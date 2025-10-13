@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meus Matches - Business Match</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
     <nav class="navbar navbar-dark bg-primary">
@@ -24,9 +25,9 @@
         {% if matches %}
             <div class="row">
                 {% for match in matches %}
-                <div class="col-md-6 mb-3">
-                    <div class="card">
-                        <div class="card-header">
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
                             <span class="badge bg-{{ 'success' if match.business.business_type == 'OFERTA' else 'warning' }}">
                                 {{ match.business.business_type }}
                             </span>
@@ -35,13 +36,21 @@
                         <div class="card-body">
                             <h5 class="card-title">{{ match.business.title }}</h5>
                             <p class="card-text">{{ match.business.description }}</p>
-                            <div class="d-flex justify-content-between">
+                        </div>
+                        <div class="card-footer">
+                            <div class="d-flex justify-content-between align-items-center">
                                 <small class="text-muted">
-                                    Match em: {{ match.matched_at.strftime('%d/%m/%Y') }}
+                                    <i class="fas fa-calendar"></i>
+                                    {{ match.matched_at.strftime('%d/%m/%Y') }}
                                 </small>
-                                <button class="btn btn-sm btn-primary">
-                                    <i class="fas fa-comment"></i> Entrar em Contato
-                                </button>
+                                <div>
+                                    <button class="btn btn-sm btn-success me-2">
+                                        <i class="fab fa-whatsapp"></i> WhatsApp
+                                    </button>
+                                    <button class="btn btn-sm btn-primary">
+                                        <i class="fas fa-calendar-plus"></i> Agendar
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -53,12 +62,14 @@
                 <i class="fas fa-handshake fa-3x text-muted mb-3"></i>
                 <h4>Nenhum match ainda</h4>
                 <p class="text-muted">Explore as oportunidades para fazer conexões!</p>
-                <a href="/opportunities" class="btn btn-primary">Ver Oportunidades</a>
+                <a href="/opportunities" class="btn btn-primary">
+                    <i class="fas fa-briefcase"></i> Ver Oportunidades
+                </a>
             </div>
         {% endif %}
     </div>
 
-    <!-- Font Awesome -->
-    <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
