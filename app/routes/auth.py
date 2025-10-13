@@ -1,68 +1,76 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
-from app import db
+from app import db, bcrypt
 from app.models import User
+from app.forms import RegistrationForm, LoginForm
 
-bp = Blueprint('auth', __name__)
+auth = Blueprint('auth', __name__)
 
-@bp.route('/login', methods=['GET', 'POST'])
-def login():
-    if current_user.is_authenticated:
-        return redirect(url_for('main.home'))
-    
-    if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-        
-        user = User.query.filter_by(email=email).first()
-        
-        if user and user.check_password(password):
-            login_user(user)
-            flash('Login realizado com sucesso!', 'success')
-            next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('business.opportunities'))
-        else:
-            flash('E-mail ou senha incorretos.', 'danger')
-    
-    return render_template('login.html')
-
-@bp.route('/register', methods=['GET', 'POST'])
+@auth.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for('main.home'))
+        return redirect(url_for('business.opportunities'))
     
-    if request.method == 'POST':
-        name = request.form.get('name')
-        email = request.form.get('email')
-        phone = request.form.get('phone')
-        company = request.form.get('company')
-        password = request.form.get('password')
-        
-        # Verificar se usuário já existe
-        if User.query.filter_by(email=email).first():
-            flash('Este e-mail já está cadastrado.', 'danger')
-            return render_template('register.html')
-        
-        # Criar novo usuário
-        user = User(
-            name=name,
-            email=email,
-            phone=phone,
-            company=company
-        )
-        user.set_password(password)
-        
-        db.session.add(user)
-        db.session.commit()
-        
-        flash('Cadastro realizado com sucesso! Faça login.', 'success')
-        return redirect(url_for('auth.login'))
+    form = RegistrationForm(request.form)
     
-    return render_template('register.html')
+    if request.method == 'POST' and form.validate():
+        try:
+            # Verificar se email já existe
+            existing_user = User.query.filter_by(email=form.email.data).first()
+            if existing_user:
+                flash('Este email já está cadastrado.', 'danger')
+                return render_template('register.html', form=form)
+            
+            # Criar novo usuário
+            hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+            
+            # Formatar telefone para armazenar apenas números
+            phone_digits = ''.join(filter(str.isdigit, form.phone.data))
+            
+            user = User(
+                name=form.name.data,
+                email=form.email.data,
+                phone=phone_digits,
+                company=form.company.data,
+                company_size=form.company_size.data,
+                password=hashed_password
+            )
+            
+            db.session.add(user)
+            db.session.commit()
+            
+            flash('Cadastro realizado com sucesso! Faça login para continuar.', 'success')
+            print(f"✅ Usuário criado: {user.name} - Redirecionando para login...")
+            return redirect(url_for('auth.login'))  # 🔧 GARANTIR REDIRECT
+            
+        except Exception as e:
+            db.session.rollback()
+            print(f"❌ Erro no cadastro: {e}")
+            flash('Erro ao realizar cadastro. Tente novamente.', 'danger')
+    
+    return render_template('register.html', form=form)
 
-@bp.route('/logout')
+@auth.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.dashboard'))
+    
+    form = LoginForm(request.form)
+    
+    if request.method == 'POST' and form.validate():
+        user = User.query.filter_by(email=form.email.data).first()
+        
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
+            login_user(user)
+            next_page = request.args.get('next')
+            return redirect(next_page) if next_page else redirect(url_for('main.dashboard'))
+        else:
+            flash('Login falhou. Verifique seu email e senha.', 'danger')
+    
+    return render_template('login.html', form=form)
+
+@auth.route('/logout')
 @login_required
 def logout():
     logout_user()
-    flash('Você saiu da sua conta.', 'info')
     return redirect(url_for('main.home'))
