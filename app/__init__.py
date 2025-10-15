@@ -7,7 +7,6 @@ from config import get_config
 from app.security import limiter
 from app.middleware import security_headers
 from app.csrf import init_csrf
-from app.database_setup import setup_database  # ✅ NOVO: Setup automático
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -30,8 +29,13 @@ def create_app(config_class=None):
     login_manager.init_app(app)
     bcrypt.init_app(app)
     
-    # ✅ DATABASE: Setup automático (CRÍTICO) - PASSAR db COMO PARÂMETRO
-    setup_database(app, db)
+    # ✅ SETUP AUTOMÁTICO SIMPLIFICADO (SEM IMPORTS CIRCULARES)
+    with app.app_context():
+        try:
+            db.create_all()
+            print("✅ Tabelas criadas/verificadas automaticamente")
+        except Exception as e:
+            print(f"⚠️  Erro no setup automático: {e}")
     
     # Inicializar rate limiting
     limiter.init_app(app)
