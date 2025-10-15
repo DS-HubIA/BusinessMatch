@@ -23,7 +23,7 @@ class ProductionConfig(Config):
     
     # Database para produção
     if os.environ.get('DATABASE_URL'):
-        SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace('postgres://', 'postgresql://')
+        SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace('postgres://', 'postgresql+pg8000://')
     
     # Performance
     SQLALCHEMY_ENGINE_OPTIONS = {
