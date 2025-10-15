@@ -74,3 +74,66 @@ main.bm-main{ padding-top: 88px; padding-bottom: 82px; }
 /* Links padrão dentro do conteúdo */
 a{ color:var(--bm-primary); }
 a:hover{ color:var(--bm-primary-900); }
+
+
+/* === MVP Polish v2 (cards/badges/swipe/nav links) === */
+
+/* Nav: remove sublinhado e usa branco forçado em todos os links/itens */
+.navbar .navbar-brand, .navbar .nav-link, .bm-topbar a { text-decoration:none !important; color:#fff !important; }
+.navbar .nav-link:hover { opacity:.9; }
+
+/* Cards gerais */
+.card{ border:0; border-radius:22px; box-shadow:0 10px 28px rgba(22,53,82,.08); overflow:hidden; }
+.card-header{ background:linear-gradient(135deg,#5a78d1 0%, #7c4dff 100%); color:#fff; border:0; padding:1.25rem 1.5rem; }
+.card-title{ color:#23354a; font-weight:800; letter-spacing:-.2px; }
+.card-text{ color:#59697c; }
+
+/* Avatar/autor dentro de card */
+.card .bm-author{ display:flex; align-items:center; gap:.75rem; padding:.75rem 0; }
+.card .bm-author .bm-avatar{ width:48px; height:48px; border-radius:50%; background:#e6eef7; display:inline-flex; align-items:center; justify-content:center; font-weight:700; color:#1f4771; }
+
+/* Badges tipo “pill” */
+.badge, .btn.badge { 
+  border-radius:999px; 
+  padding:.4rem .85rem; 
+  font-weight:700; 
+  background:#eef3fb; 
+  color:#35516f; 
+  border:1px solid rgba(31,71,113,.12);
+}
+.badge.bg-primary{ background:#e6eefb !important; color:#1f4771 !important; }
+.badge.bg-success{ background:#e8f6ef !important; color:#1e7b4f !important; }
+.badge.bg-info{ background:#e9f6ff !important; color:#146c94 !important; }
+
+/* Chips de categoria (se vierem como .badge .rounded-pill) */
+.badge.rounded-pill{ padding:.45rem .95rem; }
+
+/* Botões principais */
+.btn{ border-radius:14px; font-weight:700; }
+.btn-outline-light{ color:#fff; border-color:rgba(255,255,255,.6); }
+.btn-outline-light:hover{ background:rgba(255,255,255,.12); }
+
+/* Swipe buttons: deixar redondões */
+.bm-swipe-actions .btn{ width:112px; height:112px; border-radius:999px; font-size:2rem; box-shadow:0 10px 26px rgba(0,0,0,.08); }
+.bm-swipe-actions .btn-success{ background:#35ab59; border-color:#2f9850; }
+.bm-swipe-actions .btn-danger{ background:#e24a43; border-color:#cf433c; }
+
+/* Indicador de páginas do swipe */
+.bm-dots{ display:flex; gap:.4rem; justify-content:center; align-items:center; }
+.bm-dots span{ width:8px; height:8px; border-radius:50%; background:#d5deea; display:inline-block; }
+.bm-dots span.active{ background:#1f4771; transform:scale(1.1); }
+
+/* Listas & boxes */
+.list-group-item{ border:0; border-radius:14px; margin:.25rem 0; background:#f7faff; }
+
+/* Espaçamentos globais em headers de seção */
+h1, .display-5, .display-6{ letter-spacing:-.3px; }
+.section-title{ font-weight:800; color:#23354a; margin-bottom:.5rem; }
+.section-sub{ color:#6a7c91; }
+
+/* Área de perigo */
+.alert-danger{ border:0; border-left:6px solid #e24a43; border-radius:16px; background:#ffecec; color:#a63a35; }
+
+/* Form inputs */
+.form-control{ border-radius:14px; border:1px solid #dbe6f3; }
+.form-select{ border-radius:14px; border:1px solid #dbe6f3; }
