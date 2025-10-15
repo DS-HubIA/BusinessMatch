@@ -1,18 +1,6 @@
-import multiprocessing
-
-bind = "0.0.0.0:5000"
-workers = multiprocessing.cpu_count() * 2 + 1
-worker_class = "sync"
-worker_connections = 1000
+workers = 2
+threads = 2
 timeout = 120
-keepalive = 2
-
-# Security
-max_requests = 1000
-max_requests_jitter = 100
-preload_app = True
-
-# Logging
+bind = "0.0.0.0:10000"
 accesslog = "-"
 errorlog = "-"
-loglevel = "info"
