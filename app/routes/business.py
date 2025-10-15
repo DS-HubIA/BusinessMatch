@@ -53,3 +53,39 @@ def api_opportunities():
         return jsonify([]), 500
 
 # Manter o resto do código igual...
+def matches():
+
+@business_bp.route('/matches')
+@login_required
+def matches():
+    if not current_user.has_business:
+        return redirect(url_for('business.create_business'))
+        
+    try:
+        user_matches = Match.query.filter(
+            (Match.user1_id == current_user.id) | (Match.user2_id == current_user.id)
+        ).all()
+        
+        matches_data = []
+        for match in user_matches:
+            other_user_id = match.user2_id if match.user1_id == current_user.id else match.user1_id
+            other_user = User.query.get(other_user_id)
+            opportunity = Opportunity.query.get(match.opportunity_id)
+            business = Business.query.get(opportunity.business_id) if opportunity else None
+            
+            matches_data.append({
+                'match_id': match.id,
+                'other_user_name': sanitize_input(other_user.name) if other_user else 'Usuário',
+                'other_user_phone': other_user.phone if other_user else '',
+                'other_user_email': other_user.email if other_user else '',
+                'opportunity_title': sanitize_input(opportunity.title) if opportunity else 'Oportunidade',
+                'business_name': sanitize_input(business.name) if business else 'Negócio',
+                'match_date': match.created_at.strftime('%d/%m/%Y') if match.created_at else 'Data não disponível'
+            })
+        
+        return render_template('matches.html', matches=matches_data)
+        
+    except Exception as e:
+        print(f"Erro ao carregar matches: {e}")
+        flash('Erro ao carregar matches.', 'danger')
+        return render_template('matches.html', matches=[])
