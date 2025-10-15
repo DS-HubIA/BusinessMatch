@@ -13,27 +13,26 @@
 </head>
 <body class="bg-light">
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-  <div class="container-fluid">
-    <a class="navbar-brand fw-bold" href="/">BusinessMatch</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topnav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div id="topnav" class="collapse navbar-collapse">
-      <ul class="navbar-nav ms-auto align-items-lg-center">
-        <li class="nav-item"><a class="nav-link" href="/opportunities">Oportunidades</a></li>
-        <li class="nav-item"><a class="nav-link" href="/profile">Meu Perfil</a></li>
-        <li class="nav-item"><a class="nav-link" href="/business/matches">Matches</a></li>
-        <li class="nav-item"><a class="nav-link" href="/admin/">Admin</a></li>
-        {% if current_user.is_authenticated %}
-          <li class="nav-item ms-lg-2"><a class="btn btn-light btn-sm" href="/logout">Sair</a></li>
-        {% else %}
-          <li class="nav-item ms-lg-2"><a class="btn btn-outline-light btn-sm me-2" href="/login">Entrar</a></li>
-          <li class="nav-item"><a class="btn btn-warning btn-sm" href="/register">Criar conta</a></li>
-        {% endif %}
-      </ul>
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold" href="{{ url_for('routes.dashboard') }}">BusinessMatch</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topnav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div id="topnav" class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          {% if current_user.is_authenticated %}
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('routes.dashboard') }}">Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('routes.matches') }}">Matches</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('routes.profile') }}">Meu Perfil</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('routes.logout') }}">Sair</a></li>
+          {% else %}
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('routes.login') }}">Entrar</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('routes.signup') }}">Criar Conta</a></li>
+          {% endif %}
+        </ul>
+      </div>
     </div>
-  </div>
-</nav>
+  </nav>
 
   <main class="container my-4">
     {% with msgs = get_flashed_messages(with_categories=true) %}
