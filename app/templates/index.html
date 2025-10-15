@@ -1,58 +1,28 @@
 {% extends "base.html" %}
-
-{% block title %}Business Match - SEBRAE{% endblock %}
-
+{% from "_components.html" import bm_button %}
+{% block title %} — Conecte-se e Faça Negócios{% endblock %}
 {% block content %}
-<div style="background: #F0F2F5; min-height: 100vh; padding: 20px 16px 70px; display: flex; align-items: flex-start; justify-content: center;">
-    <div style="background: white; border-radius: 12px; padding: 30px 24px; text-align: center; max-width: 400px; width: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 1px solid #E5E7EB; margin-top: 20px;">
-        <!-- Logo -->
-        <div style="margin-bottom: 24px;">
-            <svg width="56" height="56" viewBox="0 0 24 24" fill="#2196F3" style="margin: 0 auto 12px;">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-            </svg>
-            <h1 style="font-size: 20px; font-weight: bold; color: #283E58; margin-bottom: 6px;">
-                Business Match
-            </h1>
-            <p style="color: #666666; font-size: 14px; margin: 0;">
-                Clube de Negócios SEBRAE
-            </p>
-        </div>
-
-        <!-- Descrição -->
-        <div style="margin-bottom: 24px;">
-            <p style="color: #666666; font-size: 14px; line-height: 1.5; margin-bottom: 20px;">
-                Conecte oferta e demanda de forma simples e intuitiva. Encontre oportunidades de negócio e parceiros comerciais.
-            </p>
-        </div>
-
-        <!-- Botões de Ação -->
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-            <a href="{{ url_for('auth.login') }}" style="background: #2196F3; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; text-decoration: none; text-align: center; transition: all 0.2s ease;">
-                Entrar na Plataforma
-            </a>
-            
-            <a href="{{ url_for('auth.register') }}" style="background: white; color: #2196F3; border: 2px solid #2196F3; padding: 12px 20px; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; text-decoration: none; text-align: center; transition: all 0.2s ease;">
-                Criar Conta
-            </a>
-        </div>
-
-        <!-- Rodapé -->
-        <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #E5E7EB;">
-            <p style="color: #999; font-size: 11px; margin: 0;">
-                FE 2025 • Conectando negócios, impulsionando resultados
-            </p>
-        </div>
+<section class="hero p-4 p-md-5 shadow-sm">
+  <div class="row align-items-center">
+    <div class="col-md-7">
+      <h1 class="display-6 fw-bold mb-3">Business Match</h1>
+      <p class="lead mb-4">Encontre parceiros, gere oportunidades e acelere vendas.</p>
+      <div class="d-flex flex-wrap gap-2">
+        {{ bm_button("Criar conta", "success", url_for('routes.signup')) }}
+        {{ bm_button("Entrar", "primary", url_for('routes.login')) }}
+        {{ bm_button("Saiba mais", "info", url_for('routes.dashboard')) }}
+      </div>
     </div>
-</div>
-
-<style>
-    a:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
-    }
-    
-    a:active {
-        transform: translateY(0px);
-    }
-</style>
+    <div class="col-md-5 mt-4 mt-md-0">
+      <div class="card p-3">
+        <h5 class="fw-semibold mb-3">Destaques</h5>
+        <ul class="mb-0">
+          <li>Swipe/Match em tempo real</li>
+          <li>Chat/WhatsApp integrado</li>
+          <li>Perfis de negócios e filtros</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
 {% endblock %}

@@ -1,0 +1,9 @@
+{% macro bm_button(label, kind="primary", href="#", outline=False) -%}
+  {%- set cls = "btn" -%}
+  {%- if outline -%}
+    {%- set cls = cls + " btn-outline" -%}
+  {%- else -%}
+    {%- set cls = cls + " btn-" + kind -%}
+  {%- endif -%}
+  <a class="{{ cls }}" href="{{ href }}">{{ label }}</a>
+{%- endmacro %}

@@ -1,0 +1,21 @@
+:root{
+  --bm-radius: 14px;
+}
+.card{ border-radius: var(--bm-radius); }
+.btn{
+  border-radius: 12px;
+  padding: .6rem 1rem;
+  font-weight: 600;
+}
+.btn-outline{
+  border: 2px dashed var(--bs-primary);
+  color: var(--bs-primary);
+  background: transparent;
+}
+.hero{
+  border-radius: var(--bm-radius);
+  background: linear-gradient(180deg, rgba(13,110,253,.08), rgba(13,110,253,.02));
+}
+@media (max-width: 576px){
+  .btn{ width: 100%; margin-bottom: .5rem; }
+}
