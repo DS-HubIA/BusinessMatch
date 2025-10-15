@@ -30,8 +30,8 @@ def create_app(config_class=None):
     login_manager.init_app(app)
     bcrypt.init_app(app)
     
-    # ✅ DATABASE: Setup automático (CRÍTICO)
-    setup_database(app)
+    # ✅ DATABASE: Setup automático (CRÍTICO) - PASSAR db COMO PARÂMETRO
+    setup_database(app, db)
     
     # Inicializar rate limiting
     limiter.init_app(app)

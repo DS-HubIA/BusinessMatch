@@ -1,9 +1,7 @@
-import os
-from app import db
 from app.models import User
 from flask_bcrypt import Bcrypt
 
-def setup_database(app):
+def setup_database(app, db):  # ✅ RECEBER db COMO PARÂMETRO
     """Configura o database automaticamente se as tabelas não existirem"""
     with app.app_context():
         try:
