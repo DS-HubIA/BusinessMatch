@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Debug - Opportunities{% endblock %}
+
+{% block content %}
+<div class="swipe-container">
+    <header class="app-header">
+        <h1>Debug - Opportunities</h1>
+    </header>
+
+    <div class="cards-container" id="cardsContainer">
+        <div class="loading">Carregando oportunidades...</div>
+    </div>
+
+    <div class="action-buttons">
+        <button class="btn-action btn-unlike" onclick="handleSwipe('dislike')">✕</button>
+        <button class="btn-action btn-like" onclick="handleSwipe('like')">✓</button>
+    </div>
+
+    <!-- Área de debug -->
+    <div style="padding: 20px; background: #f5f5f5;">
+        <h3>Debug Info:</h3>
+        <div id="debugInfo"></div>
+        <button onclick="manualTest()">Testar API Manualmente</button>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let currentOpportunities = [];
+    let currentCardIndex = 0;
+
+    async function loadOpportunities() {
+        try {
+            document.getElementById('debugInfo').innerHTML = "🔄 Fazendo request para /api/opportunities...";
+            const response = await fetch('/api/opportunities');
+            
+            document.getElementById('debugInfo').innerHTML += `<br>✅ Response status: ${response.status}`;
+            
+            currentOpportunities = await response.json();
+            document.getElementById('debugInfo').innerHTML += `<br>📊 Dados recebidos: ${JSON.stringify(currentOpportunities)}`;
+            
+            currentCardIndex = 0;
+            renderCards();
+        } catch (error) {
+            document.getElementById('debugInfo').innerHTML = `<br>❌ Erro: ${error}`;
+            console.error('Erro ao carregar oportunidades:', error);
+        }
+    }
+
+    function renderCards() {
+        const container = document.getElementById('cardsContainer');
+        container.innerHTML = '';
+
+        document.getElementById('debugInfo').innerHTML += `<br>🎯 Renderizando ${currentOpportunities.length} cards...`;
+
+        if (currentOpportunities.length === 0) {
+            container.innerHTML = '<div class="no-opportunities">Nenhuma oportunidade disponível</div>';
+            return;
+        }
+
+        for (let i = 0; i < Math.min(3, currentOpportunities.length - currentCardIndex); i++) {
+            const opportunity = currentOpportunities[currentCardIndex + i];
+            const card = createOpportunityCard(opportunity, i);
+            container.appendChild(card);
+        }
+    }
+
+    function createOpportunityCard(opportunity, zIndex) {
+        const card = document.createElement('div');
+        card.className = 'opportunity-card';
+        card.style.zIndex = 100 - zIndex;
+        card.style.transform = `scale(${1 - zIndex * 0.05}) translateY(${zIndex * 10}px)`;
+        
+        card.innerHTML = `
+            <div class="card-header">
+                ${opportunity.business_type || 'Oportunidade'}
+            </div>
+            <div class="card-content">
+                <h2 class="business-name">${opportunity.business_name}</h2>
+                <p class="business-description">${opportunity.description}</p>
+            </div>
+        `;
+
+        return card;
+    }
+
+    function manualTest() {
+        loadOpportunities();
+    }
+
+    // Inicializar
+    document.addEventListener('DOMContentLoaded', loadOpportunities);
+</script>
+{% endblock %}

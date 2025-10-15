@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Negócio - Business Match</title>
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <style>
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .form-title {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 2rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .form-section {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        .section-title {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #667eea;
+            color: #667eea;
+        }
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .required::after {
+            content: " *";
+            color: #e74c3c;
+        }
+        .user-info {
+            background: #e8f4fd;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .tag-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .tag-suggestion {
+            background: #e9ecef;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .tag-suggestion:hover {
+            background: #667eea;
+            color: white;
+        }
+        .cnpj-info {
+            background: #fff3cd;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #ffc107;
+        }
+    </style>
+</head>
+<body style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 1rem;">
+    
+    <!-- Header -->
+    <div style="background: white; padding: 1rem; border-radius: 15px; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+        <a href="{{ url_for('main.profile') }}" style="text-decoration: none; color: #666;">← Voltar ao Perfil</a>
+        <h2 style="margin: 0; color: #2c3e50;">✏️ Editar Negócio</h2>
+        <div style="width: 60px;"></div>
+    </div>
+
+    <!-- Formulário -->
+    <div class="form-container">
+        <h1 class="form-title">📋 Editar Seu Negócio</h1>
+        
+        <!-- Informações do usuário -->
+        <div class="user-info">
+            <h4 style="margin: 0 0 0.5rem 0;">👤 Suas Informações</h4>
+            <p style="margin: 0.25rem 0;"><strong>Nome:</strong> {{ current_user.name }}</p>
+            <p style="margin: 0.25rem 0;"><strong>Empresa:</strong> {{ current_user.company }}</p>
+            <p style="margin: 0.25rem 0;"><strong>WhatsApp:</strong> {{ current_user.phone }}</p>
+        </div>
+
+        <!-- Informação do CNPJ (não editável) -->
+        <div class="cnpj-info">
+            <h4 style="margin: 0 0 0.5rem 0;">🏢 CNPJ do Negócio</h4>
+            <p style="margin: 0; font-size: 1.1rem; font-weight: bold;">{{ business.cnpj }}</p>
+            <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem; color: #856404;">
+                O CNPJ não pode ser alterado por questões de segurança.
+            </p>
+        </div>
+        
+        <form method="POST" onsubmit="return validateForm()">
+            <!-- Informações Básicas -->
+            <div class="form-section">
+                <h3 class="section-title">🏢 Informações do Negócio</h3>
+                
+                <div class="form-group">
+                    <label class="form-label required" for="name">Nome do Negócio</label>
+                    <input type="text" id="name" name="name" class="form-input" required 
+                           value="{{ business.name }}"
+                           placeholder="Ex: Tech Solutions LTDA">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label required" for="description">Descrição do Negócio</label>
+                    <textarea id="description" name="description" class="form-textarea" required 
+                              placeholder="Descreva o que sua empresa faz, sua missão, valores...">{{ business.description }}</textarea>
+                </div>
+            </div>
+
+            <!-- Localização -->
+            <div class="form-section">
+                <h3 class="section-title">📍 Localização</h3>
+                
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label required" for="city">Cidade</label>
+                        <input type="text" id="city" name="city" class="form-input" required 
+                               value="{{ business.city }}"
+                               placeholder="Ex: São Paulo">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label required" for="state">Estado</label>
+                        <select id="state" name="state" class="form-select" required>
+                            <option value="">Selecione</option>
+                            <option value="AC" {% if business.state == 'AC' %}selected{% endif %}>AC</option>
+                            <option value="AL" {% if business.state == 'AL' %}selected{% endif %}>AL</option>
+                            <option value="AP" {% if business.state == 'AP' %}selected{% endif %}>AP</option>
+                            <option value="AM" {% if business.state == 'AM' %}selected{% endif %}>AM</option>
+                            <option value="BA" {% if business.state == 'BA' %}selected{% endif %}>BA</option>
+                            <option value="CE" {% if business.state == 'CE' %}selected{% endif %}>CE</option>
+                            <option value="DF" {% if business.state == 'DF' %}selected{% endif %}>DF</option>
+                            <option value="ES" {% if business.state == 'ES' %}selected{% endif %}>ES</option>
+                            <option value="GO" {% if business.state == 'GO' %}selected{% endif %}>GO</option>
+                            <option value="MA" {% if business.state == 'MA' %}selected{% endif %}>MA</option>
+                            <option value="MT" {% if business.state == 'MT' %}selected{% endif %}>MT</option>
+                            <option value="MS" {% if business.state == 'MS' %}selected{% endif %}>MS</option>
+                            <option value="MG" {% if business.state == 'MG' %}selected{% endif %}>MG</option>
+                            <option value="PA" {% if business.state == 'PA' %}selected{% endif %}>PA</option>
+                            <option value="PB" {% if business.state == 'PB' %}selected{% endif %}>PB</option>
+                            <option value="PR" {% if business.state == 'PR' %}selected{% endif %}>PR</option>
+                            <option value="PE" {% if business.state == 'PE' %}selected{% endif %}>PE</option>
+                            <option value="PI" {% if business.state == 'PI' %}selected{% endif %}>PI</option>
+                            <option value="RJ" {% if business.state == 'RJ' %}selected{% endif %}>RJ</option>
+                            <option value="RN" {% if business.state == 'RN' %}selected{% endif %}>RN</option>
+                            <option value="RS" {% if business.state == 'RS' %}selected{% endif %}>RS</option>
+                            <option value="RO" {% if business.state == 'RO' %}selected{% endif %}>RO</option>
+                            <option value="RR" {% if business.state == 'RR' %}selected{% endif %}>RR</option>
+                            <option value="SC" {% if business.state == 'SC' %}selected{% endif %}>SC</option>
+                            <option value="SP" {% if business.state == 'SP' %}selected{% endif %}>SP</option>
+                            <option value="SE" {% if business.state == 'SE' %}selected{% endif %}>SE</option>
+                            <option value="TO" {% if business.state == 'TO' %}selected{% endif %}>TO</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Setor e Categoria -->
+            <div class="form-section">
+                <h3 class="section-title">🏷️ Setor e Categoria</h3>
+                
+                <div class="form-group">
+                    <label class="form-label required" for="business_sector">Setor do Negócio</label>
+                    <select id="business_sector" name="business_sector" class="form-select" required onchange="updateCategories()">
+                        <option value="">Selecione o setor</option>
+                        <option value="Comércio" {% if business.business_sector == 'Comércio' %}selected{% endif %}>Comércio</option>
+                        <option value="Serviços" {% if business.business_sector == 'Serviços' %}selected{% endif %}>Serviços</option>
+                        <option value="Indústria" {% if business.business_sector == 'Indústria' %}selected{% endif %}>Indústria</option>
+                        <option value="Agronegócio" {% if business.business_sector == 'Agronegócio' %}selected{% endif %}>Agronegócio</option>
+                        <option value="Tecnologia" {% if business.business_sector == 'Tecnologia' %}selected{% endif %}>Tecnologia</option>
+                        <option value="Saúde" {% if business.business_sector == 'Saúde' %}selected{% endif %}>Saúde</option>
+                        <option value="Educação" {% if business.business_sector == 'Educação' %}selected{% endif %}>Educação</option>
+                        <option value="Construção Civil" {% if business.business_sector == 'Construção Civil' %}selected{% endif %}>Construção Civil</option>
+                        <option value="Alimentação" {% if business.business_sector == 'Alimentação' %}selected{% endif %}>Alimentação</option>
+                        <option value="Moda" {% if business.business_sector == 'Moda' %}selected{% endif %}>Moda</option>
+                        <option value="Transporte" {% if business.business_sector == 'Transporte' %}selected{% endif %}>Transporte</option>
+                        <option value="Turismo" {% if business.business_sector == 'Turismo' %}selected{% endif %}>Turismo</option>
+                        <option value="Financeiro" {% if business.business_sector == 'Financeiro' %}selected{% endif %}>Financeiro</option>
+                        <option value="Imobiliário" {% if business.business_sector == 'Imobiliário' %}selected{% endif %}>Imobiliário</option>
+                        <option value="Outros" {% if business.business_sector == 'Outros' %}selected{% endif %}>Outros</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label required" for="business_category">Categoria Específica</label>
+                    <select id="business_category" name="business_category" class="form-select" required>
+                        <option value="{{ business.business_category }}" selected>{{ business.business_category }}</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="tags">Palavras-chave</label>
+                    <input type="text" id="tags" name="tags" class="form-input" 
+                           value="{{ business.tags }}"
+                           placeholder="Ex: software, consultoria, tecnologia">
+                    <small style="color: #666;">Separe por vírgula. Use palavras simples, sem acentos.</small>
+                    
+                    <div class="tag-suggestions">
+                        <div class="tag-suggestion" onclick="addTag('tecnologia')">tecnologia</div>
+                        <div class="tag-suggestion" onclick="addTag('consultoria')">consultoria</div>
+                        <div class="tag-suggestion" onclick="addTag('software')">software</div>
+                        <div class="tag-suggestion" onclick="addTag('desenvolvimento')">desenvolvimento</div>
+                        <div class="tag-suggestion" onclick="addTag('inovacao')">inovacao</div>
+                        <div class="tag-suggestion" onclick="addTag('digital')">digital</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- O que sua empresa VENDE (OFERTA) -->
+            <div class="form-section">
+                <h3 class="section-title">🛍️ O que sua empresa VENDE (Ofertas)</h3>
+                <p style="color: #666; margin-bottom: 1rem;">Estas informações aparecerão para outros usuários como oportunidades de negócio</p>
+                
+                <div class="form-group">
+                    <label class="form-label" for="sells_products">Produtos que Vende</label>
+                    <textarea id="sells_products" name="sells_products" class="form-textarea" 
+                              placeholder="Ex: Software customizado, aplicativos mobile, sistemas web...">{{ business.sells_products or '' }}</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="sells_services">Serviços que Oferece</label>
+                    <textarea id="sells_services" name="sells_services" class="form-textarea" 
+                              placeholder="Ex: Consultoria em TI, desenvolvimento de sites, suporte técnico...">{{ business.sells_services or '' }}</textarea>
+                </div>
+            </div>
+
+            <!-- O que sua empresa COMPRA (DEMANDA) -->
+            <div class="form-section">
+                <h3 class="section-title">🛒 O que sua empresa COMPRA (Demandas)</h3>
+                <p style="color: #666; margin-bottom: 1rem;">Estas informações ajudarão outros usuários a oferecerem produtos/serviços para você</p>
+                
+                <div class="form-group">
+                    <label class="form-label" for="buys_products">Produtos que Compra</label>
+                    <textarea id="buys_products" name="buys_products" class="form-textarea" 
+                              placeholder="Ex: Matéria-prima, equipamentos, insumos...">{{ business.buys_products or '' }}</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="buys_services">Serviços que Contrata</label>
+                    <textarea id="buys_services" name="buys_services" class="form-textarea" 
+                              placeholder="Ex: Contabilidade, marketing digital, limpeza...">{{ business.buys_services or '' }}</textarea>
+                </div>
+            </div>
+
+            <!-- Ações -->
+            <div class="form-actions">
+                <a href="{{ url_for('main.profile') }}" class="btn btn-outline">Cancelar</a>
+                <button type="submit" class="btn btn-primary">💾 Salvar Alterações</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Categorias por setor
+        const categories = {
+            'Comércio': ['Varejo', 'Atacado', 'E-commerce', 'Shopping', 'Loja Conveniência'],
+            'Serviços': ['Consultoria', 'Manutenção', 'Limpeza', 'Transporte', 'Educação', 'Saúde'],
+            'Indústria': ['Alimentícia', 'Têxtil', 'Metalmecânica', 'Química', 'Farmacêutica'],
+            'Agronegócio': ['Agricultura', 'Pecuária', 'Agroindústria', 'Fruticultura'],
+            'Tecnologia': ['Software', 'Hardware', 'TI', 'Internet', 'Telecomunicações'],
+            'Saúde': ['Hospital', 'Clínica', 'Farmácia', 'Laboratório'],
+            'Educação': ['Escola', 'Curso', 'Faculdade', 'Treinamento'],
+            'Construção Civil': ['Construtora', 'Incorporadora', 'Materiais'],
+            'Alimentação': ['Restaurante', 'Lanches', 'Supermercado', 'Padaria'],
+            'Moda': ['Confecção', 'Calçados', 'Acessórios'],
+            'Transporte': ['Logística', 'Carga', 'Passageiros'],
+            'Turismo': ['Hotel', 'Agência', 'Eventos'],
+            'Financeiro': ['Banco', 'Seguros', 'Investimentos'],
+            'Imobiliário': ['Imobiliária', 'Corretagem'],
+            'Outros': ['Outros']
+        };
+
+        // Inicializar categorias baseado no setor atual
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentSector = document.getElementById('business_sector').value;
+            if (currentSector) {
+                updateCategories();
+            }
+        });
+
+        function updateCategories() {
+            const sector = document.getElementById('business_sector').value;
+            const categorySelect = document.getElementById('business_category');
+            const currentCategory = '{{ business.business_category }}';
+            
+            categorySelect.innerHTML = '<option value="">Selecione a categoria</option>';
+            
+            if (sector && categories[sector]) {
+                categories[sector].forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat;
+                    option.textContent = cat;
+                    if (cat === currentCategory) {
+                        option.selected = true;
+                    }
+                    categorySelect.appendChild(option);
+                });
+            }
+        }
+
+        function addTag(tag) {
+            const tagsInput = document.getElementById('tags');
+            const currentTags = tagsInput.value.split(',').map(t => t.trim()).filter(t => t);
+            
+            if (!currentTags.includes(tag)) {
+                if (currentTags.length > 0) {
+                    tagsInput.value = currentTags.join(', ') + ', ' + tag;
+                } else {
+                    tagsInput.value = tag;
+                }
+            }
+        }
+
+        // Validação do formulário
+        function validateForm() {
+            return true; // Validação básica - CNPJ não é editável
+        }
+
+        // Normalizar tags ao enviar formulário
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const tagsInput = document.getElementById('tags');
+            if (tagsInput.value) {
+                let tags = tagsInput.value.split(',')
+                    .map(tag => tag.trim().toLowerCase())
+                    .filter(tag => tag)
+                    .join(', ');
+                tagsInput.value = tags;
+            }
+        });
+    </script>
+</body>
+</html>

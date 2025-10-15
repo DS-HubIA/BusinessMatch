@@ -1,0 +1,55 @@
+{
+  "data_backup": "2025-10-14T23:10:18.622777",
+  "projeto": "Business Match SEBRAE",
+  "status_geral": {
+    "backend": "100% funcional",
+    "frontend": "70% (precisa ajustes visuais)",
+    "banco_dados": "PostgreSQL configurado",
+    "deploy": "Render preparado"
+  },
+  "funcionalidades_implementadas": [
+    "Sistema completo de autentica\u00e7\u00e3o",
+    "Cadastro/edi\u00e7\u00e3o de neg\u00f3cios com CNPJ",
+    "Sistema de swipe com like/dislike",
+    "Matching autom\u00e1tico (interesse m\u00fatuo)",
+    "Integra\u00e7\u00e3o WhatsApp",
+    "Dashboard b\u00e1sico",
+    "Gest\u00e3o de matches e interesses",
+    "Roteamento corrigido - / vai para dashboard",
+    "CSS mobile - bot\u00f5es clic\u00e1veis"
+  ],
+  "problemas_atuais": [
+    "Visual diferente do MVP original"
+  ],
+  "arquivos_principais": {
+    "models": "app/models.py",
+    "routes": "app/routes/",
+    "templates": "app/templates/",
+    "config": "config.py",
+    "requirements": "requirements.txt",
+    "mvp_original": "BusinessMatch.html"
+  },
+  "comandos_reinicio": [
+    "cd business-match-sebrae",
+    "source venv/bin/activate",
+    "python run.py",
+    "http://127.0.0.1:5000/"
+  ],
+  "usuarios_teste": [
+    {
+      "email": "tech@empresa.com",
+      "senha": "123456",
+      "negocio": "sim"
+    },
+    {
+      "email": "consultoria@empresa.com",
+      "senha": "123456",
+      "negocio": "sim"
+    },
+    {
+      "email": "novo@empresa.com",
+      "senha": "123456",
+      "negocio": "nao"
+    }
+  ]
+}

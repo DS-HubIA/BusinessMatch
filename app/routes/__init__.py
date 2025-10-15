@@ -1,6 +1,4 @@
-from .main import bp as main_bp
-from .auth import auth as auth_bp
-from .business import bp as business_bp
-
-# Placeholder - vamos criar amanhã
-bp = main_bp
+from .main import main_bp
+from .auth import auth_bp
+from .business import business_bp
+# Health blueprint será criado depois se necessário

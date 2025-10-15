@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+
+{% block title %}Cadastrar - Business Match{% endblock %}
+
+{% block content %}
+<div style="background: #F0F2F5; min-height: 100vh; padding: 20px 16px; display: flex; align-items: flex-start; justify-content: center;">
+    <div style="background: white; border-radius: 12px; padding: 30px 24px; max-width: 400px; width: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 1px solid #E5E7EB; margin-top: 20px;">
+        <!-- Header -->
+        <div style="text-align: center; margin-bottom: 24px;">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="#2196F3" style="margin: 0 auto 12px;">
+                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+            </svg>
+            <h2 style="font-size: 20px; font-weight: bold; color: #283E58; margin-bottom: 6px;">Criar Conta</h2>
+            <p style="color: #666666; font-size: 14px; margin: 0;">Clube de Negócios SEBRAE</p>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div style="margin-bottom: 20px;">
+                    {% for category, message in messages %}
+                        <div style="background: {% if category == 'success' %}#f0fdf4{% else %}#fef2f2{% endif %}; 
+                                    border: 1px solid {% if category == 'success' %}#bbf7d0{% else %}#fecaca{% endif %}; 
+                                    padding: 12px; border-radius: 6px; font-size: 14px; color: #283E58;">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Formulário -->
+        <form method="POST" action="{{ url_for('auth.register') }}" enctype="multipart/form-data" id="registerForm">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+            <!-- Foto de perfil funcional - CORRIGIDO -->
+            <div style="text-align: center; margin-bottom: 20px;">
+                <label for="profile_picture" style="cursor: pointer; display: inline-block;">
+                    <div id="photo-placeholder" style="width: 80px; height: 80px; background: #F8F9FA; border: 2px dashed #E5E7EB; border-radius: 50%; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: #666; transition: all 0.2s ease;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="#666">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                    </div>
+                    <p id="photo-text" style="color: #666; font-size: 12px; margin: 0;">Clique para adicionar foto</p>
+                </label>
+                <input type="file" id="profile_picture" name="profile_picture" accept="image/*" style="display: none;">
+                <div id="image-preview" style="display: none; margin-top: 8px;">
+                    <img id="preview" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
+                </div>
+            </div>
+
+            <!-- Campos do formulário -->
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 14px; font-weight: bold; color: #283E58; margin-bottom: 6px;">Nome Completo</label>
+                <input type="text" name="name" required style="width: 100%; padding: 12px; border: 1px solid #E5E7EB; border-radius: 6px; font-size: 14px;" placeholder="Seu nome completo">
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 14px; font-weight: bold; color: #283E58; margin-bottom: 6px;">E-mail</label>
+                <input type="email" name="email" required style="width: 100%; padding: 12px; border: 1px solid #E5E7EB; border-radius: 6px; font-size: 14px;" placeholder="seu@email.com">
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 14px; font-weight: bold; color: #283E58; margin-bottom: 6px;">WhatsApp</label>
+                <input type="tel" name="phone" id="phone" placeholder="(11) 99999-9999" required style="width: 100%; padding: 12px; border: 1px solid #E5E7EB; border-radius: 6px; font-size: 14px;">
+                <div id="phone-error" style="color: #EF4444; font-size: 12px; margin-top: 4px; display: none;">Formato: (DDD) 9XXXX-XXXX</div>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 14px; font-weight: bold; color: #283E58; margin-bottom: 6px;">Empresa</label>
+                <input type="text" name="company" required style="width: 100%; padding: 12px; border: 1px solid #E5E7EB; border-radius: 6px; font-size: 14px;" placeholder="Nome da empresa">
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 14px; font-weight: bold; color: #283E58; margin-bottom: 6px;">Porte da Empresa</label>
+                <select name="company_size" required style="width: 100%; padding: 12px; border: 1px solid #E5E7EB; border-radius: 6px; font-size: 14px; background: white;">
+                    <option value="">Selecione...</option>
+                    <option value="MEI">MEI</option>
+                    <option value="Micro">Micro Empresa</option>
+                    <option value="Pequena">Pequena Empresa</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 14px; font-weight: bold; color: #283E58; margin-bottom: 6px;">Senha</label>
+                <input type="password" name="password" id="password" required style="width: 100%; padding: 12px; border: 1px solid #E5E7EB; border-radius: 6px; font-size: 14px;" placeholder="Mínimo 6 caracteres">
+                <div id="password-error" style="color: #EF4444; font-size: 12px; margin-top: 4px; display: none;">Mínimo 6 caracteres</div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-size: 14px; font-weight: bold; color: #283E58; margin-bottom: 6px;">Confirmar Senha</label>
+                <input type="password" name="confirm_password" id="confirm_password" required style="width: 100%; padding: 12px; border: 1px solid #E5E7EB; border-radius: 6px; font-size: 14px;" placeholder="Digite a mesma senha">
+                <div id="confirm-error" style="color: #EF4444; font-size: 12px; margin-top: 4px; display: none;">Senhas não coincidem</div>
+            </div>
+
+            <!-- Termos de Uso -->
+            <div style="margin-bottom: 20px; padding: 16px; background: #F8F9FA; border-radius: 8px; border: 1px solid #E5E7EB;">
+                <h4 style="font-size: 14px; font-weight: bold; color: #283E58; margin-bottom: 8px;">TERMOS DE USO</h4>
+                <div style="max-height: 120px; overflow-y: auto; font-size: 11px; line-height: 1.4; color: #666; margin-bottom: 12px;">
+                    <p><strong>1. Aceitação dos termos</strong><br>
+                    Ao acessar e usar o BusinessMatch, você concorda em cumprir e ser vinculado por estes Termos de Uso.</p>
+                    
+                    <p><strong>2. Cadastro de usuário</strong><br>
+                    - Você deve fornecer informações precisas e atualizadas<br>
+                    - É proibido criar contas falsas<br>
+                    - Você é responsável por manter sua senha segura</p>
+                    
+                    <p><strong>3. Conduta do usuário</strong><br>
+                    - Respeitar outros usuários<br>
+                    - Não publicar conteúdo ofensivo<br>
+                    - Usar apenas para fins legítimos de negócios</p>
+                </div>
+                
+                <label style="display: flex; align-items: flex-start; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" name="terms_accepted" value="1" style="margin-top: 2px;" required>
+                    <span style="font-size: 12px; color: #283E58;">Li e aceito os Termos de Uso e Política de Privacidade</span>
+                </label>
+            </div>
+
+            <button type="submit" style="width: 100%; background: #2196F3; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; transition: all 0.2s ease;">
+                Cadastrar
+            </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <p style="color: #666666; font-size: 14px; margin: 0;">
+                Já tem conta? <a href="{{ url_for('auth.login') }}" style="color: #2196F3; text-decoration: none; font-weight: bold;">Entrar</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // PREVIEW DA FOTO - CORRIGIDO
+    document.getElementById('profile_picture').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const preview = document.getElementById('preview');
+        const imagePreview = document.getElementById('image-preview');
+        const photoPlaceholder = document.getElementById('photo-placeholder');
+        const photoText = document.getElementById('photo-text');
+        
+        if (file) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                imagePreview.style.display = 'block';
+                photoPlaceholder.style.display = 'none';
+                photoText.textContent = 'Foto selecionada';
+            }
+            
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // MÁSCARA TELEFONE - SOMENTE NÚMEROS
+    document.getElementById('phone').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        
+        if (value.length <= 2) {
+            value = value.replace(/(\d{0,2})/, '($1');
+        } else if (value.length <= 3) {
+            value = value.replace(/(\d{2})(\d{0,1})/, '($1) $2');
+        } else if (value.length <= 7) {
+            value = value.replace(/(\d{2})(\d{1})(\d{0,4})/, '($1) $2$3');
+        } else {
+            value = value.replace(/(\d{2})(\d{1})(\d{4})(\d{0,4})/, '($1) $2$3-$4');
+        }
+        
+        e.target.value = value;
+        
+        // Validação visual
+        const phoneError = document.getElementById('phone-error');
+        const cleanPhone = value.replace(/\D/g, '');
+        if (cleanPhone.length === 11) {
+            phoneError.style.display = 'none';
+            e.target.style.borderColor = '#10B981';
+        } else {
+            phoneError.style.display = 'block';
+            e.target.style.borderColor = '#EF4444';
+        }
+    });
+
+    // BLOQUEIA LETRAS NO TELEFONE
+    document.getElementById('phone').addEventListener('keypress', function(e) {
+        const char = String.fromCharCode(e.keyCode || e.which);
+        if (!/\d/.test(char)) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    // VALIDAÇÃO SENHA EM TEMPO REAL
+    document.getElementById('password').addEventListener('input', validatePassword);
+    document.getElementById('confirm_password').addEventListener('input', validatePassword);
+
+    function validatePassword() {
+        const password = document.getElementById('password').value;
+        const confirm = document.getElementById('confirm_password').value;
+        const passwordError = document.getElementById('password-error');
+        const confirmError = document.getElementById('confirm-error');
+        
+        // Valida comprimento
+        if (password.length > 0 && password.length < 6) {
+            passwordError.style.display = 'block';
+            document.getElementById('password').style.borderColor = '#EF4444';
+        } else {
+            passwordError.style.display = 'none';
+            document.getElementById('password').style.borderColor = password.length >= 6 ? '#10B981' : '#E5E7EB';
+        }
+        
+        // Valida confirmação
+        if (confirm.length > 0 && password !== confirm) {
+            confirmError.style.display = 'block';
+            document.getElementById('confirm_password').style.borderColor = '#EF4444';
+        } else {
+            confirmError.style.display = 'none';
+            document.getElementById('confirm_password').style.borderColor = confirm.length > 0 && password === confirm ? '#10B981' : '#E5E7EB';
+        }
+    }
+
+    // VALIDAÇÃO FINAL ANTES DO ENVIO
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+        const phone = document.getElementById('phone').value.replace(/\D/g, '');
+        const password = document.getElementById('password').value;
+        const confirm = document.getElementById('confirm_password').value;
+        
+        if (phone.length !== 11) {
+            alert('Por favor, insira um número de celular válido com DDD: (XX) 9XXXX-XXXX');
+            document.getElementById('phone').focus();
+            e.preventDefault();
+            return false;
+        }
+        
+        if (password.length < 6) {
+            alert('A senha deve ter pelo menos 6 caracteres');
+            document.getElementById('password').focus();
+            e.preventDefault();
+            return false;
+        }
+        
+        if (password !== confirm) {
+            alert('As senhas não coincidem');
+            document.getElementById('confirm_password').focus();
+            e.preventDefault();
+            return false;
+        }
+        
+        return true;
+    });
+
+    // EFEITOS HOVER
+    document.getElementById('profile_picture').addEventListener('mouseenter', function() {
+        document.getElementById('photo-placeholder').style.borderColor = '#2196F3';
+        document.getElementById('photo-placeholder').style.background = '#F0F9FF';
+    });
+
+    document.getElementById('profile_picture').addEventListener('mouseleave', function() {
+        document.getElementById('photo-placeholder').style.borderColor = '#E5E7EB';
+        document.getElementById('photo-placeholder').style.background = '#F8F9FA';
+    });
+</script>
+
+<style>
+    button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+    }
+    
+    button:active {
+        transform: translateY(0px);
+    }
+
+    input:focus, select:focus {
+        outline: none;
+        border-color: #2196F3 !important;
+        box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
+    }
+
+    a:hover {
+        text-decoration: underline !important;
+    }
+
+    label[for="profile_picture"]:hover div {
+        border-color: #2196F3;
+        background: #F0F9FF;
+    }
+</style>
+{% endblock %}

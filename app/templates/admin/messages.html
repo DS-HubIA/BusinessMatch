@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Mensagens em Massa - Admin{% endblock %}
+
+{% block content %}
+<div style="background: #F0F2F5; min-height: 100vh; padding: 16px;">
+    <!-- Header -->
+    <div style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 16px;">
+        <h2 style="font-size: 18px; font-weight: bold; color: #283E58; margin-bottom: 8px;">Mensagens em Massa</h2>
+        <p style="color: #666666; font-size: 14px; margin: 0;">Comunique-se com todos os usuários</p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+        <!-- Email em Massa -->
+        <div style="background: white; border-radius: 8px; padding: 20px;">
+            <h3 style="font-size: 16px; font-weight: bold; color: #283E58; margin-bottom: 16px;">📧 Email em Massa</h3>
+            <form method="POST" action="{{ url_for('main.send_bulk_email') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-size: 14px; font-weight: bold; color: #283E58; margin-bottom: 6px;">Assunto</label>
+                    <input type="text" name="subject" required style="width: 100%; padding: 12px; border: 1px solid #E5E7EB; border-radius: 6px; font-size: 14px;" placeholder="Assunto do email">
+                </div>
+                
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-size: 14px; font-weight: bold; color: #283E58; margin-bottom: 6px;">Mensagem</label>
+                    <textarea name="message" required rows="5" style="width: 100%; padding: 12px; border: 1px solid #E5E7EB; border-radius: 6px; font-size: 14px; resize: vertical;" placeholder="Digite sua mensagem..."></textarea>
+                </div>
+                
+                <button type="submit" style="background: #2196F3; color: white; border: none; padding: 14px 24px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer;">
+                    📧 Enviar para Todos os Usuários
+                </button>
+            </form>
+        </div>
+
+        <!-- WhatsApp em Massa -->
+        <div style="background: white; border-radius: 8px; padding: 20px;">
+            <h3 style="font-size: 16px; font-weight: bold; color: #283E58; margin-bottom: 16px;">📱 WhatsApp em Massa</h3>
+            <form method="POST" action="{{ url_for('main.send_bulk_whatsapp') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-size: 14px; font-weight: bold; color: #283E58; margin-bottom: 6px;">Mensagem</label>
+                    <textarea name="message" required rows="4" style="width: 100%; padding: 12px; border: 1px solid #E5E7EB; border-radius: 6px; font-size: 14px; resize: vertical;" placeholder="Digite a mensagem para WhatsApp..."></textarea>
+                </div>
+                
+                <button type="submit" style="background: #25D366; color: white; border: none; padding: 14px 24px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer;">
+                    📱 Gerar Links WhatsApp
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Menu Admin -->
+<div style="background: white; border-top: 1px solid #E5E7EB; padding: 16px; position: fixed; bottom: 0; left: 0; right: 0; display: flex; justify-content: space-around;">
+    <a href="{{ url_for('main.admin_dashboard') }}" style="color: #666; text-decoration: none; text-align: center;">
+        <div style="font-size: 20px;">📊</div>
+        <div style="font-size: 12px;">Dashboard</div>
+    </a>
+    <a href="{{ url_for('main.admin_messages') }}" style="color: #2196F3; text-decoration: none; text-align: center;">
+        <div style="font-size: 20px;">📨</div>
+        <div style="font-size: 12px;">Mensagens</div>
+    </a>
+    <a href="{{ url_for('main.admin_settings') }}" style="color: #666; text-decoration: none; text-align: center;">
+        <div style="font-size: 20px;">⚙️</div>
+        <div style="font-size: 12px;">Config</div>
+    </a>
+</div>
+
+<style>
+    button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        transition: all 0.2s ease;
+    }
+</style>
+{% endblock %}

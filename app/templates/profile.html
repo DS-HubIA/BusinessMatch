@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Perfil - Business Match{% endblock %}
+
+{% block content %}
+<div style="background: #F0F2F5; min-height: 100vh; padding: 16px;">
+    <!-- Header do Perfil -->
+    <div style="background: white; border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 16px;">
+        <div style="width: 60px; height: 60px; border-radius: 50%; background: #2196F3; color: white; display: flex; align-items: center; justify-content: center; font-size: 20px; margin: 0 auto 12px; font-weight: bold;">
+            {{ current_user.name[0] if current_user.name else 'U' }}
+        </div>
+        <h2 style="font-size: 16px; font-weight: bold; margin-bottom: 4px; color: #283E58;">{{ current_user.name or 'User' }}</h2>
+        <p style="color: #666666; font-size: 14px;">{{ current_user.company or 'Empresa 1' }}</p>
+    </div>
+
+    <!-- Se NÃO tem negócios → Card para adicionar -->
+    {% if not businesses %}
+    <div style="background: white; border-radius: 8px; padding: 30px 20px; text-align: center; margin-bottom: 16px;">
+        <div style="font-size: 48px; margin-bottom: 16px;">🏢</div>
+        <h3 style="color: #283E58; margin-bottom: 8px; font-weight: bold;">Cadastre seu Primeiro Negócio</h3>
+        <p style="color: #666666; margin-bottom: 24px;">
+            Para começar a usar o Business Match, adicione seu negócio.
+        </p>
+        <a href="{{ url_for('business.edit_business') }}" style="display: inline-block; background: #2196F3; color: white; padding: 12px 32px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px;">
+            + Adicionar Negócio
+        </a>
+    </div>
+
+    <!-- Se TEM negócios → Lista + APENAS BOTÃO EDITAR -->
+    {% else %}
+    <div style="margin-bottom: 16px;">
+        {% for business in businesses %}
+        <div style="background: white; border-radius: 8px; padding: 16px; margin-bottom: 12px; border: 1px solid #E5E7EB;">
+            <h3 style="font-size: 16px; font-weight: bold; color: #283E58; margin-bottom: 8px;">{{ business.name }}</h3>
+            
+            <!-- Tags Oferta/Demanda -->
+            <div style="margin-bottom: 8px;">
+                {% if business.sells_products or business.sells_services %}
+                <span style="background: #F8F9FA; color: #283E58; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; border: 1px solid #E5E7EB;">
+                    OFERTA - {{ business.business_sector }}
+                </span>
+                {% endif %}
+                
+                {% if business.buys_products or business.buys_services %}
+                <span style="background: #F8F9FA; color: #283E58; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; border: 1px solid #E5E7EB;">
+                    DEMANDA - {{ business.business_sector }}
+                </span>
+                {% endif %}
+            </div>
+            
+            <!-- Descrição resumida -->
+            <p style="color: #666666; font-size: 14px; line-height: 1.4; margin: 0;">
+                {% if business.sells_products %}
+                {{ business.sells_products }}
+                {% elif business.sells_services %}
+                {{ business.sells_services }}
+                {% elif business.buys_products %}
+                {{ business.buys_products }}
+                {% elif business.buys_services %}
+                {{ business.buys_services }}
+                {% endif %}
+            </p>
+        </div>
+        {% endfor %}
+        
+        <!-- APENAS UM BOTÃO - EDITAR/GERENCIAR -->
+        <div style="background: white; border-radius: 8px; padding: 20px; text-align: center;">
+            <a href="{{ url_for('business.edit_business') }}" style="display: inline-block; background: #2196F3; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px;">
+                Gerenciar Meus Negócios
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Área de Perigo -->
+    <div style="background: #FFEBEE; border: 1px solid #E53935; border-radius: 8px; padding: 20px;">
+        <h3 style="color: #E53935; font-size: 16px; font-weight: bold; margin-bottom: 8px;">
+            Área de Perigo
+        </h3>
+        <p style="color: #666666; font-size: 14px; margin-bottom: 16px; line-height: 1.4;">
+            Ações nesta área são irreversíveis. Tenha certeza do que está fazendo.
+        </p>
+        
+        <div style="display: flex; gap: 12px;">
+            <a href="{{ url_for('auth.logout') }}" style="flex: 1; background: white; color: #283E58; border: 1px solid #CCCCCC; padding: 12px; border-radius: 6px; text-decoration: none; text-align: center; font-weight: bold; font-size: 14px;">
+                Sair
+            </a>
+            
+            <form action="{{ url_for('auth.delete_account') }}" method="POST" 
+                  onsubmit="return confirm('Tem certeza que deseja excluir sua conta permanentemente? Esta ação não pode ser desfeita.');"
+                  style="flex: 1;">
+                <button type="submit" style="width: 100%; background: #E53935; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px;">
+                    Excluir Conta
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Gestão de Usuários - Admin{% endblock %}
+
+{% block content %}
+<div style="padding: 20px; max-width: 1200px; margin: 0 auto;">
+    <h1 style="margin-bottom: 10px;">👥 Gestão de Usuários</h1>
+    <p style="color: #666; margin-bottom: 30px;">Total: {{ users|length }} usuários</p>
+    
+    <div style="background: white; padding: 20px; border-radius: 10px; border: 1px solid #e0e0e0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; min-width: 800px;">
+                <thead>
+                    <tr style="border-bottom: 2px solid #eee;">
+                        <th style="padding: 12px; text-align: left; font-weight: 600; color: #666;">ID</th>
+                        <th style="padding: 12px; text-align: left; font-weight: 600; color: #666;">Nome</th>
+                        <th style="padding: 12px; text-align: left; font-weight: 600; color: #666;">Email</th>
+                        <th style="padding: 12px; text-align: left; font-weight: 600; color: #666;">Empresa</th>
+                        <th style="padding: 12px; text-align: left; font-weight: 600; color: #666;">Cadastro</th>
+                        <th style="padding: 12px; text-align: center; font-weight: 600; color: #666;">Negócio</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr style="border-bottom: 1px solid #f0f0f0;">
+                        <td style="padding: 12px; font-family: monospace; color: #666;">{{ user.id }}</td>
+                        <td style="padding: 12px;">{{ user.name }}</td>
+                        <td style="padding: 12px;">{{ user.email }}</td>
+                        <td style="padding: 12px;">{{ user.company }}</td>
+                        <td style="padding: 12px; color: #666; font-size: 0.9rem;">{{ user.created_at.strftime('%d/%m/%Y') }}</td>
+                        <td style="padding: 12px; text-align: center;">
+                            {% if user.has_business %}
+                                <span style="color: green; font-size: 1.2rem;">✓</span>
+                            {% else %}
+                                <span style="color: orange; font-size: 1.2rem;">○</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

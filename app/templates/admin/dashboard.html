@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Business Match{% endblock %}
+
+{% block content %}
+<div style="background: #F0F2F5; min-height: 100vh; padding: 16px;">
+    <!-- Header Admin -->
+    <div style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 16px;">
+        <h2 style="font-size: 18px; font-weight: bold; color: #283E58; margin-bottom: 8px;">Painel Administrativo</h2>
+        <p style="color: #666666; font-size: 14px; margin: 0;">Visão geral da plataforma</p>
+    </div>
+
+    <!-- Estatísticas -->
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px;">
+        <!-- Total Usuários -->
+        <div style="background: white; border-radius: 8px; padding: 16px; text-align: center; border-left: 4px solid #2196F3;">
+            <div style="font-size: 24px; font-weight: bold; color: #283E58; margin-bottom: 4px;">{{ stats.total_users }}</div>
+            <div style="font-size: 12px; color: #666666;">Usuários</div>
+        </div>
+
+        <!-- Total Negócios -->
+        <div style="background: white; border-radius: 8px; padding: 16px; text-align: center; border-left: 4px solid #4CAF50;">
+            <div style="font-size: 24px; font-weight: bold; color: #283E58; margin-bottom: 4px;">{{ stats.total_businesses }}</div>
+            <div style="font-size: 12px; color: #666666;">Negócios</div>
+        </div>
+
+        <!-- Total Oportunidades -->
+        <div style="background: white; border-radius: 8px; padding: 16px; text-align: center; border-left: 4px solid #FF9800;">
+            <div style="font-size: 24px; font-weight: bold; color: #283E58; margin-bottom: 4px;">{{ stats.total_opportunities }}</div>
+            <div style="font-size: 12px; color: #666666;">Oportunidades</div>
+        </div>
+
+        <!-- Total Matches -->
+        <div style="background: white; border-radius: 8px; padding: 16px; text-align: center; border-left: 4px solid #9C27B0;">
+            <div style="font-size: 24px; font-weight: bold; color: #283E58; margin-bottom: 4px;">{{ stats.total_matches }}</div>
+            <div style="font-size: 12px; color: #666666;">Matches</div>
+        </div>
+    </div>
+
+    <!-- Grid Principal -->
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+        <!-- Usuários Recentes -->
+        <div style="background: white; border-radius: 8px; padding: 20px;">
+            <h3 style="font-size: 16px; font-weight: bold; color: #283E58; margin-bottom: 16px;">Usuários Recentes</h3>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                {% for user in recent_users %}
+                <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #F8F9FA; border-radius: 6px;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: #2196F3; color: white; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold;">
+                        {{ user.name[0] if user.name else 'U' }}
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="font-size: 14px; font-weight: bold; color: #283E58;">{{ user.name or 'Usuário' }}</div>
+                        <div style="font-size: 12px; color: #666666;">{{ user.email }}</div>
+                    </div>
+                    <div style="font-size: 11px; color: #999;">
+                        {{ user.created_at.strftime('%d/%m/%Y') if user.created_at else 'N/A' }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Ações Rápidas -->
+                <a href="{{ url_for('main.admin_messages') }}" style="background: #2196F3; color: white; padding: 14px; border-radius: 8px; text-decoration: none; text-align: center; font-weight: bold; font-size: 14px;">
+                    Mensagens em Massa
+                </a>
+                <a href="{{ url_for('main.admin_settings') }}" style="background: #9C27B0; color: white; padding: 14px; border-radius: 8px; text-decoration: none; text-align: center; font-weight: bold; font-size: 14px;">
+                    Configurações
+                </a>
+        <div style="background: white; border-radius: 8px; padding: 20px;">
+            <h3 style="font-size: 16px; font-weight: bold; color: #283E58; margin-bottom: 16px;">Ações Rápidas</h3>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <a href="{{ url_for('main.admin_users') }}" style="background: #2196F3; color: white; padding: 14px; border-radius: 8px; text-decoration: none; text-align: center; font-weight: bold; font-size: 14px;">
+                    Gerenciar Usuários
+                </a>
+                <a href="{{ url_for('main.admin_security') }}" style="background: #E53935; color: white; padding: 14px; border-radius: 8px; text-decoration: none; text-align: center; font-weight: bold; font-size: 14px;">
+                    Logs de Segurança
+                </a>
+                <button style="background: #4CAF50; color: white; border: none; padding: 14px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer;">
+                    Exportar Relatório
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    a:hover, button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        transition: all 0.2s ease;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Botão de exportar relatório
+        const exportBtn = document.querySelector('button');
+        exportBtn.addEventListener('click', function() {
+            this.style.transform = 'scale(0.98)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+                alert('Funcionalidade de exportação em desenvolvimento!');
+            }, 150);
+        });
+    });
+</script>
+{% endblock %}

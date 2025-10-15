@@ -1,0 +1,21 @@
+{
+  "funcionalidades": [
+    "Admin Dashboard",
+    "Cadastro Produtos",
+    "Autenticação",
+    "Swipe/Match",
+    "Chat/WhatsApp",
+    "Perfil Usuário",
+    "Busca/Filtros"
+  ],
+  "formularios": [],
+  "botoes_principais": [
+    "btn-warning",
+    "btn-success",
+    "btn-info",
+    "btn-danger",
+    "btn-primary",
+    "btn-outline"
+  ],
+  "tecnicas": []
+}

@@ -1,11 +1,13 @@
+# Business Match SEBRAE - Configuração Render
 services:
   - type: web
     name: business-match-sebrae
     env: python
-    plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn run:app
+    startCommand: gunicorn wsgi:app --timeout 120 --workers 2
     envVars:
+      - key: FLASK_ENV
+        value: production
       - key: SECRET_KEY
         generateValue: true
       - key: DATABASE_URL
@@ -15,6 +17,5 @@ services:
 
 databases:
   - name: business-match-db
-    plan: free
-    databaseName: businessmatch
-    user: businessmatch
+    databaseName: business_match
+    user: business_match_user

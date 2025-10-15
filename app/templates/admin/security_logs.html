@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Logs de Segurança - Admin{% endblock %}
+
+{% block content %}
+<div style="padding: 20px; max-width: 1200px; margin: 0 auto;">
+    <h1 style="margin-bottom: 10px;">🔒 Logs de Segurança</h1>
+    <p style="color: #666; margin-bottom: 30px;">Sistema de auditoria e monitoramento</p>
+    
+    <div style="background: #f8f9fa; padding: 25px; border-radius: 10px; border: 1px solid #e0e0e0;">
+        <h3 style="margin-bottom: 20px; color: #333;">Logs do Sistema</h3>
+        
+        <div style="background: white; border-radius: 8px; border: 1px solid #e0e0e0; max-height: 400px; overflow-y: auto;">
+            <div style="padding: 15px;">
+                {% for log in logs %}
+                <div style="padding: 10px 0; border-bottom: 1px solid #f0f0f0; display: flex; align-items: flex-start;">
+                    <span style="color: #666; margin-right: 10px; font-size: 0.9rem;">•</span>
+                    <span style="flex: 1;">{{ log }}</span>
+                </div>
+                {% endfor %}
+                
+                {% if not logs %}
+                <div style="text-align: center; padding: 40px; color: #666;">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">📋</div>
+                    <p>Nenhum log disponível no momento</p>
+                    <p style="font-size: 0.9rem; margin-top: 10px;">Os logs são gerados automaticamente durante o uso do sistema</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div style="margin-top: 20px; padding: 15px; background: #e7f3ff; border-radius: 8px; border: 1px solid #b3d9ff;">
+            <strong style="color: #0066cc;">ℹ️ Sistema de Logs</strong>
+            <p style="margin: 8px 0 0 0; font-size: 14px; color: #0066cc;">
+                Os logs de segurança estão sendo registrados em tempo real durante:<br>
+                • Logins e logouts • Criação de contas • Ações administrativas • Eventos de segurança
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

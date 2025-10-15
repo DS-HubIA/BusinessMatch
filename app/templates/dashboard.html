@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Business Match{% endblock %}
+
+{% block content %}
+<div class="app-header">
+    <h1>Dashboard</h1>
+</div>
+
+<div style="padding: 20px;">
+    <h2>Bem-vindo, {{ current_user.name }}!</h2>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0;">
+        <div style="background: white; padding: 20px; border-radius: 10px; text-align: center;">
+            <h3>📊</h3>
+            <p>Seu Negócio</p>
+            <a href="{{ url_for('business.edit_business') }}">Ver Detalhes</a>
+        </div>
+        
+        <div style="background: white; padding: 20px; border-radius: 10px; text-align: center;">
+            <h3>💼</h3>
+            <p>Oportunidades</p>
+            <a href="{{ url_for('main.opportunities') }}">Explorar</a>
+        </div>
+        
+        <div style="background: white; padding: 20px; border-radius: 10px; text-align: center;">
+            <h3>❤️</h3>
+            <p>Matches</p>
+            <a href="{{ url_for('business.matches') }}">Ver Matches</a>
+        </div>
+        
+        <div style="background: white; padding: 20px; border-radius: 10px; text-align: center;">
+            <h3>👀</h3>
+            <p>Interesses</p>
+            <a href="{{ url_for('business.interests') }}">Ver Interesses</a>
+        </div>
+    </div>
+
+    <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px; border: 1px solid #dee2e6;">
+        <h3>🔐 Gerenciar Conta</h3>
+        
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <a href="{{ url_for('auth.logout') }}" style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 5px; text-decoration: none; text-align: center;">
+                🚪 Sair
+            </a>
+            
+            <form action="{{ url_for('auth.delete_account') }}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita!');">
+                <button type="submit" style="background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                    🗑️ Excluir Conta
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<nav class="bottom-nav">
+    <a href="{{ url_for('main.index') }}" class="nav-item active">
+        <span class="nav-icon">📊</span>
+        <span>Dashboard</span>
+    </a>
+    <a href="{{ url_for('main.opportunities') }}" class="nav-item">
+        <span class="nav-icon">💼</span>
+        <span>Oportunidades</span>
+    </a>
+    <a href="{{ url_for('business.matches') }}" class="nav-item">
+        <span class="nav-icon">❤️</span>
+        <span>Matches</span>
+    </a>
+    <a href="{{ url_for('business.interests') }}" class="nav-item">
+        <span class="nav-icon">👀</span>
+        <span>Interesses</span>
+    </a>
+    <a href="{{ url_for('main.profile') }}" class="nav-item">
+        <span class="nav-icon">👤</span>
+        <span>Perfil</span>
+    </a>
+</nav>
+{% endblock %}

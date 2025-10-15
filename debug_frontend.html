@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Frontend</title>
+</head>
+<body>
+    <h1>Teste API Manual</h1>
+    <button onclick="testAPI()">Testar API</button>
+    <div id="result"></div>
+
+    <script>
+        async function testAPI() {
+            try {
+                const response = await fetch('/api/opportunities');
+                const data = await response.json();
+                document.getElementById('result').innerHTML = 
+                    `✅ API retornou: ${data.length} oportunidades<br>`;
+                
+                data.forEach(opp => {
+                    document.getElementById('result').innerHTML += 
+                        `- ${opp.business_name}: ${opp.description}<br>`;
+                });
+            } catch (error) {
+                document.getElementById('result').innerHTML = 
+                    `❌ Erro: ${error}`;
+            }
+        }
+    </script>
+</body>
+</html>

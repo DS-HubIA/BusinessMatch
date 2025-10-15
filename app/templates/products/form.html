@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Editar' if product else 'Novo' }} Produto - Business Match{% endblock %}
+
+{% block content %}
+<div style="background: #F0F2F5; min-height: 100vh; padding: 16px;">
+    <!-- Header -->
+    <div style="background: white; border-radius: 8px; padding: 20px; margin-bottom: 16px;">
+        <h2 style="font-size: 18px; font-weight: bold; color: #283E58; margin-bottom: 8px;">
+            {{ 'Editar Produto' if product else 'Novo Produto' }}
+        </h2>
+        <p style="color: #666666; font-size: 14px; margin: 0;">
+            {{ 'Atualize as informações do seu produto' if product else 'Cadastre um novo produto ou serviço' }}
+        </p>
+    </div>
+
+    <!-- Formulário -->
+    <div style="background: white; border-radius: 8px; padding: 20px;">
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            
+            <!-- Nome -->
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 14px; font-weight: bold; color: #283E58; margin-bottom: 6px;">
+                    Nome do Produto/Serviço *
+                </label>
+                <input type="text" name="name" value="{{ product.name if product }}" 
+                       required style="width: 100%; padding: 12px; border: 1px solid #E5E7EB; border-radius: 6px; font-size: 14px;" 
+                       placeholder="Ex: Consultoria em Marketing Digital">
+            </div>
+
+            <!-- Descrição -->
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 14px; font-weight: bold; color: #283E58; margin-bottom: 6px;">
+                    Descrição
+                </label>
+                <textarea name="description" rows="3" 
+                          style="width: 100%; padding: 12px; border: 1px solid #E5E7EB; border-radius: 6px; font-size: 14px; resize: vertical;"
+                          placeholder="Descreva seu produto ou serviço...">{{ product.description if product }}</textarea>
+            </div>
+
+            <!-- Preço -->
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 14px; font-weight: bold; color: #283E58; margin-bottom: 6px;">
+                    Preço (R$)
+                </label>
+                <input type="number" name="price" value="{{ product.price if product }}" step="0.01" min="0"
+                       style="width: 100%; padding: 12px; border: 1px solid #E5E7EB; border-radius: 6px; font-size: 14px;" 
+                       placeholder="0.00">
+            </div>
+
+            <!-- Categoria -->
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; font-size: 14px; font-weight: bold; color: #283E58; margin-bottom: 6px;">
+                    Categoria
+                </label>
+                <input type="text" name="category" value="{{ product.category if product }}"
+                       style="width: 100%; padding: 12px; border: 1px solid #E5E7EB; border-radius: 6px; font-size: 14px;" 
+                       placeholder="Ex: Consultoria, Software, Produto Físico">
+            </div>
+
+            <!-- Tags -->
+            <div style="margin-bottom: 24px;">
+                <label style="display: block; font-size: 14px; font-weight: bold; color: #283E58; margin-bottom: 6px;">
+                    Tags (separadas por vírgula)
+                </label>
+                <input type="text" name="tags" value="{{ product.tags if product }}"
+                       style="width: 100%; padding: 12px; border: 1px solid #E5E7EB; border-radius: 6px; font-size: 14px;" 
+                       placeholder="Ex: marketing, digital, consultoria, sebrae">
+            </div>
+
+            <!-- Botões -->
+            <div style="display: flex; gap: 12px;">
+                <button type="submit" 
+                        style="flex: 1; background: #2196F3; color: white; border: none; padding: 14px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer;">
+                    {{ 'Atualizar' if product else 'Cadastrar' }} Produto
+                </button>
+                <a href="{{ url_for('products.list_products') }}" 
+                   style="background: #6B7280; color: white; padding: 14px 20px; border-radius: 8px; text-decoration: none; text-align: center; font-weight: bold;">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    button:hover, a:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        transition: all 0.2s ease;
+    }
+
+    input:focus, textarea:focus {
+        outline: none;
+        border-color: #2196F3 !important;
+        box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
+    }
+</style>
+{% endblock %}

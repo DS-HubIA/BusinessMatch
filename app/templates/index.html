@@ -1,29 +1,58 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Business Match - SEBRAE</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <nav class="navbar navbar-dark bg-primary">
-        <div class="container">
-            <span class="navbar-brand mb-0 h1">🚀 Business Match SEBRAE</span>
+{% extends "base.html" %}
+
+{% block title %}Business Match - SEBRAE{% endblock %}
+
+{% block content %}
+<div style="background: #F0F2F5; min-height: 100vh; padding: 20px 16px 70px; display: flex; align-items: flex-start; justify-content: center;">
+    <div style="background: white; border-radius: 12px; padding: 30px 24px; text-align: center; max-width: 400px; width: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 1px solid #E5E7EB; margin-top: 20px;">
+        <!-- Logo -->
+        <div style="margin-bottom: 24px;">
+            <svg width="56" height="56" viewBox="0 0 24 24" fill="#2196F3" style="margin: 0 auto 12px;">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+            </svg>
+            <h1 style="font-size: 20px; font-weight: bold; color: #283E58; margin-bottom: 6px;">
+                Business Match
+            </h1>
+            <p style="color: #666666; font-size: 14px; margin: 0;">
+                Clube de Negócios SEBRAE
+            </p>
         </div>
-    </nav>
-    
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-8 mx-auto text-center">
-                <h1>Bem-vindo ao Business Match!</h1>
-                <p class="lead">Sistema de conexão de negócios SEBRAE</p>
-                <div class="mt-4">
-                    <a href="/login" class="btn btn-primary btn-lg">Entrar</a>
-                    <a href="/register" class="btn btn-outline-primary btn-lg">Cadastrar</a>
-                </div>
-            </div>
+
+        <!-- Descrição -->
+        <div style="margin-bottom: 24px;">
+            <p style="color: #666666; font-size: 14px; line-height: 1.5; margin-bottom: 20px;">
+                Conecte oferta e demanda de forma simples e intuitiva. Encontre oportunidades de negócio e parceiros comerciais.
+            </p>
+        </div>
+
+        <!-- Botões de Ação -->
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <a href="{{ url_for('auth.login') }}" style="background: #2196F3; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; text-decoration: none; text-align: center; transition: all 0.2s ease;">
+                Entrar na Plataforma
+            </a>
+            
+            <a href="{{ url_for('auth.register') }}" style="background: white; color: #2196F3; border: 2px solid #2196F3; padding: 12px 20px; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; text-decoration: none; text-align: center; transition: all 0.2s ease;">
+                Criar Conta
+            </a>
+        </div>
+
+        <!-- Rodapé -->
+        <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #E5E7EB;">
+            <p style="color: #999; font-size: 11px; margin: 0;">
+                FE 2025 • Conectando negócios, impulsionando resultados
+            </p>
         </div>
     </div>
-</body>
-</html>
+</div>
+
+<style>
+    a:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+    }
+    
+    a:active {
+        transform: translateY(0px);
+    }
+</style>
+{% endblock %}

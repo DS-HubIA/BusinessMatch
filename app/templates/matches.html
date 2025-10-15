@@ -1,75 +1,92 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meus Matches - Business Match</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-</head>
-<body>
-    <nav class="navbar navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="/">🚀 Business Match SEBRAE</a>
-            <div class="navbar-nav">
-                <a class="nav-link" href="/opportunities">Oportunidades</a>
-                <a class="nav-link" href="/logout">Sair</a>
-            </div>
-        </div>
-    </nav>
+{% extends "base.html" %}
 
-    <div class="container mt-4">
-        <h2>Meus Matches 🤝</h2>
-        <p class="text-muted">Conexões realizadas com sucesso!</p>
-        
-        {% if matches %}
-            <div class="row">
-                {% for match in matches %}
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <span class="badge bg-{{ 'success' if match.business.business_type == 'OFERTA' else 'warning' }}">
-                                {{ match.business.business_type }}
-                            </span>
-                            <small class="text-muted">{{ match.business.category }}</small>
-                        </div>
-                        <div class="card-body">
-                            <h5 class="card-title">{{ match.business.title }}</h5>
-                            <p class="card-text">{{ match.business.description }}</p>
-                        </div>
-                        <div class="card-footer">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <small class="text-muted">
-                                    <i class="fas fa-calendar"></i>
-                                    {{ match.matched_at.strftime('%d/%m/%Y') }}
-                                </small>
-                                <div>
-                                    <button class="btn btn-sm btn-success me-2">
-                                        <i class="fab fa-whatsapp"></i> WhatsApp
-                                    </button>
-                                    <button class="btn btn-sm btn-primary">
-                                        <i class="fas fa-calendar-plus"></i> Agendar
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="text-center py-5">
-                <i class="fas fa-handshake fa-3x text-muted mb-3"></i>
-                <h4>Nenhum match ainda</h4>
-                <p class="text-muted">Explore as oportunidades para fazer conexões!</p>
-                <a href="/opportunities" class="btn btn-primary">
-                    <i class="fas fa-briefcase"></i> Ver Oportunidades
-                </a>
-            </div>
-        {% endif %}
+{% block title %}Matches - Business Match{% endblock %}
+
+{% block content %}
+<div style="background: #F0F2F5; min-height: 100vh; padding: 16px;">
+    <!-- Header Matches -->
+    <div style="background: white; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+        <h2 style="font-size: 18px; font-weight: bold; color: #283E58; margin-bottom: 12px; text-align: center;">Seus Matches</h2>
+        <p style="color: #666666; font-size: 14px; text-align: center; margin: 0;">
+            Conexões com interesse mútuo
+        </p>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    <!-- FLUXO CORRETO: -->
+    <!-- SE TEM MATCHES → Mostra lista -->
+    {% if matches %}
+    <div style="margin-bottom: 16px;">
+        {% for match in matches %}
+        <div style="background: white; border-radius: 12px; padding: 16px; margin-bottom: 12px; border: 1px solid #E5E7EB;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: bold;">
+                    {{ match.business_name[:2]|upper }}
+                </div>
+                <div style="flex: 1;">
+                    <h3 style="font-size: 16px; font-weight: bold; color: #283E58; margin: 0 0 2px 0;">{{ match.business_name }}</h3>
+                    <p style="font-size: 13px; color: #666666; margin: 0;">{{ match.business_sector }}</p>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <!-- WhatsApp -->
+                    <a href="https://wa.me/{{ match.phone }}" style="width: 40px; height: 40px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; text-decoration: none;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893-.001-3.189-1.248-6.189-3.515-8.452"/>
+                        </svg>
+                    </a>
+                    <!-- Agendar -->
+                    <button style="width: 40px; height: 40px; border-radius: 50%; background: #2196F3; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                            <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19a2 2 0 002 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Interesse em comum -->
+            <div style="background: #F0F9FF; border: 1px solid #E0F2FE; border-radius: 8px; padding: 12px;">
+                <p style="font-size: 13px; color: #283E58; margin: 0 0 6px 0; font-weight: bold;">Interesse em comum:</p>
+                <p style="font-size: 12px; color: #666666; margin: 0;">{{ match.match_description }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- SE NÃO TEM MATCHES → Mostra mensagem -->
+    {% else %}
+    <div style="background: white; border-radius: 12px; padding: 40px 20px; text-align: center; margin-bottom: 16px;">
+        <div style="font-size: 48px; margin-bottom: 16px;">🤝</div>
+        <h3 style="color: #283E58; margin-bottom: 8px; font-weight: bold;">Ainda não há matches</h3>
+        <p style="color: #666666; margin-bottom: 20px;">
+            Continue explorando oportunidades para encontrar conexões!
+        </p>
+        <a href="{{ url_for('main.opportunities') }}" style="display: inline-block; background: #2196F3; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px;">
+            Explorar Oportunidades
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    // Animação para os botões de ação
+    document.addEventListener('DOMContentLoaded', function() {
+        const buttons = document.querySelectorAll('button, a[href^="https://wa.me"]');
+        
+        buttons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (this.getAttribute('href') && this.getAttribute('href').includes('wa.me')) {
+                    // WhatsApp - já abre link externo
+                    return;
+                }
+                
+                // Botão Agendar
+                e.preventDefault();
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                    alert('📅 Funcionalidade de agendamento em desenvolvimento!');
+                }, 150);
+            });
+        });
+    });
+</script>
+{% endblock %}

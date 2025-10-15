@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Negócios - Business Match SEBRAE</title>
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-dark bg-primary shadow">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">← Voltar ao Dashboard</a>
+            <span class="navbar-text">🏪 Meus Negócios</span>
+        </div>
+    </nav>
+    
+    <div class="container mt-4">
+        <h2>Meus Negócios</h2>
+        
+        {% if businesses %}
+            {% for business in businesses %}
+            <div class="card mb-3 card-hover">
+                <div class="card-body">
+                    <h5>{{ business.name }}</h5>
+                    <p>{{ business.description }}</p>
+                    <p><strong>Tipo:</strong> {{ business.business_type }}</p>
+                    <p><strong>Categoria:</strong> {{ business.category }}</p>
+                    <p><strong>Localização:</strong> {{ business.location }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-info">
+                Nenhum negócio cadastrado.
+                <br>
+                <button class="btn btn-primary mt-2" onclick="alert('Funcionalidade em desenvolvimento')">
+                    ➕ Cadastrar Primeiro Negócio
+                </button>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

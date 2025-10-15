@@ -1,0 +1,223 @@
+/* app/static/css/professional.css - NOVA VERSÃO TINDER-LIKE */
+
+:root {
+    /* PALETA OFICIAL BUSINESS MATCH */
+    --primary-blue: #4169E1;
+    --like-green: #4CAF50;
+    --unlike-red: #F44336;
+    --background-gray: #F5F5F5;
+    --card-white: #FFFFFF;
+    --text-dark: #333333;
+    --text-light: #666666;
+    --border-light: #E0E0E0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: var(--background-gray);
+    color: var(--text-dark);
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* CONTAINER PRINCIPAL SWIPE */
+.swipe-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+/* HEADER PROFISSIONAL */
+.app-header {
+    background: linear-gradient(135deg, var(--primary-blue), #2a56c6);
+    color: white;
+    padding: 15px 20px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(65, 105, 225, 0.3);
+    position: relative;
+    z-index: 100;
+}
+
+.app-header h1 {
+    font-size: 1.4em;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* ÁREA DE CARDS - CENTRAL COM ERGONOMIA MOBILE */
+.cards-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    position: relative;
+    margin-bottom: 100px;
+}
+
+/* CARD DE OPORTUNIDADE - ESTILO TINDER */
+.opportunity-card {
+    width: 95%;
+    max-width: 400px;
+    height: 500px;
+    background: var(--card-white);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    position: absolute;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.card-header {
+    height: 200px;
+    background: linear-gradient(135deg, var(--primary-blue), #2a56c6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2em;
+    font-weight: 600;
+}
+
+.card-content {
+    padding: 25px;
+}
+
+.business-name {
+    font-size: 1.4em;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+}
+
+.business-description {
+    color: var(--text-light);
+    line-height: 1.5;
+    margin-bottom: 15px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.tag {
+    background: rgba(65, 105, 225, 0.1);
+    color: var(--primary-blue);
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.8em;
+    font-weight: 500;
+}
+
+/* BOTÕES DE AÇÃO - POSIÇÃO ERGONÔMICA MOBILE */
+.action-buttons {
+    position: fixed;
+    bottom: 30px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    padding: 0 20px;
+    z-index: 1000;
+}
+
+.btn-action {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-action:active {
+    transform: scale(0.95);
+}
+
+.btn-unlike {
+    background: var(--unlike-red);
+    color: white;
+}
+
+.btn-like {
+    background: var(--like-green);
+    color: white;
+}
+
+/* ANIMAÇÕES SWIPE */
+.swipe-right {
+    transform: translateX(200px) rotate(20deg);
+    opacity: 0;
+}
+
+.swipe-left {
+    transform: translateX(-200px) rotate(-20deg);
+    opacity: 0;
+}
+
+/* NAVEGAÇÃO INFERIOR */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--card-white);
+    display: flex;
+    justify-content: space-around;
+    padding: 15px 0;
+    border-top: 1px solid var(--border-light);
+    z-index: 1000;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--text-light);
+    text-decoration: none;
+    font-size: 0.8em;
+}
+
+.nav-item.active {
+    color: var(--primary-blue);
+}
+
+.nav-icon {
+    font-size: 1.4em;
+    margin-bottom: 4px;
+}
+
+/* RESPONSIVIDADE */
+@media (max-width: 768px) {
+    .opportunity-card {
+        height: 450px;
+    }
+    
+    .card-header {
+        height: 150px;
+    }
+    
+    .action-buttons {
+        bottom: 80px;
+    }
+}

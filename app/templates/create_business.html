@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Negócio - Business Match</title>
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <style>
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .form-title {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 2rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .form-section {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        .section-title {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #667eea;
+            color: #667eea;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .required::after {
+            content: " *";
+            color: #e74c3c;
+        }
+        .user-info {
+            background: #e8f4fd;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        .tag-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        .tag-suggestion {
+            background: #e9ecef;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .tag-suggestion:hover {
+            background: #667eea;
+            color: white;
+        }
+        .welcome-message {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+        }
+        .cnpj-help {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 1rem;">
+    
+    <!-- Mensagem de Boas-Vindas -->
+    <div class="welcome-message">
+        <h1 style="margin: 0 0 1rem 0;">🎉 Bem-vindo ao Business Match!</h1>
+        <p style="margin: 0; font-size: 1.1rem;">Complete o cadastro do seu negócio para começar a fazer conexões</p>
+    </div>
+
+    <!-- Formulário -->
+    <div class="form-container">
+        <h1 class="form-title">📋 Cadastro do Seu Negócio</h1>
+        
+        <!-- Informações do usuário -->
+        <div class="user-info">
+            <h4 style="margin: 0 0 0.5rem 0;">👤 Suas Informações</h4>
+            <p style="margin: 0.25rem 0;"><strong>Nome:</strong> {{ current_user.name }}</p>
+            <p style="margin: 0.25rem 0;"><strong>Empresa:</strong> {{ current_user.company }}</p>
+            <p style="margin: 0.25rem 0;"><strong>WhatsApp:</strong> {{ current_user.phone }}</p>
+        </div>
+        
+        <form method="POST" onsubmit="return validateForm()">
+            <!-- Informações Básicas -->
+            <div class="form-section">
+                <h3 class="section-title">🏢 Informações do Negócio</h3>
+                
+                <div class="form-group">
+                    <label class="form-label required" for="name">Nome do Negócio</label>
+                    <input type="text" id="name" name="name" class="form-input" required 
+                           placeholder="Ex: Tech Solutions LTDA">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label required" for="cnpj">CNPJ</label>
+                    <input type="text" id="cnpj" name="cnpj" class="form-input" required 
+                           placeholder="00.000.000/0000-00" maxlength="18"
+                           oninput="formatCNPJ(this)">
+                    <div class="cnpj-help">Digite o CNPJ no formato: 00.000.000/0000-00</div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label required" for="description">Descrição do Negócio</label>
+                    <textarea id="description" name="description" class="form-textarea" required 
+                              placeholder="Descreva o que sua empresa faz, sua missão, valores..."></textarea>
+                </div>
+            </div>
+
+            <!-- Localização -->
+            <div class="form-section">
+                <h3 class="section-title">📍 Localização</h3>
+                
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label required" for="city">Cidade</label>
+                        <input type="text" id="city" name="city" class="form-input" required 
+                               placeholder="Ex: São Paulo">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label required" for="state">Estado</label>
+                        <select id="state" name="state" class="form-select" required>
+                            <option value="">Selecione</option>
+                            <option value="AC">AC</option>
+                            <option value="AL">AL</option>
+                            <option value="AP">AP</option>
+                            <option value="AM">AM</option>
+                            <option value="BA">BA</option>
+                            <option value="CE">CE</option>
+                            <option value="DF">DF</option>
+                            <option value="ES">ES</option>
+                            <option value="GO">GO</option>
+                            <option value="MA">MA</option>
+                            <option value="MT">MT</option>
+                            <option value="MS">MS</option>
+                            <option value="MG">MG</option>
+                            <option value="PA">PA</option>
+                            <option value="PB">PB</option>
+                            <option value="PR">PR</option>
+                            <option value="PE">PE</option>
+                            <option value="PI">PI</option>
+                            <option value="RJ">RJ</option>
+                            <option value="RN">RN</option>
+                            <option value="RS">RS</option>
+                            <option value="RO">RO</option>
+                            <option value="RR">RR</option>
+                            <option value="SC">SC</option>
+                            <option value="SP">SP</option>
+                            <option value="SE">SE</option>
+                            <option value="TO">TO</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Setor e Categoria -->
+            <div class="form-section">
+                <h3 class="section-title">🏷️ Setor e Categoria</h3>
+                
+                <div class="form-group">
+                    <label class="form-label required" for="business_sector">Setor do Negócio</label>
+                    <select id="business_sector" name="business_sector" class="form-select" required onchange="updateCategories()">
+                        <option value="">Selecione o setor</option>
+                        <option value="Comércio">Comércio</option>
+                        <option value="Serviços">Serviços</option>
+                        <option value="Indústria">Indústria</option>
+                        <option value="Agronegócio">Agronegócio</option>
+                        <option value="Tecnologia">Tecnologia</option>
+                        <option value="Saúde">Saúde</option>
+                        <option value="Educação">Educação</option>
+                        <option value="Construção Civil">Construção Civil</option>
+                        <option value="Alimentação">Alimentação</option>
+                        <option value="Moda">Moda</option>
+                        <option value="Transporte">Transporte</option>
+                        <option value="Turismo">Turismo</option>
+                        <option value="Financeiro">Financeiro</option>
+                        <option value="Imobiliário">Imobiliário</option>
+                        <option value="Outros">Outros</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label required" for="business_category">Categoria Específica</label>
+                    <select id="business_category" name="business_category" class="form-select" required>
+                        <option value="">Primeiro selecione o setor</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="tags">Palavras-chave</label>
+                    <input type="text" id="tags" name="tags" class="form-input" 
+                           placeholder="Ex: software, consultoria, tecnologia">
+                    <small style="color: #666;">Separe por vírgula. Use palavras simples, sem acentos.</small>
+                    
+                    <div class="tag-suggestions">
+                        <div class="tag-suggestion" onclick="addTag('tecnologia')">tecnologia</div>
+                        <div class="tag-suggestion" onclick="addTag('consultoria')">consultoria</div>
+                        <div class="tag-suggestion" onclick="addTag('software')">software</div>
+                        <div class="tag-suggestion" onclick="addTag('desenvolvimento')">desenvolvimento</div>
+                        <div class="tag-suggestion" onclick="addTag('inovacao')">inovacao</div>
+                        <div class="tag-suggestion" onclick="addTag('digital')">digital</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- O que sua empresa VENDE (OFERTA) -->
+            <div class="form-section">
+                <h3 class="section-title">🛍️ O que sua empresa VENDE (Ofertas)</h3>
+                <p style="color: #666; margin-bottom: 1rem;">Estas informações aparecerão para outros usuários como oportunidades de negócio</p>
+                
+                <div class="form-group">
+                    <label class="form-label" for="sells_products">Produtos que Vende</label>
+                    <textarea id="sells_products" name="sells_products" class="form-textarea" 
+                              placeholder="Ex: Software customizado, aplicativos mobile, sistemas web..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="sells_services">Serviços que Oferece</label>
+                    <textarea id="sells_services" name="sells_services" class="form-textarea" 
+                              placeholder="Ex: Consultoria em TI, desenvolvimento de sites, suporte técnico..."></textarea>
+                </div>
+            </div>
+
+            <!-- O que sua empresa COMPRA (DEMANDA) -->
+            <div class="form-section">
+                <h3 class="section-title">🛒 O que sua empresa COMPRA (Demandas)</h3>
+                <p style="color: #666; margin-bottom: 1rem;">Estas informações ajudarão outros usuários a oferecerem produtos/serviços para você</p>
+                
+                <div class="form-group">
+                    <label class="form-label" for="buys_products">Produtos que Compra</label>
+                    <textarea id="buys_products" name="buys_products" class="form-textarea" 
+                              placeholder="Ex: Matéria-prima, equipamentos, insumos..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="buys_services">Serviços que Contrata</label>
+                    <textarea id="buys_services" name="buys_services" class="form-textarea" 
+                              placeholder="Ex: Contabilidade, marketing digital, limpeza..."></textarea>
+                </div>
+            </div>
+
+            <!-- Ações -->
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">✅ Finalizar Cadastro e Começar</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Categorias por setor
+        const categories = {
+            'Comércio': ['Varejo', 'Atacado', 'E-commerce', 'Shopping', 'Loja Conveniência'],
+            'Serviços': ['Consultoria', 'Manutenção', 'Limpeza', 'Transporte', 'Educação', 'Saúde'],
+            'Indústria': ['Alimentícia', 'Têxtil', 'Metalmecânica', 'Química', 'Farmacêutica'],
+            'Agronegócio': ['Agricultura', 'Pecuária', 'Agroindústria', 'Fruticultura'],
+            'Tecnologia': ['Software', 'Hardware', 'TI', 'Internet', 'Telecomunicações'],
+            'Saúde': ['Hospital', 'Clínica', 'Farmácia', 'Laboratório'],
+            'Educação': ['Escola', 'Curso', 'Faculdade', 'Treinamento'],
+            'Construção Civil': ['Construtora', 'Incorporadora', 'Materiais'],
+            'Alimentação': ['Restaurante', 'Lanches', 'Supermercado', 'Padaria'],
+            'Moda': ['Confecção', 'Calçados', 'Acessórios'],
+            'Transporte': ['Logística', 'Carga', 'Passageiros'],
+            'Turismo': ['Hotel', 'Agência', 'Eventos'],
+            'Financeiro': ['Banco', 'Seguros', 'Investimentos'],
+            'Imobiliário': ['Imobiliária', 'Corretagem'],
+            'Outros': ['Outros']
+        };
+
+        function updateCategories() {
+            const sector = document.getElementById('business_sector').value;
+            const categorySelect = document.getElementById('business_category');
+            
+            categorySelect.innerHTML = '<option value="">Selecione a categoria</option>';
+            
+            if (sector && categories[sector]) {
+                categories[sector].forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat;
+                    option.textContent = cat;
+                    categorySelect.appendChild(option);
+                });
+            }
+        }
+
+        function addTag(tag) {
+            const tagsInput = document.getElementById('tags');
+            const currentTags = tagsInput.value.split(',').map(t => t.trim()).filter(t => t);
+            
+            if (!currentTags.includes(tag)) {
+                if (currentTags.length > 0) {
+                    tagsInput.value = currentTags.join(', ') + ', ' + tag;
+                } else {
+                    tagsInput.value = tag;
+                }
+            }
+        }
+
+        // Formatação do CNPJ
+        function formatCNPJ(input) {
+            let value = input.value.replace(/\D/g, '');
+            
+            if (value.length <= 14) {
+                value = value.replace(/(\d{2})(\d)/, '$1.$2');
+                value = value.replace(/(\d{3})(\d)/, '$1.$2');
+                value = value.replace(/(\d{3})(\d)/, '$1/$2');
+                value = value.replace(/(\d{4})(\d{1,2})$/, '$1-$2');
+            }
+            
+            input.value = value;
+        }
+
+        // Validação do formulário
+        function validateForm() {
+            const cnpj = document.getElementById('cnpj').value.replace(/\D/g, '');
+            
+            if (cnpj.length !== 14) {
+                alert('Por favor, insira um CNPJ válido com 14 dígitos.');
+                return false;
+            }
+            
+            // Verifica se é uma sequência de números iguais
+            if (/^(\d)\1+$/.test(cnpj)) {
+                alert('CNPJ inválido. Não pode ser uma sequência de números iguais.');
+                return false;
+            }
+            
+            return true;
+        }
+
+        // Normalizar tags ao enviar formulário
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const tagsInput = document.getElementById('tags');
+            if (tagsInput.value) {
+                let tags = tagsInput.value.split(',')
+                    .map(tag => tag.trim().toLowerCase())
+                    .filter(tag => tag)
+                    .join(', ');
+                tagsInput.value = tags;
+            }
+        });
+    </script>
+</body>
+</html>
