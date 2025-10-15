@@ -8,8 +8,8 @@
       <h1 class="display-6 fw-bold mb-3">Business Match</h1>
       <p class="lead mb-4">Encontre parceiros, gere oportunidades e acelere vendas.</p>
       <div class="d-flex flex-wrap gap-2">
-        {{ bm_button("Criar conta", "success", url_for('routes.signup')) }}
-        {{ bm_button("Entrar", "primary", url_for('routes.login')) }}
+        {{ bm_button("Criar conta", "success", "/register") }}
+        {{ bm_button("Entrar", "primary", "/login") }}
         {{ bm_button("Saiba mais", "info", url_for('routes.dashboard')) }}
       </div>
     </div>
