@@ -32,3 +32,8 @@
 .navbar-nav { list-style: none; margin: 0; padding-left: 0; }
 .navbar-nav .nav-link { text-decoration: none; }
 .navbar-brand { text-decoration: none; }
+
+
+/* aba inferior ativa */
+.bn-item.active { color: var(--bm-primary); }
+.bn-item.active .bn-ico { transform: translateY(-1px); }

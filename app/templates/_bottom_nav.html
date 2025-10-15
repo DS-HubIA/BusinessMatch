@@ -1,0 +1,15 @@
+{% set here = request.path %}
+<nav class="bm-bottomnav">
+  <a href="{{ url_for('main.opportunities') }}" class="bn-item {% if here.startswith(url_for('main.opportunities')) %}active{% endif %}">
+    <span class="bn-ico">💼</span><span class="bn-txt">Oportunidades</span>
+  </a>
+  <a href="{{ url_for('business.matches') }}" class="bn-item {% if here.startswith(url_for('business.matches')) %}active{% endif %}">
+    <span class="bn-ico">🤝</span><span class="bn-txt">Matches</span>
+  </a>
+  <a href="{{ url_for('business.interests') }}" class="bn-item {% if here.startswith(url_for('business.interests')) %}active{% endif %}">
+    <span class="bn-ico">❤️</span><span class="bn-txt">Interesses</span>
+  </a>
+  <a href="{{ url_for('main.profile') }}" class="bn-item {% if here.startswith(url_for('main.profile')) %}active{% endif %}">
+    <span class="bn-ico">👤</span><span class="bn-txt">Perfil</span>
+  </a>
+</nav>
