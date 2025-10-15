@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
-
-
-
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+    <title>Meus Negócios - Business Match SEBRAE</title>
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
-
-
+</head>
+<body class="bg-light">
     <nav class="navbar navbar-dark bg-primary shadow">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('main.index') }}">← Voltar ao Dashboard</a>
@@ -41,7 +41,7 @@
             </div>
         {% endif %}
     </div>
-
-
+</body>
+</html>
 
 {% endblock %}

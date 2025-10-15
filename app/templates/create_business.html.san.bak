@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
-
-
-
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+    <title>Cadastrar Negócio - Business Match</title>
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
     <style>
         .form-container {
@@ -129,8 +129,8 @@
             margin-top: 0.25rem;
         }
     </style>
-
-
+</head>
+<body style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 1rem;">
     
     <!-- Mensagem de Boas-Vindas -->
     <div class="welcome-message">
@@ -409,7 +409,7 @@
             }
         });
     </script>
-
-
+</body>
+</html>
 
 {% endblock %}

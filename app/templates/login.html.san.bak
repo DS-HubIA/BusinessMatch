@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
-
-
-
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+    <title>Login - Business Match SEBRAE</title>
     <style>
         * {
             margin: 0;
@@ -141,8 +141,8 @@
             border-color: #bbf7d0;
         }
     </style>
-
-
+</head>
+<body>
     <div class="login-container">
         <!-- Header -->
         <div class="login-header">
@@ -189,7 +189,7 @@
             <p>Não tem conta? <a href="{{ url_for('auth.register') }}">Cadastre-se</a></p>
         </div>
     </div>
-
-
+</body>
+</html>
 
 {% endblock %}
