@@ -6,7 +6,8 @@ from flask_bcrypt import Bcrypt
 from config import get_config
 from app.security import limiter
 from app.middleware import security_headers
-from app.csrf import init_csrf  # ✅ NOVO: Import CSRF
+from app.csrf import init_csrf
+from app.database_setup import setup_database  # ✅ NOVO: Setup automático
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -29,6 +30,9 @@ def create_app(config_class=None):
     login_manager.init_app(app)
     bcrypt.init_app(app)
     
+    # ✅ DATABASE: Setup automático (CRÍTICO)
+    setup_database(app)
+    
     # Inicializar rate limiting
     limiter.init_app(app)
 
@@ -43,12 +47,10 @@ def create_app(config_class=None):
     from app.routes.main import main_bp
     from app.routes.auth import auth_bp
     from app.routes.business import business_bp
-    from app.routes.products import products_bp
     
     app.register_blueprint(main_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(business_bp)
-    app.register_blueprint(products_bp)
     
     # Aplicar headers de segurança
     @app.after_request
@@ -56,5 +58,3 @@ def create_app(config_class=None):
         return security_headers(response)
     
     return app
-
-from app.routes.products import products_bp
