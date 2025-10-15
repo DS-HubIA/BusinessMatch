@@ -5,12 +5,12 @@
 <div class="row g-3">
   <div class="col-12">
     <div class="d-flex flex-wrap gap-2">
-      {{ bm_button("Novo Produto", "warning", url_for('routes.new_product')) }}
-      {{ bm_button("Meus Matches", "success", url_for('routes.matches')) }}
-      {{ bm_button("Explorar", "info", url_for('routes.explore')) }}
-      {{ bm_button("Excluir Match", "danger", url_for('routes.unmatch')) }}
-      {{ bm_button("Preferências", "primary", url_for('routes.settings')) }}
-      {{ bm_button("Ação Especial", href=url_for('routes.special'), outline=True) }}
+      {{ bm_button("Novo Produto", "warning", url_for("main.opportunities")) }}
+      {{ bm_button("Meus Matches", "success", url_for("business.matches")) }}
+      {{ bm_button("Explorar", "info", url_for("main.opportunities")) }}
+      {{ bm_button("Excluir Match", "danger", url_for("business.matches")) }}
+      {{ bm_button("Preferências", "primary", url_for("main.profile")) }}
+      {{ bm_button("Ação Especial", href=url_for("main.index"), outline=True) }}
     </div>
   </div>
 
@@ -25,9 +25,9 @@
     <div class="card p-3">
       <h5 class="mb-3">Atalhos Rápidos</h5>
       <div class="d-grid gap-2">
-        <a class="btn btn-success" href="{{ url_for('routes.swipe') }}">Começar Swipe</a>
-        <a class="btn btn-primary" href="{{ url_for('routes.profile') }}">Editar Perfil</a>
-        <a class="btn btn-info" href="{{ url_for('routes.support') }}">Ajuda</a>
+        <a class="btn btn-success" href="{{ url_for("main.opportunities") }}">Começar Swipe</a>
+        <a class="btn btn-primary" href="{{ url_for("main.profile") }}">Editar Perfil</a>
+        <a class="btn btn-info" href="{{ url_for("main.index") }}">Ajuda</a>
       </div>
     </div>
   </div>
