@@ -4,11 +4,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ APP_TITLE }}{% block title %}{% endblock %}</title>
+  <title>{{ APP_TITLE }}{% block title %}\1</main></title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="{{ url_for('static', filename='css/app.css') }}" rel="stylesheet">
-  {% block head_extra %}{% endblock %}
+  {% block head_extra %}\1</main>
 </head>
 <body class="bg-light">
   <nav class="bm-topbar navbar navbar-expand-lg">
@@ -53,11 +53,12 @@
         </div>
       {% endif %}
     {% endwith %}
-    {% block content %}{% endblock %}
+    <main class="bm-main">\1\1</main>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="{{ url_for('static', filename='js/app.js') }}"></script>
-  {% block body_extra %}{% endblock %}
+  {% block body_extra %}\1</main>
+{% if current_user.is_authenticated %}{% include "_bottom_nav.html" %}{% endif %}
 </body>
 </html>

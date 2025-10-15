@@ -37,3 +37,40 @@
 /* aba inferior ativa */
 .bn-item.active { color: var(--bm-primary); }
 .bn-item.active .bn-ico { transform: translateY(-1px); }
+
+/* --- Front polish MVP --- */
+
+:root{
+  --bm-primary:#1f4771; /* azul SEBRAE */
+  --bm-primary-900:#163552;
+  --bm-bg:#f3f6fa;
+}
+body{ background:var(--bm-bg); }
+
+/* Navbar topo */
+.bm-topbar{ background:var(--bm-primary); padding:.75rem 0; box-shadow:0 6px 20px rgba(0,0,0,.08); }
+.bm-topbar .bm-title{ font-weight:700; font-size:1.05rem; color:#fff !important; }
+.bm-topbar .bm-subtitle{ color:rgba(255,255,255,.85); }
+.bm-topbar a, .bm-topbar .navbar-brand, .bm-topbar .nav-link{ color:#fff !important; text-decoration:none; }
+.bm-btn-sm{ padding:.35rem .75rem; border-radius:999px; font-weight:600; }
+.btn-primary{ background:var(--bm-primary); border-color:var(--bm-primary); }
+.btn-primary:hover{ background:var(--bm-primary-900); border-color:var(--bm-primary-900); }
+
+/* Espaçamento para não ficar atrás do topo/rodapé */
+main.bm-main{ padding-top: 88px; padding-bottom: 82px; }
+
+/* Bottom nav fixo */
+.bm-bottomnav{
+  position:fixed; bottom:0; left:0; right:0;
+  background:#fff; border-top:1px solid rgba(0,0,0,.08);
+  display:flex; justify-content:space-around; align-items:center;
+  padding:.5rem .75rem; z-index:1040;
+  box-shadow:0 -8px 24px rgba(0,0,0,.06);
+}
+.bn-item{ display:flex; flex-direction:column; align-items:center; gap:.15rem; font-weight:600; color:#516173; text-decoration:none; }
+.bn-item.active{ color:var(--bm-primary); }
+.bn-ico{ font-size:1.15rem; line-height:1; }
+
+/* Links padrão dentro do conteúdo */
+a{ color:var(--bm-primary); }
+a:hover{ color:var(--bm-primary-900); }
