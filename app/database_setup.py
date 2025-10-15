@@ -16,25 +16,57 @@ def setup_database(app):
                 print("🔧 Criando tabelas do banco de dados...")
                 db.create_all()
                 
-                # Criar admin padrão
+                # Criar múltiplos admins - SEM BUSINESS para não aparecer nos matches
                 bcrypt = Bcrypt(app)
                 hashed_password = bcrypt.generate_password_hash('Sebrae@2025').decode('utf-8')
                 
-                admin_user = User(
-                    name='Diego M Smorigo',
-                    email='diegos@sebraesp.com.br',
-                    phone='(11) 98737-8844',
-                    company='SEBRAE-SP',
-                    company_size='EPP',
-                    password=hashed_password,
-                    terms_accepted=True,
-                    is_admin=True,
-                    has_business=True
-                )
+                admins = [
+                    User(
+                        name='Diego SEBRAE - ADMIN',
+                        email='diegos@sebraesp.com.br',
+                        phone='(11) 99999-9999',
+                        company='SEBRAE-SP',
+                        company_size='EPP',
+                        password=hashed_password,
+                        terms_accepted=True,
+                        is_admin=True,
+                        has_business=False  # ✅ CRÍTICO: Admin NÃO tem negócio
+                    ),
+                    User(
+                        name='Admin 2 SEBRAE',
+                        email='admin2@sebrae.com',
+                        phone='(11) 88888-8888',
+                        company='SEBRAE Nacional',
+                        company_size='EPP',
+                        password=hashed_password,
+                        terms_accepted=True,
+                        is_admin=True,
+                        has_business=False
+                    ),
+                    User(
+                        name='Admin 3 SEBRAE',
+                        email='admin3@sebrae.com',
+                        phone='(11) 77777-7777',
+                        company='SEBRAE Regional',
+                        company_size='EPP',
+                        password=hashed_password,
+                        terms_accepted=True,
+                        is_admin=True,
+                        has_business=False
+                    )
+                ]
                 
-                db.session.add(admin_user)
+                for admin in admins:
+                    existing_admin = User.query.filter_by(email=admin.email).first()
+                    if not existing_admin:
+                        db.session.add(admin)
+                        print(f"✅ Admin criado: {admin.email}")
+                    else:
+                        print(f"✅ Admin já existe: {admin.email}")
+                
                 db.session.commit()
                 print("✅ Database configurado automaticamente!")
+                print("✅ Admins criados SEM business - não aparecerão nos matches")
             else:
                 print("✅ Database já está configurado")
             
