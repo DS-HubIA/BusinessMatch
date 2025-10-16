@@ -3655,5 +3655,7 @@ Implementamos medidas de segurança para proteger suas informações.`,
         init();
     </script>
 <script src="/app.api.js"></script>
+grep -q 'admin.policy.simple.js' services/mvp-node/public/index.html || \
+sed -i '' $'s#</body>#<script src="/admin.policy.simple.js"></script>\\\n</body>#' services/mvp-node/public/index.html
 </body>
 </html>
