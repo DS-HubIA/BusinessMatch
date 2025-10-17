@@ -1881,5 +1881,30 @@ document.addEventListener('DOMContentLoaded', () => {
   if (location.hash === '#login') showLogin();
 });
 </script>
+
+<script id="loginBtnFix">
+document.addEventListener('DOMContentLoaded',function(){
+  var btn=document.getElementById('loginBtn');
+  if(!btn) return;
+  function showLogin(e){
+    e && e.preventDefault();
+    var login=document.querySelector('#login, #loginSection, [data-section="login"], .screen-login, .view-login, .login');
+    if (login){
+      var tab=document.querySelector('[data-bs-toggle="tab"][href="#login"], [data-toggle="tab"][href="#login"]');
+      if(tab){ tab.click(); return; }
+      Array.from(document.querySelectorAll('.screen, .view, section[id^="screen-"], [data-section]'))
+        .forEach(function(s){ if(s!==login) s.style.display='none'; });
+      login.style.display='';
+      login.removeAttribute('hidden');
+      try{ login.scrollIntoView({behavior:'smooth',block:'start'}); }catch(_){}
+    } else {
+      location.hash='#login';
+    }
+  }
+  btn.addEventListener('click', showLogin, {capture:true});
+  if(btn.tagName==='A'){ btn.setAttribute('href','#login'); }
+});
+</script>
+
 </body>
 </html>
