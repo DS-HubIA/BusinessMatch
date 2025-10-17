@@ -4019,57 +4019,65 @@ document.addEventListener('DOMContentLoaded',function(){
 
 <script id="login-modal-logic">
 (function(){
-  function q(s){return document.querySelector(s);}
-  function showLogin(open=true){
-    var lg = q('#login');
-    if (!lg) return;
-    if(open){
-      lg.removeAttribute('hidden');
-      document.body.style.overflow='hidden';
-    } else {
-      lg.setAttribute('hidden','');
-      document.body.style.overflow='';
+  const $ = (s)=>document.querySelector(s);
+  const modal = $('#login');
+  const email = $('#loginEmail');
+  const pass  = $('#loginPassword');
+  const err   = $('#loginError');
+  const btnCancel = $('#loginCancelBtn');
+  const btnSubmit = $('#loginSubmitBtn');
+  const topLogin  = $('#loginBtn');
+
+  function openModal(){
+    if(!modal) return;
+    modal.removeAttribute('hidden');
+    document.body.style.overflow='hidden';
+    if(err) err.style.display='none';
+    if(email) email.focus();
+  }
+  function closeModal(){
+    if(!modal) return;
+    modal.setAttribute('hidden','');
+    document.body.style.overflow='';
+    if(location.hash==='#login') history.replaceState(null,'',location.pathname+location.search);
+  }
+
+  // Botão do topo
+  if (topLogin){
+    topLogin.addEventListener('click', (e)=>{ e.preventDefault(); openModal(); });
+  }
+  // Cancelar
+  if (btnCancel){
+    btnCancel.addEventListener('click', (e)=>{ e.preventDefault(); closeModal(); });
+  }
+  // Backdrop
+  if (modal){
+    modal.addEventListener('click', (e)=>{ if(e.target===modal) closeModal(); });
+  }
+  // Submit
+  async function doLogin(){
+    if(err) err.style.display='none';
+    const mail=(email?.value||'').trim();
+    const pwd =(pass?.value||'').trim();
+    if(!mail || !pwd){ if(err){err.textContent='Preencha e-mail e senha.'; err.style.display='block';} return; }
+    try{
+      await window.apiLogin({ email: mail, password: pwd });
+      closeModal();
+      location.hash = '#perfil';
+      if (typeof window.init === 'function') window.init();
+      if (typeof window.renderProfile === 'function') window.renderProfile();
+    }catch{
+      if(err){ err.textContent='Credenciais inválidas.'; err.style.display='block'; }
     }
   }
-  function hideLogin(){
-    showLogin(false);
-    if (location.hash === '#login') history.replaceState(null, '', location.pathname + location.search);
-  }
+  if (btnSubmit) btnSubmit.addEventListener('click', doLogin);
+  if (pass) pass.addEventListener('keydown', (e)=>{ if(e.key==='Enter') doLogin(); });
 
-  // Botão "Entrar" no topo
-  var btn = q('#loginBtn');
-  if (btn){
-    btn.addEventListener('click', function(e){
-      e.preventDefault();
-      showLogin(true);
-    });
-  }
-
-  // Botão "Cancelar" no modal
-  var cancel = q('#loginCancel');
-  if (cancel){
-    cancel.addEventListener('click', function(e){
-      e.preventDefault();
-      hideLogin();
-    });
-  }
-
-  // Submissão do formulário de login
-  var form = q('#login form, form#loginForm');
-  if (form){
-    form.addEventListener('submit', async function(e){
-      try {
-        // deixe o handler existente fazer o POST normalmente;
-        // este setTimeout fecha o modal depois do ciclo do handler
-        setTimeout(hideLogin, 100);
-      } catch(_) {}
-    });
-  }
-
-  // Abrir pelo hash (ex.: #login) sem autoabrir em carregamento normal
-  window.addEventListener('hashchange', function(){
-    if (location.hash === '#login') showLogin(true);
-  });
+  // Só abre via hash #login (sem auto-abrir no load normal)
+  function onHash(){ if(location.hash==='#login') openModal(); else closeModal(); }
+  window.addEventListener('hashchange', onHash);
+  // Não chamamos onHash() agora para evitar auto-abrir; se quiser suportar visita direta a /#login:
+  if (location.hash==='#login') openModal();
 })();
 </script>
 
