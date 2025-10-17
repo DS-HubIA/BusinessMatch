@@ -4002,3 +4002,74 @@ document.addEventListener('DOMContentLoaded',function(){
 
 </body>
 </html>
+<!-- ===== LOGIN SHEET (mínimo) ===== -->
+<style>
+  #login[hidden]{display:none}
+  #login.sheet{position:fixed;inset:0;background:rgba(0,0,0,.42);display:flex;align-items:center;justify-content:center;z-index:9999}
+  #login .sheet-body{background:#fff;border-radius:14px;padding:20px;max-width:420px;width:92%;box-shadow:0 10px 30px rgba(0,0,0,.15)}
+  #login h2{margin:0 0 12px;font-size:20px;color:#1f2937}
+  #login .field{margin:10px 0}
+  #login .field input{width:100%;padding:10px 12px;border:1px solid #D1D5DB;border-radius:10px;font-size:16px}
+  #login .row{display:flex;gap:10px;margin-top:14px}
+  #login .btn{flex:1;padding:10px 14px;border-radius:999px;border:1px solid #1F6FEB;background:#1F6FEB;color:#fff;font-weight:600}
+  #login .btn.outline{background:#fff;color:#1F6FEB}
+</style>
+
+<div id="login" class="sheet" hidden>
+  <div class="sheet-body">
+    <h2>Entrar</h2>
+    <form id="loginForm" autocomplete="on">
+      <div class="field">
+        <input type="email" id="loginEmail" placeholder="Seu e-mail" required inputmode="email" />
+      </div>
+      <div class="field">
+        <input type="password" id="loginPassword" placeholder="Sua senha" required />
+      </div>
+      <div class="row">
+        <button type="button" id="loginClose" class="btn outline">Cancelar</button>
+        <button type="submit" class="btn">Entrar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+(function(){
+  function showLogin(show){
+    var el=document.getElementById('login');
+    if(!el) return;
+    el.hidden=!show;
+    document.body.style.overflow = show ? 'hidden' : '';
+  }
+  function onHash(){ showLogin(location.hash==='#login'); }
+  window.addEventListener('hashchange', onHash);
+  window.addEventListener('DOMContentLoaded', onHash);
+
+  document.addEventListener('click', function(e){
+    if(e.target && e.target.id==='loginClose'){
+      // volta para a seção anterior sem recarregar
+      history.back();
+    }
+    // fecha se clicar no backdrop fora do card
+    var dlg=document.getElementById('login');
+    if(dlg && !dlg.hidden && e.target===dlg){ history.back(); }
+  });
+
+  document.addEventListener('submit', async function(e){
+    if(e.target && e.target.id==='loginForm'){
+      e.preventDefault();
+      var email=document.getElementById('loginEmail').value.trim();
+      var password=document.getElementById('loginPassword').value;
+      try{
+        await window.apiLogin({ email, password });
+        // após login, vá para Perfil (ajuste a âncora se seu perfil for outra)
+        location.hash = '#perfil';
+        showLogin(false);
+      }catch(err){
+        alert('Credenciais inválidas. Verifique e tente novamente.');
+      }
+    }
+  });
+})();
+</script>
+<!-- ===== /LOGIN SHEET ===== -->
