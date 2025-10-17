@@ -1,0 +1,4186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clube de Negócios Sebrae - Business Match 2025</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --info: #1abc9c;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            min-height: 70px;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+            justify-content: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo-icon {
+            font-size: 1.8rem;
+            color: var(--secondary);
+        }
+        
+        .logo span {
+            color: var(--secondary);
+        }
+        
+        .logo-subtitle {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            margin-top: 0.2rem;
+        }
+        
+        .user-actions {
+            display: flex;
+            gap: 1rem;
+            margin-right: 3rem;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            color: white;
+            border: 1px solid white;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn-info {
+            background-color: var(--info);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+            position: relative;
+        }
+        
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #f5f7fa;
+            display: none;
+            flex-direction: column;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+        
+        .screen.active {
+            display: flex;
+        }
+        
+        .card-container {
+            flex: 1;
+            position: relative;
+            margin: 1rem 0;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            touch-action: pan-y;
+        }
+        
+        .business-card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            cursor: grab;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        
+        .business-card:active {
+            cursor: grabbing;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .business-type {
+            background-color: var(--secondary);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .business-type.demanda {
+            background-color: var(--warning);
+        }
+        
+        .business-category {
+            color: var(--dark);
+            font-size: 0.9rem;
+        }
+        
+        .business-image {
+            width: 100%;
+            height: 200px;
+            background-color: #ddd;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .business-image-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #777;
+            font-size: 3rem;
+        }
+        
+        .business-image-placeholder span {
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        
+        .business-title {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .business-description {
+            flex: 1;
+            margin-bottom: 1rem;
+            line-height: 1.4;
+            color: #555;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+        
+        .business-contact {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .business-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .tag {
+            background-color: var(--light);
+            padding: 0.3rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+        
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            padding: 1rem 0;
+        }
+        
+        .action-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .dislike-btn {
+            background-color: white;
+            color: var(--danger);
+        }
+        
+        .like-btn {
+            background-color: white;
+            color: var(--success);
+        }
+        
+        .match-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(46, 204, 113, 0.9);
+            border-radius: var(--radius);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            z-index: 5;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .match-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .match-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .match-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        
+        .match-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .match-btn {
+            padding: 0.7rem 1.5rem;
+            border-radius: 24px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .send-message {
+            background-color: white;
+            color: var(--success);
+        }
+        
+        .schedule-meeting {
+            background-color: var(--warning);
+            color: white;
+        }
+        
+        .keep-browsing {
+            background-color: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-around;
+            padding: 1rem 0;
+            border-top: 1px solid #ddd;
+            background-color: white;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: background-color 0.2s ease;
+        }
+        
+        .nav-item.active {
+            color: var(--secondary);
+        }
+        
+        .nav-item:hover {
+            background-color: var(--light);
+        }
+        
+        .nav-icon {
+            font-size: 1.3rem;
+        }
+        
+        .nav-text {
+            font-size: 0.8rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #777;
+        }
+        
+        .swipe-left {
+            transform: translateX(-100%) rotate(-30deg);
+            opacity: 0;
+        }
+        
+        .swipe-right {
+            transform: translateX(100%) rotate(30deg);
+            opacity: 0;
+        }
+        
+        .form-container {
+            background-color: white;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 1rem;
+        }
+        
+        .form-title {
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--primary);
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+        }
+        
+        .form-actions.center {
+            justify-content: center;
+        }
+        
+        .matches-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .match-item {
+            background-color: white;
+            border-radius: var(--radius);
+            padding: 1rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .match-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #777;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .match-info {
+            flex: 1;
+        }
+        
+        .match-name {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+        
+        .match-business {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .match-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .whatsapp-btn {
+            background-color: #25D366;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        .schedule-btn {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        .profile-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #ddd;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: #777;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .profile-avatar-edit {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            text-align: center;
+            padding: 0.3rem;
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .profile-avatar:hover .profile-avatar-edit {
+            opacity: 1;
+        }
+        
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .profile-business {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        
+        .profile-section {
+            background-color: white;
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        
+        .my-businesses {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .business-item {
+            background-color: var(--light);
+            border-radius: var(--radius);
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .business-item-info h4 {
+            margin-bottom: 0.3rem;
+        }
+        
+        .business-item-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .business-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .icon-btn {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--dark);
+        }
+        
+        .icon-btn.edit {
+            color: var(--secondary);
+        }
+        
+        .icon-btn.delete {
+            color: var(--danger);
+        }
+        
+        .interests-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .interest-item {
+            background-color: white;
+            border-radius: var(--radius);
+            padding: 1rem;
+            box-shadow: var(--shadow);
+        }
+        
+        .interest-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .interest-name {
+            font-weight: 600;
+        }
+        
+        .interest-date {
+            color: #666;
+            font-size: 0.8rem;
+        }
+        
+        .interest-business {
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        
+        .interest-message {
+            font-style: italic;
+            color: #777;
+            margin-bottom: 0.5rem;
+        }
+        
+        .interest-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+        
+        .tab-container {
+            display: flex;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #ddd;
+            overflow-x: auto;
+        }
+        
+        .tab {
+            padding: 0.7rem 1rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid var(--secondary);
+            color: var(--secondary);
+            font-weight: 600;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .upload-container {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+        
+        .upload-btn {
+            display: block;
+            width: 100%;
+            padding: 0.8rem;
+            background-color: var(--light);
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-btn:hover {
+            background-color: #e0e0e0;
+            border-color: var(--secondary);
+        }
+        
+        .upload-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .image-preview {
+            margin-top: 1rem;
+            text-align: center;
+        }
+        
+        .preview-image {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+        }
+        
+        .remove-image {
+            margin-top: 0.5rem;
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        /* Filtros */
+        .filters-container {
+            background-color: white;
+            border-radius: var(--radius);
+            padding: 1rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 1rem;
+        }
+        
+        .filter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .filter-toggle {
+            background: none;
+            border: none;
+            color: var(--secondary);
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .filter-content {
+            display: none;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .filter-content.active {
+            display: grid;
+        }
+        
+        .filter-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        /* Admin */
+        .admin-login {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1000;
+        }
+        
+        .admin-login-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: background-color 0.2s ease;
+        }
+        
+        .admin-login-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 1.2rem;
+            }
+            
+            .user-actions {
+                margin-right: 2.5rem;
+            }
+            
+            .business-title {
+                font-size: 1.2rem;
+            }
+            
+            .business-description {
+                -webkit-line-clamp: 2;
+            }
+            
+            .filter-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .match-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .match-btn {
+                width: 100%;
+                max-width: 200px;
+            }
+            
+            .actions {
+                gap: 1rem;
+            }
+            
+            .action-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            header {
+                padding: 0.8rem;
+            }
+            
+            .logo {
+                font-size: 1rem;
+            }
+            
+            .btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.9rem;
+            }
+            
+            .business-card {
+                padding: 1rem;
+            }
+            
+            .business-image {
+                height: 150px;
+            }
+            
+            .form-container {
+                padding: 1rem;
+            }
+        }
+        
+        /* Indicadores de swipe */
+        .swipe-indicator {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .swipe-like {
+            right: 1rem;
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .swipe-dislike {
+            left: 1rem;
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .swipe-indicator.active {
+            opacity: 1;
+        }
+        
+        /* Loading states */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        .pulse {
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* Estilos para agendamento */
+        .calendar-container {
+            background-color: white;
+            border-radius: var(--radius);
+            padding: 1rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 1rem;
+        }
+        
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .calendar-day {
+            text-align: center;
+            padding: 0.5rem;
+            font-weight: bold;
+            color: var(--dark);
+        }
+        
+        .calendar-date {
+            text-align: center;
+            padding: 0.7rem 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .calendar-date:hover {
+            background-color: var(--light);
+        }
+        
+        .calendar-date.selected {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .calendar-date.disabled {
+            color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .calendar-date.disabled:hover {
+            background-color: transparent;
+        }
+        
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .time-slot {
+            padding: 0.7rem;
+            text-align: center;
+            background-color: var(--light);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .time-slot:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .time-slot.selected {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .meeting-type {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .meeting-type-option {
+            flex: 1;
+            text-align: center;
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .meeting-type-option.selected {
+            border-color: var(--secondary);
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        
+        .meetings-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .meeting-item {
+            background-color: white;
+            border-radius: var(--radius);
+            padding: 1rem;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .meeting-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .meeting-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .meeting-date {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .meeting-details {
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        
+        .meeting-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+        
+        .meeting-status {
+            display: inline-block;
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .meeting-status.confirmed {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .meeting-status.pending {
+            background-color: var(--warning);
+            color: white;
+        }
+        
+        .meeting-status.cancelled {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        /* Estilos para Admin */
+        .admin-panel {
+            background-color: white;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 1rem;
+        }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .admin-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .admin-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .stat-card {
+            background-color: var(--light);
+            border-radius: var(--radius);
+            padding: 1rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .admin-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .categories-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .category-item {
+            background-color: var(--light);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .category-actions {
+            display: flex;
+            gap: 0.3rem;
+        }
+        
+        .color-picker {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .color-option.selected {
+            border-color: var(--dark);
+        }
+        
+        .terms-container {
+            background-color: var(--light);
+            border-radius: var(--radius);
+            padding: 1rem;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+        }
+        
+        .terms-content {
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .terms-checkbox {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .terms-checkbox input {
+            margin-top: 0.2rem;
+        }
+        
+        .terms-label {
+            font-size: 0.9rem;
+        }
+        
+        .terms-link {
+            color: var(--secondary);
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        
+        .welcome-screen {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 2rem;
+        }
+        
+        .welcome-image {
+            width: 200px;
+            height: 200px;
+            background-color: #ddd;
+            border-radius: 50%;
+            margin-bottom: 2rem;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: #777;
+        }
+        
+        .welcome-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        
+        .welcome-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            color: #666;
+            max-width: 400px;
+            line-height: 1.5;
+        }
+        
+        .welcome-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .danger-zone {
+            background-color: #ffeaea;
+            border: 1px solid var(--danger);
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .danger-zone-title {
+            color: var(--danger);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .danger-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .profile-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+    </style>
+
+<style id="login-guard">#login[hidden]{display:none !important}</style>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <div class="logo">
+                <i class="fas fa-handshake logo-icon"></i>
+                <div>
+                    <div>Clube de Negócios Sebrae</div>
+                    <div class="logo-subtitle">Business Match 2025</div>
+                </div>
+            </div>
+        </div>
+        <div class="user-actions">
+            <a class="btn btn-outline" id="loginBtn" href="#login">Entrar</a>
+            <button class="btn btn-primary" id="registerBtn">Cadastrar</button>
+        </div>
+        <div class="admin-login">
+            <button class="admin-login-btn" id="adminLoginBtn">
+                <i class="fas fa-cog"></i>
+            </button>
+        </div>
+    </header>
+    
+    <main>
+        <!-- Tela de Boas-Vindas -->
+        <div class="screen active" id="welcomeScreen">
+            <div class="welcome-screen">
+                <div class="welcome-image" id="welcomeImage">
+                    <i class="fas fa-handshake"></i>
+                </div>
+                <h1 class="welcome-title">Clube de Negócios Sebrae</h1>
+                <p class="welcome-subtitle">
+                    Conecte oferta e demanda de forma simples e intuitiva. 
+                    Encontre oportunidades de negócio e parceiros comerciais 
+                    através da plataforma Business Match 2025.
+                </p>
+                <div class="welcome-actions">
+                    <button class="btn btn-primary" id="getStartedBtn">Começar Agora</button>
+                    <button class="btn btn-primary" id="learnMoreBtn">Saiba Mais</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tela de Oportunidades -->
+        <div class="screen" id="opportunitiesScreen">
+            <!-- Filtros -->
+            <div class="filters-container">
+                <div class="filter-header">
+                    <h3>Filtros</h3>
+                    <button class="filter-toggle" id="filterToggle">
+                        <i class="fas fa-sliders-h"></i> Filtrar
+                    </button>
+                </div>
+                <div class="filter-content" id="filterContent">
+                    <div class="form-group">
+                        <label class="form-label" for="filterType">Tipo</label>
+                        <select id="filterType" class="form-select">
+                            <option value="">Todos</option>
+                            <option value="OFERTA">Oferta</option>
+                            <option value="DEMANDA">Demanda</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="filterCategory">Categoria</label>
+                        <select id="filterCategory" class="form-select">
+                            <option value="">Todas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="filterTags">Tags</label>
+                        <input type="text" id="filterTags" class="form-input" placeholder="Ex: software, consultoria">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="filterLocation">Localização</label>
+                        <input type="text" id="filterLocation" class="form-input" placeholder="Cidade ou estado">
+                    </div>
+                    <div class="filter-actions">
+                        <button class="btn btn-outline" id="clearFiltersBtn">Limpar</button>
+                        <button class="btn btn-primary" id="applyFiltersBtn">Aplicar</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-container">
+                <div class="swipe-indicator swipe-like">LIKE</div>
+                <div class="swipe-indicator swipe-dislike">NOPE</div>
+                
+                <div class="empty-state" id="emptyState">
+                    <h3>Nenhuma oportunidade disponível no momento</h3>
+                    <p>Volte mais tarde para novas conexões de negócios</p>
+                </div>
+                
+                <div class="match-overlay" id="matchOverlay">
+                    <div class="match-icon">🤝</div>
+                    <div class="match-text">Match de Negócios!</div>
+                    <p>Você e esta empresa têm interesses compatíveis</p>
+                    <div class="match-actions">
+                        <button class="match-btn send-message" id="whatsappMatchBtn">
+                            <i class="fab fa-whatsapp"></i> Enviar Mensagem
+                        </button>
+                        <button class="match-btn schedule-meeting" id="scheduleMeetingBtn">
+                            <i class="fas fa-calendar-plus"></i> Agendar Reunião
+                        </button>
+                        <button class="match-btn keep-browsing">Continuar Navegando</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="actions">
+                <button class="action-btn dislike-btn" id="dislikeBtn">✕</button>
+                <button class="action-btn like-btn" id="likeBtn">✓</button>
+            </div>
+        </div>
+        
+        <!-- Tela de Matches -->
+        <div class="screen" id="matchesScreen">
+            <h2 class="form-title">Seus Matches</h2>
+            <div class="matches-list" id="matchesList">
+                <!-- Matches serão carregados dinamicamente -->
+            </div>
+        </div>
+        
+        <!-- Tela de Mensagens/Interesses -->
+        <div class="screen" id="interestsScreen">
+            <h2 class="form-title">Interesses Recebidos</h2>
+            <div class="interests-list" id="interestsList">
+                <!-- Interesses serão carregados dinamicamente -->
+            </div>
+        </div>
+        
+        <!-- Tela de Perfil -->
+        <div class="screen" id="profileScreen">
+            <div class="profile-header">
+                <div class="profile-avatar" id="profileAvatar">
+                    <div class="profile-avatar-edit">Alterar Foto</div>
+                </div>
+                <h2 class="profile-name" id="profileName">Usuário</h2>
+                <p class="profile-business" id="profileBusiness">Empresa</p>
+                <div class="profile-actions">
+                    <button class="btn btn-primary" id="editProfileBtn">Editar Perfil</button>
+                    <button class="btn btn-outline" id="logoutBtn">Sair</button>
+                </div>
+            </div>
+            
+            <div class="tab-container">
+                <div class="tab active" data-tab="myBusinesses">Meus Negócios</div>
+                <div class="tab" data-tab="myInterests">Meus Interesses</div>
+                <div class="tab" data-tab="myMeetings">Minhas Reuniões</div>
+            </div>
+            
+            <div class="tab-content active" id="myBusinesses">
+                <div class="my-businesses" id="myBusinessesList">
+                    <!-- Negócios do usuário serão carregados dinamicamente -->
+                </div>
+                <button class="btn btn-primary" id="addBusinessBtn" style="width: 100%; margin-top: 1rem;">
+                    <i class="fas fa-plus"></i> Adicionar Negócio
+                </button>
+            </div>
+            
+            <div class="tab-content" id="myInterests">
+                <div class="interests-list" id="myInterestsList">
+                    <!-- Interesses do usuário serão carregados dinamicamente -->
+                </div>
+            </div>
+            
+            <div class="tab-content" id="myMeetings">
+                <div class="meetings-list" id="myMeetingsList">
+                    <!-- Reuniões do usuário serão carregados dinamicamente -->
+                </div>
+            </div>
+            
+            <!-- Área de perigo - Exclusão de conta -->
+            <div class="danger-zone">
+                <h3 class="danger-zone-title">Área de Perigo</h3>
+                <p>Ações nesta área são irreversíveis. Tenha certeza do que está fazendo.</p>
+                <div class="danger-actions">
+                    <button class="btn btn-danger" id="deleteAccountBtn">Excluir Conta Permanentemente</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tela de Cadastro/Login -->
+        <div class="screen" id="authScreen">
+            <div class="form-container">
+                <h2 class="form-title" id="authTitle">Cadastre-se</h2>
+                <form id="authForm">
+                    <div class="upload-container">
+                        <div class="upload-btn" id="avatarUploadBtn">
+                            <i class="fas fa-camera"></i> Clique para adicionar foto de perfil
+                        </div>
+                        <input type="file" id="avatarInput" class="upload-input" accept="image/*">
+                    </div>
+                    <div class="image-preview" id="avatarPreview"></div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="name">Nome Completo</label>
+                        <input type="text" id="name" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="email">E-mail</label>
+                        <input type="email" id="email" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="phone">WhatsApp</label>
+                        <input type="tel" id="phone" class="form-input" placeholder="(11) 99999-9999" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="company">Empresa</label>
+                        <input type="text" id="company" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="password">Senha</label>
+                        <input type="password" id="password" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="terms-container">
+                            <div class="terms-content" id="termsContent">
+                                <!-- Termos de uso serão carregados dinamicamente -->
+                            </div>
+                        </div>
+                        <div class="terms-checkbox">
+                            <input type="checkbox" id="acceptTerms" required>
+                            <label class="terms-label" for="acceptTerms">
+                                Li e aceito os <span class="terms-link" id="viewTerms">Termos de Uso</span> e 
+                                <span class="terms-link" id="viewPrivacy">Política de Privacidade</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline" id="switchAuthMode">Já tenho conta</button>
+                        <button type="submit" class="btn btn-primary">Cadastrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Tela de Adicionar Negócio -->
+        <div class="screen" id="addBusinessScreen">
+            <div class="form-container">
+                <h2 class="form-title">Adicionar Negócio</h2>
+                <form id="businessForm">
+                    <div class="form-group">
+                        <label class="form-label" for="businessType">Tipo</label>
+                        <select id="businessType" class="form-select" required>
+                            <option value="">Selecione...</option>
+                            <option value="OFERTA">Oferta</option>
+                            <option value="DEMANDA">Demanda</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="businessCategory">Categoria</label>
+                        <select id="businessCategory" class="form-select" required>
+                            <!-- Categorias serão carregadas dinamicamente -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="businessTitle">Título</label>
+                        <input type="text" id="businessTitle" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="businessDescription">Descrição</label>
+                        <textarea id="businessDescription" class="form-textarea" required></textarea>
+                    </div>
+                    
+                    <div class="upload-container">
+                        <div class="upload-btn" id="businessImageUploadBtn">
+                            <i class="fas fa-image"></i> Clique para adicionar imagem do negócio
+                        </div>
+                        <input type="file" id="businessImageInput" class="upload-input" accept="image/*">
+                    </div>
+                    <div class="image-preview" id="businessImagePreview"></div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="businessTags">Tags (separadas por vírgula)</label>
+                        <input type="text" id="businessTags" class="form-input" placeholder="Ex: Software, ERP, Gestão">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="businessLocation">Localização</label>
+                        <input type="text" id="businessLocation" class="form-input" placeholder="Cidade, Estado">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline" id="cancelBusinessBtn">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Tela de Agendamento -->
+        <div class="screen" id="scheduleScreen">
+            <div class="form-container">
+                <h2 class="form-title">Agendar Reunião</h2>
+                <div class="meeting-with">
+                    <div class="match-item">
+                        <div class="match-avatar" id="meetingAvatar"></div>
+                        <div class="match-info">
+                            <div class="match-name" id="meetingName">Nome</div>
+                            <div class="match-business" id="meetingBusiness">Negócio</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <form id="scheduleForm">
+                    <div class="form-group">
+                        <label class="form-label" for="meetingTitle">Título da Reunião</label>
+                        <input type="text" id="meetingTitle" class="form-input" placeholder="Ex: Apresentação de Proposta" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Tipo de Reunião</label>
+                        <div class="meeting-type">
+                            <div class="meeting-type-option" data-type="presencial">
+                                <i class="fas fa-building"></i>
+                                <div>Presencial</div>
+                            </div>
+                            <div class="meeting-type-option" data-type="online">
+                                <i class="fas fa-video"></i>
+                                <div>Online</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" id="locationGroup">
+                        <label class="form-label" for="meetingLocation">Local da Reunião</label>
+                        <input type="text" id="meetingLocation" class="form-input" placeholder="Endereço ou link da reunião">
+                    </div>
+                    
+                    <div class="calendar-container">
+                        <div class="calendar-header">
+                            <button type="button" class="btn btn-outline" id="prevMonth">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <h3 id="currentMonth">Junho 2023</h3>
+                            <button type="button" class="btn btn-outline" id="nextMonth">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="calendar-grid" id="calendarDays">
+                            <!-- Dias da semana -->
+                        </div>
+                        
+                        <div class="calendar-grid" id="calendarDates">
+                            <!-- Datas do mês -->
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Horário</label>
+                        <div class="time-slots" id="timeSlots">
+                            <!-- Horários disponíveis -->
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="meetingDescription">Descrição (opcional)</label>
+                        <textarea id="meetingDescription" class="form-textarea" placeholder="Detalhes adicionais sobre a reunião"></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline" id="cancelScheduleBtn">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Agendar Reunião</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Tela de Administração -->
+        <div class="screen" id="adminScreen">
+            <div class="admin-panel">
+                <div class="admin-header">
+                    <h1 class="admin-title">Painel Administrativo</h1>
+                    <div class="admin-actions">
+                        <button class="btn btn-outline" id="logoutAdminBtn">Sair</button>
+                    </div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="usersCount">0</div>
+                        <div class="stat-label">Usuários Cadastrados</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="meetingsCount">0</div>
+                        <div class="stat-label">Reuniões Agendadas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="whatsappCount">0</div>
+                        <div class="stat-label">Acionamentos WhatsApp</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="offersCount">0</div>
+                        <div class="stat-label">Ofertas Cadastradas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="demandsCount">0</div>
+                        <div class="stat-label">Demandas Cadastradas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="matchesCount">0</div>
+                        <div class="stat-label">Matches Realizados</div>
+                    </div>
+                </div>
+                
+                <div class="admin-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Gerenciar Categorias</h2>
+                        <button class="btn btn-primary" id="addCategoryBtn">Adicionar Categoria</button>
+                    </div>
+                    <div class="categories-list" id="categoriesList">
+                        <!-- Categorias serão carregadas dinamicamente -->
+                    </div>
+                </div>
+                
+                <div class="admin-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Personalizar Cores</h2>
+                    </div>
+                    <div class="color-picker">
+                        <div class="color-option selected" style="background-color: #2c3e50;" data-color="2c3e50"></div>
+                        <div class="color-option" style="background-color: #34495e;" data-color="34495e"></div>
+                        <div class="color-option" style="background-color: #16a085;" data-color="16a085"></div>
+                        <div class="color-option" style="background-color: #27ae60;" data-color="27ae60"></div>
+                        <div class="color-option" style="background-color: #2980b9;" data-color="2980b9"></div>
+                        <div class="color-option" style="background-color: #8e44ad;" data-color="8e44ad"></div>
+                        <div class="color-option" style="background-color: #f39c12;" data-color="f39c12"></div>
+                        <div class="color-option" style="background-color: #d35400;" data-color="d35400"></div>
+                        <div class="color-option" style="background-color: #c0392b;" data-color="c0392b"></div>
+                    </div>
+                </div>
+                
+                <div class="admin-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Termos de Uso</h2>
+                        <button class="btn btn-primary" id="editTermsBtn">Editar Termos</button>
+                    </div>
+                    <div class="terms-container">
+                        <div class="terms-content" id="adminTermsContent">
+                            <!-- Termos de uso serão carregados dinamicamente -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <div class="navigation">
+        <div class="nav-item active" data-screen="opportunitiesScreen">
+            <div class="nav-icon"><i class="fas fa-briefcase"></i></div>
+            <div class="nav-text">Oportunidades</div>
+        </div>
+        <div class="nav-item" data-screen="matchesScreen">
+            <div class="nav-icon"><i class="fas fa-handshake"></i></div>
+            <div class="nav-text">Matches</div>
+        </div>
+        <div class="nav-item" data-screen="interestsScreen">
+            <div class="nav-icon"><i class="fas fa-heart"></i></div>
+            <div class="nav-text">Interesses</div>
+        </div>
+        <div class="nav-item" data-screen="profileScreen">
+            <div class="nav-icon"><i class="fas fa-user"></i></div>
+            <div class="nav-text">Perfil</div>
+        </div>
+    </div>
+
+    <script>
+        // Dados de exemplo para demonstração
+        let businessOpportunities = [
+            {
+                id: 1,
+                type: "DEMANDA",
+                category: "Tecnologia",
+                title: "Sistema de Gestão para Varejo",
+                description: "Buscamos uma solução de software para gestão de estoque, vendas e financeiro para nossa rede de lojas.",
+                image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+                tags: ["Software", "ERP", "Varejo", "Gestão"],
+                contact: "Maria Silva",
+                phone: "5511999999999",
+                userAvatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+                location: "São Paulo, SP"
+            },
+            {
+                id: 2,
+                type: "OFERTA",
+                category: "Marketing",
+                title: "Consultoria em Marketing Digital",
+                description: "Oferecemos serviços completos de marketing digital para pequenas e médias empresas, incluindo SEO, mídias sociais e Google Ads.",
+                image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+                tags: ["Marketing", "Digital", "Consultoria", "SEO"],
+                contact: "João Santos",
+                phone: "5511888888888",
+                userAvatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+                location: "Rio de Janeiro, RJ"
+            },
+            {
+                id: 3,
+                type: "OFERTA",
+                category: "Consultoria",
+                title: "Consultoria Financeira para PMEs",
+                description: "Serviços especializados em consultoria financeira, planejamento tributário e gestão de custos para pequenas e médias empresas.",
+                image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+                tags: ["Financeiro", "Consultoria", "PME", "Tributário"],
+                contact: "Carlos Oliveira",
+                phone: "5511777777777",
+                userAvatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+                location: "Belo Horizonte, MG"
+            },
+            {
+                id: 4,
+                type: "DEMANDA",
+                category: "Logística",
+                title: "Solução de Logística para E-commerce",
+                description: "Precisamos de parceiro para gestão de estoque, picking, packing e entrega para nosso e-commerce de moda.",
+                image: "https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+                tags: ["Logística", "E-commerce", "Entregas", "Armazenagem"],
+                contact: "Ana Costa",
+                phone: "5511666666666",
+                userAvatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+                location: "Curitiba, PR"
+            }
+        ];
+
+        // Estado da aplicação
+        let currentUser = null;
+        let userMatches = [];
+        let userInterests = [];
+        let userBusinesses = [];
+        let userMeetings = [];
+        let currentCardIndex = 0;
+        let startX = 0;
+        let currentX = 0;
+        let isDragging = false;
+        let isLoginMode = false;
+        let currentMatch = null;
+        let avatarFile = null;
+        let businessImageFile = null;
+        let activeFilters = {};
+        
+        // Estado do agendamento
+        let currentCalendarDate = new Date();
+        let selectedDate = null;
+        let selectedTime = null;
+        let selectedMeetingType = 'online';
+        
+        // Configurações do sistema
+        let appSettings = {
+            categories: ["Tecnologia", "Marketing", "Consultoria", "Logística", "Varejo", "Serviços", "Indústria", "Saúde", "Educação"],
+            colors: {
+                primary: "#2c3e50",
+                secondary: "#3498db",
+                success: "#2ecc71",
+                danger: "#e74c3c",
+                warning: "#f39c12",
+                info: "#1abc9c",
+                light: "#ecf0f1",
+                dark: "#34495e"
+            },
+            termsOfUse: `TERMOS DE USO DO BUSINESSMATCH
+
+1. ACEITAÇÃO DOS TERMOS
+Ao acessar e usar o BusinessMatch, você concorda em cumprir e ser vinculado por estes Termos de Uso.
+
+2. CADASTRO DE USUÁRIO
+- Você deve fornecer informações precisas e atualizadas durante o cadastro
+- É proibido criar contas falsas ou usar informações de terceiros sem autorização
+- Você é responsável por manter a confidencialidade de sua senha
+
+3. CONDUTA DO USUÁRIO
+- Respeitar todos os usuários da plataforma
+- Não publicar conteúdo ofensivo, discriminatório ou ilegal
+- Não usar a plataforma para atividades fraudulentas
+
+4. PROTEÇÃO DE DADOS
+Seus dados pessoais são protegidos de acordo com nossa Política de Privacidade.
+
+5. PROPRIEDADE INTELECTUAL
+Todo o conteúdo da plataforma é propriedade do BusinessMatch.
+
+6. LIMITAÇÃO DE RESPONSABILIDADE
+O BusinessMatch não se responsabiliza por:
+- Acordos comerciais entre usuários
+- Veracidade das informações publicadas
+- Danos decorrentes do uso da plataforma
+
+7. MODIFICAÇÕES DOS TERMOS
+Podemos modificar estes termos a qualquer momento.
+
+Ao clicar em "Aceitar", você concorda com estes Termos de Uso.`,
+
+            privacyPolicy: `POLÍTICA DE PRIVACIDADE
+
+1. INFORMAÇÕES COLETADAS
+Coletamos informações fornecidas durante o cadastro e uso da plataforma.
+
+2. USO DAS INFORMAÇÕES
+- Melhorar nossos serviços
+- Personalizar sua experiência
+- Conectar usuários com interesses compatíveis
+
+3. COMPARTILHAMENTO DE DADOS
+Não vendemos suas informações pessoais. Compartilhamos apenas:
+- Com outros usuários para facilitar conexões (após match)
+- Quando exigido por lei
+
+4. SEUS DIREITOS
+Você pode acessar, corrigir ou excluir seus dados a qualquer momento.
+
+5. SEGURANÇA
+Implementamos medidas de segurança para proteger suas informações.`,
+            adminPassword: "admin123"
+        };
+
+        // Estatísticas
+        let stats = {
+            users: 0,
+            meetings: 0,
+            whatsappCalls: 0,
+            offers: 0,
+            demands: 0,
+            matches: 0
+        };
+
+        // Elementos DOM
+        const screens = document.querySelectorAll('.screen');
+        const navItems = document.querySelectorAll('.nav-item');
+        const cardContainer = document.querySelector('.card-container');
+        const emptyState = document.getElementById('emptyState');
+        const matchOverlay = document.getElementById('matchOverlay');
+        const dislikeBtn = document.getElementById('dislikeBtn');
+        const likeBtn = document.getElementById('likeBtn');
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        const adminLoginBtn = document.getElementById('adminLoginBtn');
+        
+        // Novos elementos de filtros
+        const filterToggle = document.getElementById('filterToggle');
+        const filterContent = document.getElementById('filterContent');
+        const filterType = document.getElementById('filterType');
+        const filterCategory = document.getElementById('filterCategory');
+        const filterTags = document.getElementById('filterTags');
+        const filterLocation = document.getElementById('filterLocation');
+        const clearFiltersBtn = document.getElementById('clearFiltersBtn');
+        const applyFiltersBtn = document.getElementById('applyFiltersBtn');
+        
+        // Indicadores de swipe
+        const swipeLikeIndicator = document.querySelector('.swipe-like');
+        const swipeDislikeIndicator = document.querySelector('.swipe-dislike');
+
+        // Inicializar aplicação
+        function init() {
+            loadAppSettings();
+            applyCustomColors();
+            loadTerms();
+            loadCategories();
+            loadFilterCategories();
+            
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                updateUserInterface();
+                showScreen('opportunitiesScreen');
+            } else {
+                showScreen('welcomeScreen');
+            }
+            
+            renderCards();
+            setupEventListeners();
+            loadUserData();
+            initCalendar();
+            updateStats();
+        }
+        
+        // Carregar configurações do app
+        function loadAppSettings() {
+            const savedSettings = localStorage.getItem('appSettings');
+            if (savedSettings) {
+                appSettings = JSON.parse(savedSettings);
+            }
+        }
+        
+        // Salvar configurações do app
+        function saveAppSettings() {
+            localStorage.setItem('appSettings', JSON.stringify(appSettings));
+        }
+        
+        // Aplicar cores personalizadas
+        function applyCustomColors() {
+            const root = document.documentElement;
+            root.style.setProperty('--primary', appSettings.colors.primary);
+            root.style.setProperty('--secondary', appSettings.colors.secondary);
+            root.style.setProperty('--success', appSettings.colors.success);
+            root.style.setProperty('--danger', appSettings.colors.danger);
+            root.style.setProperty('--warning', appSettings.colors.warning);
+            root.style.setProperty('--info', appSettings.colors.info);
+            root.style.setProperty('--light', appSettings.colors.light);
+            root.style.setProperty('--dark', appSettings.colors.dark);
+        }
+        
+        // Carregar termos de uso
+        function loadTerms() {
+            const termsContent = document.getElementById('termsContent');
+            const adminTermsContent = document.getElementById('adminTermsContent');
+            if (termsContent) termsContent.textContent = appSettings.termsOfUse;
+            if (adminTermsContent) adminTermsContent.textContent = appSettings.termsOfUse;
+        }
+        
+        // Carregar categorias
+        function loadCategories() {
+            const businessCategorySelect = document.getElementById('businessCategory');
+            if (businessCategorySelect) {
+                businessCategorySelect.innerHTML = '<option value="">Selecione...</option>';
+                appSettings.categories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category;
+                    option.textContent = category;
+                    businessCategorySelect.appendChild(option);
+                });
+            }
+            renderCategoriesList();
+        }
+        
+        // NOVO: Carregar categorias nos filtros
+        function loadFilterCategories() {
+            if (filterCategory) {
+                filterCategory.innerHTML = '<option value="">Todas</option>';
+                appSettings.categories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category;
+                    option.textContent = category;
+                    filterCategory.appendChild(option);
+                });
+            }
+        }
+        
+        // Renderizar lista de categorias no admin
+        function renderCategoriesList() {
+            const categoriesList = document.getElementById('categoriesList');
+            if (!categoriesList) return;
+            
+            categoriesList.innerHTML = '';
+            
+            if (appSettings.categories.length === 0) {
+                categoriesList.innerHTML = '<div class="empty-state">Nenhuma categoria cadastrada</div>';
+                return;
+            }
+            
+            appSettings.categories.forEach(category => {
+                const categoryElement = document.createElement('div');
+                categoryElement.className = 'category-item';
+                categoryElement.innerHTML = `
+                    <span>${category}</span>
+                    <div class="category-actions">
+                        <button class="icon-btn edit" data-category="${category}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="icon-btn delete" data-category="${category}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                categoriesList.appendChild(categoryElement);
+            });
+            
+            // Adicionar event listeners para os botões de editar e excluir
+            document.querySelectorAll('.category-actions .edit').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const category = e.currentTarget.dataset.category;
+                    const newCategory = prompt('Editar categoria:', category);
+                    if (newCategory && newCategory.trim() !== '') {
+                        const index = appSettings.categories.indexOf(category);
+                        if (index !== -1) {
+                            appSettings.categories[index] = newCategory.trim();
+                            saveAppSettings();
+                            loadCategories();
+                            loadFilterCategories();
+                            alert('Categoria atualizada com sucesso!');
+                        }
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.category-actions .delete').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const category = e.currentTarget.dataset.category;
+                    if (appSettings.categories.length <= 1) {
+                        alert('É necessário ter pelo menos uma categoria!');
+                        return;
+                    }
+                    
+                    if (confirm(`Tem certeza que deseja excluir a categoria "${category}"?`)) {
+                        appSettings.categories = appSettings.categories.filter(c => c !== category);
+                        saveAppSettings();
+                        loadCategories();
+                        loadFilterCategories();
+                        alert('Categoria excluída com sucesso!');
+                    }
+                });
+            });
+        }
+        
+        // Atualizar estatísticas
+        function updateStats() {
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const allMeetings = [];
+            users.forEach(user => {
+                const userMeetings = JSON.parse(localStorage.getItem(`meetings_${user.id}`) || '[]');
+                allMeetings.push(...userMeetings);
+            });
+            
+            const allBusinesses = [];
+            users.forEach(user => {
+                const userBusinesses = JSON.parse(localStorage.getItem(`businesses_${user.id}`) || '[]');
+                allBusinesses.push(...userBusinesses);
+            });
+            
+            const allMatches = [];
+            users.forEach(user => {
+                const userMatches = JSON.parse(localStorage.getItem(`matches_${user.id}`) || '[]');
+                allMatches.push(...userMatches);
+            });
+            
+            stats.users = users.length;
+            stats.meetings = allMeetings.length;
+            stats.whatsappCalls = parseInt(localStorage.getItem('whatsappCalls') || '0');
+            stats.offers = allBusinesses.filter(b => b.type === 'OFERTA').length;
+            stats.demands = allBusinesses.filter(b => b.type === 'DEMANDA').length;
+            stats.matches = allMatches.length;
+            
+            // Atualizar UI
+            const usersCount = document.getElementById('usersCount');
+            const meetingsCount = document.getElementById('meetingsCount');
+            const whatsappCount = document.getElementById('whatsappCount');
+            const offersCount = document.getElementById('offersCount');
+            const demandsCount = document.getElementById('demandsCount');
+            const matchesCount = document.getElementById('matchesCount');
+            
+            if (usersCount) usersCount.textContent = stats.users;
+            if (meetingsCount) meetingsCount.textContent = stats.meetings;
+            if (whatsappCount) whatsappCount.textContent = stats.whatsappCalls;
+            if (offersCount) offersCount.textContent = stats.offers;
+            if (demandsCount) demandsCount.textContent = stats.demands;
+            if (matchesCount) matchesCount.textContent = stats.matches;
+        }
+        
+        // Carregar dados do usuário
+        function loadUserData() {
+            if (!currentUser) return;
+            
+            // Carregar matches
+            const savedMatches = localStorage.getItem(`matches_${currentUser.id}`);
+            if (savedMatches) {
+                userMatches = JSON.parse(savedMatches);
+                renderMatches();
+            }
+            
+            // Carregar interesses
+            const savedInterests = localStorage.getItem(`interests_${currentUser.id}`);
+            if (savedInterests) {
+                userInterests = JSON.parse(savedInterests);
+                renderInterests();
+            }
+            
+            // Carregar negócios do usuário
+            const savedBusinesses = localStorage.getItem(`businesses_${currentUser.id}`);
+            if (savedBusinesses) {
+                userBusinesses = JSON.parse(savedBusinesses);
+                renderUserBusinesses();
+            }
+            
+            // Carregar interesses do usuário
+            const savedMyInterests = localStorage.getItem(`myInterests_${currentUser.id}`);
+            if (savedMyInterests) {
+                const myInterests = JSON.parse(savedMyInterests);
+                renderMyInterests(myInterests);
+            }
+            
+            // Carregar reuniões do usuário
+            const savedMeetings = localStorage.getItem(`meetings_${currentUser.id}`);
+            if (savedMeetings) {
+                userMeetings = JSON.parse(savedMeetings);
+                renderUserMeetings();
+            }
+        }
+        
+        // Atualizar interface com base no estado do usuário
+        function updateUserInterface() {
+            if (currentUser) {
+                // Usuário logado
+                loginBtn.style.display = 'none';
+                registerBtn.style.display = 'none';
+                
+                // Atualizar perfil
+                const profileName = document.getElementById('profileName');
+                const profileBusiness = document.getElementById('profileBusiness');
+                const profileAvatar = document.getElementById('profileAvatar');
+                
+                if (profileName) profileName.textContent = currentUser.name;
+                if (profileBusiness) profileBusiness.textContent = currentUser.company;
+                
+                // Atualizar avatar
+                if (profileAvatar) {
+                    if (currentUser.avatar) {
+                        profileAvatar.style.backgroundImage = `url(${currentUser.avatar})`;
+                        profileAvatar.innerHTML = '<div class="profile-avatar-edit">Alterar Foto</div>';
+                    } else {
+                        profileAvatar.style.backgroundImage = '';
+                        if (currentUser.name) {
+                            profileAvatar.textContent = currentUser.name.charAt(0).toUpperCase();
+                            profileAvatar.innerHTML += '<div class="profile-avatar-edit">Alterar Foto</div>';
+                        } else {
+                            profileAvatar.innerHTML = '<i class="fas fa-user"></i><div class="profile-avatar-edit">Alterar Foto</div>';
+                        }
+                    }
+                }
+            } else {
+                // Usuário não logado
+                loginBtn.style.display = 'inline-block';
+                registerBtn.style.display = 'inline-block';
+                
+                // Redirecionar para tela de boas-vindas se estiver em uma tela que requer login
+                const currentScreen = document.querySelector('.screen.active');
+                if (currentScreen && currentScreen.id !== 'authScreen' && 
+                    currentScreen.id !== 'welcomeScreen') {
+                    showScreen('welcomeScreen');
+                }
+            }
+        }
+        
+        // Renderizar cards na tela
+        function renderCards() {
+            cardContainer.innerHTML = '';
+            emptyState.style.display = 'none';
+            
+            let opportunitiesToShow = businessOpportunities;
+            
+            // Aplicar filtros se existirem
+            if (Object.keys(activeFilters).some(key => activeFilters[key])) {
+                opportunitiesToShow = filterOpportunities(businessOpportunities);
+            }
+            
+            if (opportunitiesToShow.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            // Mostrar apenas os próximos 2 cards
+            for (let i = currentCardIndex; i < Math.min(currentCardIndex + 2, opportunitiesToShow.length); i++) {
+                const opportunity = opportunitiesToShow[i];
+                const card = createBusinessCard(opportunity, i === currentCardIndex);
+                cardContainer.appendChild(card);
+            }
+        }
+        
+        // NOVO: Filtrar oportunidades
+        function filterOpportunities(opportunities) {
+            return opportunities.filter(opp => {
+                if (activeFilters.type && opp.type !== activeFilters.type) return false;
+                if (activeFilters.category && opp.category !== activeFilters.category) return false;
+                if (activeFilters.tags && !opp.tags.some(tag => 
+                    tag.toLowerCase().includes(activeFilters.tags))) return false;
+                if (activeFilters.location && (!opp.location || 
+                    !opp.location.toLowerCase().includes(activeFilters.location))) return false;
+                return true;
+            });
+        }
+        
+        // NOVO: Aplicar filtros
+        function applyFilters() {
+            activeFilters = {
+                type: filterType.value,
+                category: filterCategory.value,
+                tags: filterTags.value.toLowerCase(),
+                location: filterLocation.value.toLowerCase()
+            };
+            
+            currentCardIndex = 0;
+            renderCards();
+        }
+        
+        // Criar elemento de card
+        function createBusinessCard(opportunity, isTop) {
+            const card = document.createElement('div');
+            card.className = 'business-card';
+            card.dataset.id = opportunity.id;
+            
+            if (!isTop) {
+                card.style.zIndex = '1';
+            }
+            
+            const imageContent = opportunity.image ? 
+                `style="background-image: url('${opportunity.image}')"` : 
+                `<div class="business-image-placeholder">
+                    <i class="fas fa-image"></i>
+                    <span>Sem imagem</span>
+                </div>`;
+            
+            card.innerHTML = `
+                <div class="card-header">
+                    <div class="business-type ${opportunity.type.toLowerCase()}">${opportunity.type}</div>
+                    <div class="business-category">${opportunity.category}</div>
+                </div>
+                <div class="business-image" ${imageContent}></div>
+                <h3 class="business-title">${opportunity.title}</h3>
+                <p class="business-description">${opportunity.description}</p>
+                <div class="business-contact">
+                    <div class="match-avatar" style="background-image: ${opportunity.userAvatar ? `url('${opportunity.userAvatar}')` : 'none'}">
+                        ${!opportunity.userAvatar ? '<i class="fas fa-user"></i>' : ''}
+                    </div>
+                    <span>${opportunity.contact}</span>
+                </div>
+                <div class="business-tags">
+                    ${opportunity.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                </div>
+                ${opportunity.location ? `<div class="business-location"><i class="fas fa-map-marker-alt"></i> ${opportunity.location}</div>` : ''}
+            `;
+            
+            return card;
+        }
+        
+        // NOVO: Drag & Drop otimizado
+        function startDrag(e) {
+            if (!currentUser) {
+                showScreen('authScreen');
+                return;
+            }
+            
+            const card = getTopCard();
+            if (!card) return;
+            
+            isDragging = true;
+            startX = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX;
+            currentX = startX;
+            
+            card.style.transition = 'none';
+            card.style.cursor = 'grabbing';
+        }
+        
+        function drag(e) {
+            if (!isDragging) return;
+            
+            const card = getTopCard();
+            if (!card) return;
+            
+            currentX = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX;
+            const deltaX = currentX - startX;
+            const rotate = deltaX * 0.1;
+            
+            card.style.transform = `translateX(${deltaX}px) rotate(${rotate}deg)`;
+            
+            // Mostrar indicadores de swipe
+            if (deltaX > 50) {
+                swipeLikeIndicator.classList.add('active');
+                swipeDislikeIndicator.classList.remove('active');
+                card.style.backgroundColor = 'rgba(46, 204, 113, 0.1)';
+            } else if (deltaX < -50) {
+                swipeDislikeIndicator.classList.add('active');
+                swipeLikeIndicator.classList.remove('active');
+                card.style.backgroundColor = 'rgba(231, 76, 60, 0.1)';
+            } else {
+                swipeLikeIndicator.classList.remove('active');
+                swipeDislikeIndicator.classList.remove('active');
+                card.style.backgroundColor = 'white';
+            }
+        }
+        
+        function endDrag() {
+            if (!isDragging) return;
+            
+            const card = getTopCard();
+            if (!card) return;
+            
+            isDragging = false;
+            card.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+            card.style.cursor = 'grab';
+            
+            const deltaX = currentX - startX;
+            const threshold = 100;
+            
+            swipeLikeIndicator.classList.remove('active');
+            swipeDislikeIndicator.classList.remove('active');
+            
+            if (Math.abs(deltaX) > threshold) {
+                if (deltaX > 0) {
+                    handleSwipe('right');
+                } else {
+                    handleSwipe('left');
+                }
+            } else {
+                card.style.transform = 'translateX(0) rotate(0)';
+                card.style.backgroundColor = 'white';
+            }
+        }
+        
+        // Obter o card no topo
+        function getTopCard() {
+            const cards = document.querySelectorAll('.business-card');
+            return cards.length > 0 ? cards[0] : null;
+        }
+        
+        // Processar swipe (like/dislike)
+        function handleSwipe(direction) {
+            const card = getTopCard();
+            if (!card) return;
+            
+            const opportunityId = parseInt(card.dataset.id);
+            const opportunity = businessOpportunities.find(op => op.id === opportunityId);
+            
+            if (direction === 'right') {
+                card.classList.add('swipe-right');
+                
+                // Registrar interesse
+                const interest = {
+                    userId: currentUser.id,
+                    userName: currentUser.name,
+                    userPhone: currentUser.phone,
+                    userAvatar: currentUser.avatar,
+                    businessId: opportunity.id,
+                    businessTitle: opportunity.title,
+                    businessType: opportunity.type,
+                    businessCategory: opportunity.category,
+                    businessPhone: opportunity.phone,
+                    date: new Date().toLocaleDateString('pt-BR'),
+                    message: "Tenho interesse no seu negócio!"
+                };
+                
+                // Salvar interesse
+                const myInterests = JSON.parse(localStorage.getItem(`myInterests_${currentUser.id}`) || '[]');
+                myInterests.push(interest);
+                localStorage.setItem(`myInterests_${currentUser.id}`, JSON.stringify(myInterests));
+                
+                // Adicionar também aos interesses do dono do negócio
+                if (opportunity.userId) {
+                    const businessOwnerInterests = JSON.parse(localStorage.getItem(`interests_${opportunity.userId}`) || '[]');
+                    businessOwnerInterests.push(interest);
+                    localStorage.setItem(`interests_${opportunity.userId}`, JSON.stringify(businessOwnerInterests));
+                }
+                
+                // 30% de chance de match (para demonstração)
+                if (Math.random() < 0.3) {
+                    currentMatch = opportunity;
+                    setTimeout(() => {
+                        matchOverlay.classList.add('active');
+                        
+                        // Adicionar aos matches
+                        userMatches.push(opportunity);
+                        localStorage.setItem(`matches_${currentUser.id}`, JSON.stringify(userMatches));
+                        renderMatches();
+                        
+                        // Atualizar estatísticas
+                        updateStats();
+                    }, 300);
+                } else {
+                    setTimeout(nextCard, 300);
+                }
+            } else {
+                card.classList.add('swipe-left');
+                setTimeout(nextCard, 300);
+            }
+        }
+        
+        // Avançar para o próximo card
+        function nextCard() {
+            currentCardIndex++;
+            
+            if (currentCardIndex >= businessOpportunities.length) {
+                currentCardIndex = 0;
+            }
+            
+            renderCards();
+        }
+        
+        // Renderizar matches
+        function renderMatches() {
+            const matchesList = document.getElementById('matchesList');
+            if (!matchesList) return;
+            
+            matchesList.innerHTML = '';
+            
+            if (userMatches.length === 0) {
+                matchesList.innerHTML = '<div class="empty-state">Você ainda não tem matches</div>';
+                return;
+            }
+            
+            userMatches.forEach(match => {
+                const matchElement = document.createElement('div');
+                matchElement.className = 'match-item';
+                matchElement.innerHTML = `
+                    <div class="match-avatar" style="background-image: ${match.userAvatar ? `url('${match.userAvatar}')` : 'none'}">
+                        ${!match.userAvatar ? '<i class="fas fa-user"></i>' : ''}
+                    </div>
+                    <div class="match-info">
+                        <div class="match-name">${match.contact}</div>
+                        <div class="match-business">${match.title}</div>
+                    </div>
+                    <div class="match-actions">
+                        <button class="whatsapp-btn" data-phone="${match.phone}" data-title="${match.title}">
+                            <i class="fab fa-whatsapp"></i>
+                        </button>
+                        <button class="schedule-btn" data-match-id="${match.id}">
+                            <i class="fas fa-calendar-plus"></i>
+                        </button>
+                    </div>
+                `;
+                matchesList.appendChild(matchElement);
+            });
+            
+            // Adicionar event listeners para os botões do WhatsApp
+            document.querySelectorAll('.whatsapp-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const phone = e.currentTarget.dataset.phone;
+                    const title = e.currentTarget.dataset.title;
+                    const message = `Olá! Tenho interesse no seu negócio: ${title}. Podemos conversar?`;
+                    const encodedMessage = encodeURIComponent(message);
+                    window.open(`https://wa.me/${phone}?text=${encodedMessage}`, '_blank');
+                    
+                    // Registrar acionamento do WhatsApp
+                    let whatsappCalls = parseInt(localStorage.getItem('whatsappCalls') || '0');
+                    whatsappCalls++;
+                    localStorage.setItem('whatsappCalls', whatsappCalls.toString());
+                    updateStats();
+                });
+            });
+            
+            // Adicionar event listeners para os botões de agendamento
+            document.querySelectorAll('.schedule-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const matchId = parseInt(e.currentTarget.dataset.matchId);
+                    const match = userMatches.find(m => m.id === matchId);
+                    if (match) {
+                        setupScheduleScreen(match);
+                        showScreen('scheduleScreen');
+                    }
+                });
+            });
+        }
+        
+        // Renderizar interesses recebidos
+        function renderInterests() {
+            const interestsList = document.getElementById('interestsList');
+            if (!interestsList) return;
+            
+            interestsList.innerHTML = '';
+            
+            if (userInterests.length === 0) {
+                interestsList.innerHTML = '<div class="empty-state">Você ainda não recebeu interesses</div>';
+                return;
+            }
+            
+            userInterests.forEach(interest => {
+                const interestElement = document.createElement('div');
+                interestElement.className = 'interest-item';
+                interestElement.innerHTML = `
+                    <div class="interest-header">
+                        <div class="interest-name">${interest.userName}</div>
+                        <div class="interest-date">${interest.date}</div>
+                    </div>
+                    <div class="interest-business">Interessado em: ${interest.businessTitle}</div>
+                    <div class="interest-message">"${interest.message}"</div>
+                    <div class="interest-actions">
+                        <button class="btn btn-primary whatsapp-interest-btn" data-phone="${interest.userPhone}">
+                            <i class="fab fa-whatsapp"></i> Responder
+                        </button>
+                    </div>
+                `;
+                interestsList.appendChild(interestElement);
+            });
+            
+            // Adicionar event listeners para os botões do WhatsApp
+            document.querySelectorAll('.whatsapp-interest-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const phone = e.currentTarget.dataset.phone;
+                    const message = `Olá! Obrigado pelo interesse no meu negócio. Podemos conversar?`;
+                    const encodedMessage = encodeURIComponent(message);
+                    window.open(`https://wa.me/${phone}?text=${encodedMessage}`, '_blank');
+                    
+                    // Registrar acionamento do WhatsApp
+                    let whatsappCalls = parseInt(localStorage.getItem('whatsappCalls') || '0');
+                    whatsappCalls++;
+                    localStorage.setItem('whatsappCalls', whatsappCalls.toString());
+                    updateStats();
+                });
+            });
+        }
+        
+        // Renderizar interesses do usuário
+        function renderMyInterests(interests) {
+            const myInterestsList = document.getElementById('myInterestsList');
+            if (!myInterestsList) return;
+            
+            myInterestsList.innerHTML = '';
+            
+            if (interests.length === 0) {
+                myInterestsList.innerHTML = '<div class="empty-state">Você ainda não demonstrou interesse em nenhum negócio</div>';
+                return;
+            }
+            
+            interests.forEach(interest => {
+                const interestElement = document.createElement('div');
+                interestElement.className = 'interest-item';
+                interestElement.innerHTML = `
+                    <div class="interest-header">
+                        <div class="interest-name">${interest.businessTitle}</div>
+                        <div class="interest-date">${interest.date}</div>
+                    </div>
+                    <div class="interest-business">${interest.businessType} - ${interest.businessCategory}</div>
+                    <div class="interest-actions">
+                        <button class="btn btn-primary whatsapp-interest-btn" data-phone="${interest.businessPhone}">
+                            <i class="fab fa-whatsapp"></i> Entrar em Contato
+                        </button>
+                    </div>
+                `;
+                myInterestsList.appendChild(interestElement);
+            });
+            
+            // Adicionar event listeners para os botões do WhatsApp
+            document.querySelectorAll('.whatsapp-interest-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const phone = e.currentTarget.dataset.phone;
+                    const message = `Olá! Tenho interesse no seu negócio. Podemos conversar?`;
+                    const encodedMessage = encodeURIComponent(message);
+                    window.open(`https://wa.me/${phone}?text=${encodedMessage}`, '_blank');
+                    
+                    // Registrar acionamento do WhatsApp
+                    let whatsappCalls = parseInt(localStorage.getItem('whatsappCalls') || '0');
+                    whatsappCalls++;
+                    localStorage.setItem('whatsappCalls', whatsappCalls.toString());
+                    updateStats();
+                });
+            });
+        }
+        
+        // Renderizar negócios do usuário
+        function renderUserBusinesses() {
+            const myBusinessesList = document.getElementById('myBusinessesList');
+            if (!myBusinessesList) return;
+            
+            myBusinessesList.innerHTML = '';
+            
+            if (userBusinesses.length === 0) {
+                myBusinessesList.innerHTML = '<div class="empty-state">Você ainda não cadastrou nenhum negócio</div>';
+                return;
+            }
+            
+            userBusinesses.forEach(business => {
+                const businessElement = document.createElement('div');
+                businessElement.className = 'business-item';
+                businessElement.innerHTML = `
+                    <div class="business-item-info">
+                        <h4>${business.title}</h4>
+                        <p>${business.type} - ${business.category}</p>
+                    </div>
+                    <div class="business-actions">
+                        <button class="icon-btn edit" data-id="${business.id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="icon-btn delete" data-id="${business.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                myBusinessesList.appendChild(businessElement);
+            });
+            
+            // Adicionar event listeners para os botões de editar e excluir
+            document.querySelectorAll('.icon-btn.edit').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const businessId = parseInt(e.currentTarget.dataset.id);
+                    // Implementar edição (não implementado completamente para simplificação)
+                    alert('Funcionalidade de edição não implementada nesta demonstração');
+                });
+            });
+            
+            document.querySelectorAll('.icon-btn.delete').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const businessId = parseInt(e.currentTarget.dataset.id);
+                    userBusinesses = userBusinesses.filter(b => b.id !== businessId);
+                    localStorage.setItem(`businesses_${currentUser.id}`, JSON.stringify(userBusinesses));
+                    renderUserBusinesses();
+                    
+                    // Atualizar estatísticas
+                    updateStats();
+                });
+            });
+        }
+        
+        // Renderizar reuniões do usuário
+        function renderUserMeetings() {
+            const myMeetingsList = document.getElementById('myMeetingsList');
+            if (!myMeetingsList) return;
+            
+            myMeetingsList.innerHTML = '';
+            
+            if (userMeetings.length === 0) {
+                myMeetingsList.innerHTML = '<div class="empty-state">Você ainda não tem reuniões agendadas</div>';
+                return;
+            }
+            
+            // Ordenar reuniões por data (mais recentes primeiro)
+            const sortedMeetings = userMeetings.sort((a, b) => new Date(b.date + ' ' + b.time) - new Date(a.date + ' ' + a.time));
+            
+            sortedMeetings.forEach(meeting => {
+                const meetingElement = document.createElement('div');
+                meetingElement.className = 'meeting-item';
+                
+                const meetingDate = new Date(meeting.date + ' ' + meeting.time);
+                const now = new Date();
+                const isPast = meetingDate < now;
+                
+                meetingElement.innerHTML = `
+                    <div class="meeting-header">
+                        <div class="meeting-title">${meeting.title}</div>
+                        <span class="meeting-status ${isPast ? 'confirmed' : 'pending'}">${isPast ? 'Realizada' : 'Agendada'}</span>
+                    </div>
+                    <div class="meeting-details">
+                        <div><strong>Com:</strong> ${meeting.withName}</div>
+                        <div><strong>Data:</strong> ${formatDate(meeting.date)} às ${meeting.time}</div>
+                        <div><strong>Local:</strong> ${meeting.location}</div>
+                    </div>
+                    ${meeting.description ? `<div class="meeting-description">${meeting.description}</div>` : ''}
+                    <div class="meeting-actions">
+                        ${!isPast ? `
+                            <button class="btn btn-warning cancel-meeting" data-meeting-id="${meeting.id}">
+                                <i class="fas fa-times"></i> Cancelar
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+                myMeetingsList.appendChild(meetingElement);
+            });
+            
+            // Adicionar event listeners para os botões de cancelar
+            document.querySelectorAll('.cancel-meeting').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const meetingId = parseInt(e.currentTarget.dataset.meetingId);
+                    if (confirm('Tem certeza que deseja cancelar esta reunião?')) {
+                        userMeetings = userMeetings.filter(m => m.id !== meetingId);
+                        localStorage.setItem(`meetings_${currentUser.id}`, JSON.stringify(userMeetings));
+                        renderUserMeetings();
+                        
+                        // Atualizar estatísticas
+                        updateStats();
+                    }
+                });
+            });
+        }
+        
+        // Inicializar calendário
+        function initCalendar() {
+            // Dias da semana
+            const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+            const calendarDays = document.getElementById('calendarDays');
+            if (calendarDays) {
+                calendarDays.innerHTML = '';
+                days.forEach(day => {
+                    const dayElement = document.createElement('div');
+                    dayElement.className = 'calendar-day';
+                    dayElement.textContent = day;
+                    calendarDays.appendChild(dayElement);
+                });
+            }
+            
+            // Horários disponíveis
+            const times = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
+            const timeSlots = document.getElementById('timeSlots');
+            if (timeSlots) {
+                timeSlots.innerHTML = '';
+                times.forEach(time => {
+                    const timeElement = document.createElement('div');
+                    timeElement.className = 'time-slot';
+                    timeElement.textContent = time;
+                    timeElement.dataset.time = time;
+                    timeElement.addEventListener('click', () => {
+                        document.querySelectorAll('.time-slot').forEach(slot => slot.classList.remove('selected'));
+                        timeElement.classList.add('selected');
+                        selectedTime = time;
+                    });
+                    timeSlots.appendChild(timeElement);
+                });
+            }
+            
+            renderCalendar();
+        }
+        
+        // Renderizar calendário
+        function renderCalendar() {
+            const year = currentCalendarDate.getFullYear();
+            const month = currentCalendarDate.getMonth();
+            
+            // Atualizar título do mês
+            const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+            const currentMonthEl = document.getElementById('currentMonth');
+            if (currentMonthEl) {
+                currentMonthEl.textContent = `${monthNames[month]} ${year}`;
+            }
+            
+            // Limpar datas
+            const calendarDates = document.getElementById('calendarDates');
+            if (!calendarDates) return;
+            
+            calendarDates.innerHTML = '';
+            
+            // Primeiro dia do mês
+            const firstDay = new Date(year, month, 1);
+            // Último dia do mês
+            const lastDay = new Date(year, month + 1, 0);
+            // Dia da semana do primeiro dia (0 = Domingo, 1 = Segunda, ...)
+            const firstDayIndex = firstDay.getDay();
+            
+            // Dias do mês anterior (para preencher o início)
+            const prevMonthLastDay = new Date(year, month, 0).getDate();
+            for (let i = firstDayIndex - 1; i >= 0; i--) {
+                const dateElement = document.createElement('div');
+                dateElement.className = 'calendar-date disabled';
+                dateElement.textContent = prevMonthLastDay - i;
+                calendarDates.appendChild(dateElement);
+            }
+            
+            // Dias do mês atual
+            const today = new Date();
+            for (let i = 1; i <= lastDay.getDate(); i++) {
+                const dateElement = document.createElement('div');
+                dateElement.className = 'calendar-date';
+                dateElement.textContent = i;
+                
+                const currentDate = new Date(year, month, i);
+                const isPast = currentDate < today && currentDate.toDateString() !== today.toDateString();
+                
+                if (isPast) {
+                    dateElement.classList.add('disabled');
+                } else {
+                    dateElement.addEventListener('click', () => {
+                        document.querySelectorAll('.calendar-date').forEach(date => date.classList.remove('selected'));
+                        dateElement.classList.add('selected');
+                        selectedDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                    });
+                }
+                
+                calendarDates.appendChild(dateElement);
+            }
+            
+            // Preencher o restante do calendário (próximo mês)
+            const totalCells = 42; // 6 semanas * 7 dias
+            const remainingCells = totalCells - (firstDayIndex + lastDay.getDate());
+            for (let i = 1; i <= remainingCells; i++) {
+                const dateElement = document.createElement('div');
+                dateElement.className = 'calendar-date disabled';
+                dateElement.textContent = i;
+                calendarDates.appendChild(dateElement);
+            }
+        }
+        
+        // Configurar tela de agendamento
+        function setupScheduleScreen(match) {
+            // Preencher informações do match
+            const meetingName = document.getElementById('meetingName');
+            const meetingBusiness = document.getElementById('meetingBusiness');
+            const meetingAvatar = document.getElementById('meetingAvatar');
+            
+            if (meetingName) meetingName.textContent = match.contact;
+            if (meetingBusiness) meetingBusiness.textContent = match.title;
+            
+            if (meetingAvatar) {
+                if (match.userAvatar) {
+                    meetingAvatar.style.backgroundImage = `url('${match.userAvatar}')`;
+                    meetingAvatar.innerHTML = '';
+                } else {
+                    meetingAvatar.style.backgroundImage = 'none';
+                    meetingAvatar.innerHTML = '<i class="fas fa-user"></i>';
+                }
+            }
+            
+            // Resetar seleções
+            selectedDate = null;
+            selectedTime = null;
+            selectedMeetingType = 'online';
+            
+            document.querySelectorAll('.calendar-date').forEach(date => date.classList.remove('selected'));
+            document.querySelectorAll('.time-slot').forEach(slot => slot.classList.remove('selected'));
+            document.querySelectorAll('.meeting-type-option').forEach(opt => opt.classList.remove('selected'));
+            const onlineOption = document.querySelector('.meeting-type-option[data-type="online"]');
+            if (onlineOption) onlineOption.classList.add('selected');
+            
+            // Resetar formulário
+            const scheduleForm = document.getElementById('scheduleForm');
+            if (scheduleForm) scheduleForm.reset();
+            
+            // Atualizar calendário
+            renderCalendar();
+        }
+        
+        // Formatar data para exibição
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('pt-BR');
+        }
+        
+        // Mostrar tela específica
+        function showScreen(screenId) {
+            screens.forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+        
+        // Configurar event listeners
+        function setupEventListeners() {
+            // Navegação
+            navItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    if (!currentUser && item.dataset.screen !== 'opportunitiesScreen') {
+                        showScreen('authScreen');
+                        return;
+                    }
+                    
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    item.classList.add('active');
+                    
+                    showScreen(item.dataset.screen);
+                });
+            });
+            
+            // Eventos de drag otimizados
+            cardContainer.addEventListener('mousedown', startDrag);
+            cardContainer.addEventListener('touchstart', startDrag, { passive: true });
+            
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('touchmove', drag, { passive: true });
+            
+            document.addEventListener('mouseup', endDrag);
+            document.addEventListener('touchend', endDrag);
+            
+            // Botões de like/dislike
+            dislikeBtn.addEventListener('click', () => handleSwipe('left'));
+            likeBtn.addEventListener('click', () => handleSwipe('right'));
+            
+            // Filtros
+            filterToggle.addEventListener('click', () => {
+                filterContent.classList.toggle('active');
+            });
+            
+            applyFiltersBtn.addEventListener('click', applyFilters);
+            
+            clearFiltersBtn.addEventListener('click', () => {
+                filterType.value = '';
+                filterCategory.value = '';
+                filterTags.value = '';
+                filterLocation.value = '';
+                activeFilters = {};
+                currentCardIndex = 0;
+                renderCards();
+                filterContent.classList.remove('active');
+            });
+            
+            // Tela de boas-vindas
+            const getStartedBtn = document.getElementById('getStartedBtn');
+            const learnMoreBtn = document.getElementById('learnMoreBtn');
+            
+            if (getStartedBtn) {
+                getStartedBtn.addEventListener('click', () => {
+                    showScreen('authScreen');
+                });
+            }
+            
+            if (learnMoreBtn) {
+                learnMoreBtn.addEventListener('click', () => {
+                    alert('A Clube de Negócios Sebrae - Business Match 2025 é uma plataforma inovadora que conecta empresas com necessidades complementares. Use o sistema de swipe para encontrar oportunidades de negócio e agende reuniões diretamente pela plataforma.');
+                });
+            }
+            
+            // Autenticação
+            loginBtn.addEventListener('click', () => {
+                isLoginMode = true;
+                const authTitle = document.getElementById('authTitle');
+                const switchAuthMode = document.getElementById('switchAuthMode');
+                if (authTitle) authTitle.textContent = 'Entrar';
+                if (switchAuthMode) switchAuthMode.textContent = 'Criar uma conta';
+                showScreen('authScreen');
+            });
+            
+            registerBtn.addEventListener('click', () => {
+                isLoginMode = false;
+                const authTitle = document.getElementById('authTitle');
+                const switchAuthMode = document.getElementById('switchAuthMode');
+                if (authTitle) authTitle.textContent = 'Cadastre-se';
+                if (switchAuthMode) switchAuthMode.textContent = 'Já tenho conta';
+                showScreen('authScreen');
+            });
+            
+            adminLoginBtn.addEventListener('click', () => {
+                const password = prompt('Digite a senha de administrador:');
+                if (password === appSettings.adminPassword) {
+                    showScreen('adminScreen');
+                    updateStats();
+                } else {
+                    alert('Senha incorreta!');
+                }
+            });
+            
+            const switchAuthMode = document.getElementById('switchAuthMode');
+            if (switchAuthMode) {
+                switchAuthMode.addEventListener('click', () => {
+                    isLoginMode = !isLoginMode;
+                    const authTitle = document.getElementById('authTitle');
+                    if (isLoginMode) {
+                        if (authTitle) authTitle.textContent = 'Entrar';
+                        switchAuthMode.textContent = 'Criar uma conta';
+                    } else {
+                        if (authTitle) authTitle.textContent = 'Cadastre-se';
+                        switchAuthMode.textContent = 'Já tenho conta';
+                    }
+                });
+            }
+            
+            const authForm = document.getElementById('authForm');
+            if (authForm) {
+                authForm.addEventListener('submit', handleAuth);
+            }
+            
+            // Termos de uso
+            const viewTerms = document.getElementById('viewTerms');
+            const viewPrivacy = document.getElementById('viewPrivacy');
+            
+            if (viewTerms) {
+                viewTerms.addEventListener('click', () => {
+                    alert(appSettings.termsOfUse);
+                });
+            }
+            
+            if (viewPrivacy) {
+                viewPrivacy.addEventListener('click', () => {
+                    alert(appSettings.privacyPolicy);
+                });
+            }
+            
+            // Upload de avatar
+            const avatarInput = document.getElementById('avatarInput');
+            const profileAvatar = document.getElementById('profileAvatar');
+            
+            if (avatarInput) {
+                avatarInput.addEventListener('change', handleAvatarUpload);
+            }
+            
+            if (profileAvatar) {
+                profileAvatar.addEventListener('click', () => {
+                    if (currentUser) {
+                        avatarInput.click();
+                    }
+                });
+            }
+            
+            // Upload de imagem do negócio
+            const businessImageInput = document.getElementById('businessImageInput');
+            if (businessImageInput) {
+                businessImageInput.addEventListener('change', handleBusinessImageUpload);
+            }
+            
+            // Perfil e negócios
+            const editProfileBtn = document.getElementById('editProfileBtn');
+            if (editProfileBtn) {
+                editProfileBtn.addEventListener('click', () => {
+                    // Preencher formulário com dados atuais
+                    document.getElementById('name').value = currentUser.name;
+                    document.getElementById('email').value = currentUser.email;
+                    document.getElementById('phone').value = currentUser.phone;
+                    document.getElementById('company').value = currentUser.company;
+                    
+                    // Mostrar preview do avatar atual
+                    const avatarPreview = document.getElementById('avatarPreview');
+                    if (currentUser.avatar && avatarPreview) {
+                        avatarPreview.innerHTML = `
+                            <img src="${currentUser.avatar}" class="preview-image" alt="Avatar atual">
+                            <button type="button" class="remove-image" id="removeAvatar">Remover Foto</button>
+                        `;
+                        document.getElementById('removeAvatar').addEventListener('click', removeAvatar);
+                    }
+                    
+                    isLoginMode = false;
+                    const authTitle = document.getElementById('authTitle');
+                    const switchAuthMode = document.getElementById('switchAuthMode');
+                    if (authTitle) authTitle.textContent = 'Editar Perfil';
+                    if (switchAuthMode) switchAuthMode.textContent = 'Cancelar';
+                    showScreen('authScreen');
+                });
+            }
+            
+            // Logout
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', () => {
+                    if (confirm('Tem certeza que deseja sair?')) {
+                        currentUser = null;
+                        localStorage.removeItem('currentUser');
+                        updateUserInterface();
+                        showScreen('welcomeScreen');
+                    }
+                });
+            }
+            
+            const addBusinessBtn = document.getElementById('addBusinessBtn');
+            if (addBusinessBtn) {
+                addBusinessBtn.addEventListener('click', () => {
+                    const businessForm = document.getElementById('businessForm');
+                    if (businessForm) businessForm.reset();
+                    const businessImagePreview = document.getElementById('businessImagePreview');
+                    if (businessImagePreview) businessImagePreview.innerHTML = '';
+                    businessImageFile = null;
+                    showScreen('addBusinessScreen');
+                });
+            }
+            
+            const businessForm = document.getElementById('businessForm');
+            if (businessForm) {
+                businessForm.addEventListener('submit', handleAddBusiness);
+            }
+            
+            const cancelBusinessBtn = document.getElementById('cancelBusinessBtn');
+            if (cancelBusinessBtn) {
+                cancelBusinessBtn.addEventListener('click', () => showScreen('profileScreen'));
+            }
+            
+            // Botões do match overlay
+            const keepBrowsingBtn = document.querySelector('.keep-browsing');
+            if (keepBrowsingBtn) {
+                keepBrowsingBtn.addEventListener('click', () => {
+                    matchOverlay.classList.remove('active');
+                    nextCard();
+                });
+            }
+            
+            const whatsappMatchBtn = document.getElementById('whatsappMatchBtn');
+            if (whatsappMatchBtn) {
+                whatsappMatchBtn.addEventListener('click', () => {
+                    if (currentMatch) {
+                        const phone = currentMatch.phone;
+                        const message = `Olá! Tenho interesse no seu negócio: ${currentMatch.title}. Podemos conversar?`;
+                        const encodedMessage = encodeURIComponent(message);
+                        window.open(`https://wa.me/${phone}?text=${encodedMessage}`, '_blank');
+                        
+                        // Registrar acionamento do WhatsApp
+                        let whatsappCalls = parseInt(localStorage.getItem('whatsappCalls') || '0');
+                        whatsappCalls++;
+                        localStorage.setItem('whatsappCalls', whatsappCalls.toString());
+                        updateStats();
+                    }
+                    matchOverlay.classList.remove('active');
+                    nextCard();
+                });
+            }
+            
+            const scheduleMeetingBtn = document.getElementById('scheduleMeetingBtn');
+            if (scheduleMeetingBtn) {
+                scheduleMeetingBtn.addEventListener('click', () => {
+                    if (currentMatch) {
+                        setupScheduleScreen(currentMatch);
+                        showScreen('scheduleScreen');
+                    }
+                });
+            }
+            
+            // Tabs
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.dataset.tab;
+                    
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === tabId) {
+                            content.classList.add('active');
+                        }
+                    });
+                });
+            });
+            
+            // Agendamento
+            const cancelScheduleBtn = document.getElementById('cancelScheduleBtn');
+            if (cancelScheduleBtn) {
+                cancelScheduleBtn.addEventListener('click', () => showScreen('opportunitiesScreen'));
+            }
+            
+            const scheduleForm = document.getElementById('scheduleForm');
+            if (scheduleForm) {
+                scheduleForm.addEventListener('submit', handleScheduleMeeting);
+            }
+            
+            // Tipo de reunião
+            const meetingTypeOptions = document.querySelectorAll('.meeting-type-option');
+            meetingTypeOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    meetingTypeOptions.forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                    selectedMeetingType = option.dataset.type;
+                    
+                    // Atualizar placeholder do local
+                    const locationInput = document.getElementById('meetingLocation');
+                    if (locationInput) {
+                        if (selectedMeetingType === 'online') {
+                            locationInput.placeholder = 'Link da reunião (Zoom, Google Meet, etc.)';
+                        } else {
+                            locationInput.placeholder = 'Endereço da reunião';
+                        }
+                    }
+                });
+            });
+            
+            // Navegação do calendário
+            const prevMonthBtn = document.getElementById('prevMonth');
+            const nextMonthBtn = document.getElementById('nextMonth');
+            
+            if (prevMonthBtn) {
+                prevMonthBtn.addEventListener('click', () => {
+                    currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+                    renderCalendar();
+                });
+            }
+            
+            if (nextMonthBtn) {
+                nextMonthBtn.addEventListener('click', () => {
+                    currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+                    renderCalendar();
+                });
+            }
+            
+            // Administração
+            const logoutAdminBtn = document.getElementById('logoutAdminBtn');
+            if (logoutAdminBtn) {
+                logoutAdminBtn.addEventListener('click', () => {
+                    showScreen('welcomeScreen');
+                });
+            }
+            
+            const addCategoryBtn = document.getElementById('addCategoryBtn');
+            if (addCategoryBtn) {
+                addCategoryBtn.addEventListener('click', () => {
+                    const newCategory = prompt('Digite o nome da nova categoria:');
+                    if (newCategory && newCategory.trim() !== '') {
+                        if (appSettings.categories.includes(newCategory.trim())) {
+                            alert('Esta categoria já existe!');
+                            return;
+                        }
+                        appSettings.categories.push(newCategory.trim());
+                        saveAppSettings();
+                        loadCategories();
+                        loadFilterCategories();
+                        alert('Categoria adicionada com sucesso!');
+                    }
+                });
+            }
+            
+            const colorOptions = document.querySelectorAll('.color-option');
+            colorOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    const color = option.dataset.color;
+                    appSettings.colors.primary = `#${color}`;
+                    
+                    // Ajustar cores secundárias baseadas na cor primária
+                    const hsl = hexToHSL(color);
+                    appSettings.colors.secondary = HSLToHex(hsl.h, hsl.s, Math.min(hsl.l + 10, 100));
+                    appSettings.colors.dark = HSLToHex(hsl.h, hsl.s, Math.max(hsl.l - 10, 0));
+                    
+                    saveAppSettings();
+                    applyCustomColors();
+                    
+                    colorOptions.forEach(opt => opt.classList.remove('selected'));
+                    option.classList.add('selected');
+                });
+            });
+            
+            const editTermsBtn = document.getElementById('editTermsBtn');
+            if (editTermsBtn) {
+                editTermsBtn.addEventListener('click', () => {
+                    const newTerms = prompt('Editar Termos de Uso:', appSettings.termsOfUse);
+                    if (newTerms !== null && newTerms.trim() !== '') {
+                        appSettings.termsOfUse = newTerms;
+                        saveAppSettings();
+                        loadTerms();
+                        alert('Termos de uso atualizados com sucesso!');
+                    }
+                });
+            }
+            
+            // Funcionalidades de cancelamento e exclusão de conta
+            const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+            if (deleteAccountBtn) {
+                deleteAccountBtn.addEventListener('click', () => {
+                    if (confirm('ATENÇÃO CRÍTICA: Ao excluir sua conta, TODOS os seus dados serão permanentemente removidos do sistema, incluindo:\n\n- Seus dados pessoais\n- Seus negócios cadastrados\n- Seus matches\n- Seus interesses\n- Suas reuniões agendadas\n\nEsta ação é IRREVERSÍVEL. Tem certeza que deseja excluir sua conta?')) {
+                        // Excluir dados do usuário
+                        const userId = currentUser.id;
+                        
+                        // Remover dados do usuário
+                        localStorage.removeItem(`matches_${userId}`);
+                        localStorage.removeItem(`interests_${userId}`);
+                        localStorage.removeItem(`businesses_${userId}`);
+                        localStorage.removeItem(`myInterests_${userId}`);
+                        localStorage.removeItem(`meetings_${userId}`);
+                        
+                        // Remover usuário da lista de usuários
+                        const users = JSON.parse(localStorage.getItem('users') || '[]');
+                        const updatedUsers = users.filter(u => u.id !== userId);
+                        localStorage.setItem('users', JSON.stringify(updatedUsers));
+                        
+                        // Fazer logout
+                        currentUser = null;
+                        localStorage.removeItem('currentUser');
+                        updateUserInterface();
+                        showScreen('welcomeScreen');
+                        
+                        alert('Sua conta e todos os seus dados foram excluídos permanentemente do sistema.');
+                        
+                        // Atualizar estatísticas
+                        updateStats();
+                    }
+                });
+            }
+        }
+        
+        // Processar upload de avatar
+        function handleAvatarUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        avatarFile = event.target.result;
+                        const avatarPreview = document.getElementById('avatarPreview');
+                        if (avatarPreview) {
+                            avatarPreview.innerHTML = `
+                                <img src="${avatarFile}" class="preview-image" alt="Preview do avatar">
+                                <button type="button" class="remove-image" id="removeAvatar">Remover Foto</button>
+                            `;
+                            document.getElementById('removeAvatar').addEventListener('click', removeAvatar);
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    alert('Por favor, selecione um arquivo de imagem.');
+                }
+            }
+        }
+        
+        // Remover avatar
+        function removeAvatar() {
+            avatarFile = null;
+            const avatarPreview = document.getElementById('avatarPreview');
+            if (avatarPreview) avatarPreview.innerHTML = '';
+            const avatarInput = document.getElementById('avatarInput');
+            if (avatarInput) avatarInput.value = '';
+        }
+        
+        // Processar upload de imagem do negócio
+        function handleBusinessImageUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        businessImageFile = event.target.result;
+                        const businessImagePreview = document.getElementById('businessImagePreview');
+                        if (businessImagePreview) {
+                            businessImagePreview.innerHTML = `
+                                <img src="${businessImageFile}" class="preview-image" alt="Preview da imagem do negócio">
+                                <button type="button" class="remove-image" id="removeBusinessImage">Remover Imagem</button>
+                            `;
+                            document.getElementById('removeBusinessImage').addEventListener('click', removeBusinessImage);
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    alert('Por favor, selecione um arquivo de imagem.');
+                }
+            }
+        }
+        
+        // Remover imagem do negócio
+        function removeBusinessImage() {
+            businessImageFile = null;
+            const businessImagePreview = document.getElementById('businessImagePreview');
+            if (businessImagePreview) businessImagePreview.innerHTML = '';
+            const businessImageInput = document.getElementById('businessImageInput');
+            if (businessImageInput) businessImageInput.value = '';
+        }
+        
+        // Processar autenticação
+        function handleAuth(e) {
+            e.preventDefault();
+            
+            const acceptTerms = document.getElementById('acceptTerms');
+            if (!acceptTerms.checked && !isLoginMode) {
+                alert('Você deve aceitar os Termos de Uso para se cadastrar.');
+                return;
+            }
+            
+            if (isLoginMode) {
+                // Processar login (simulação)
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                
+                // Em uma aplicação real, isso seria uma chamada API
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                const user = users.find(u => u.email === email && u.password === password);
+                
+                if (user) {
+                    currentUser = user;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    updateUserInterface();
+                    loadUserData();
+                    showScreen('opportunitiesScreen');
+                    
+                    // Ativar a navegação de oportunidades
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    const opportunitiesNav = document.querySelector('[data-screen="opportunitiesScreen"]');
+                    if (opportunitiesNav) opportunitiesNav.classList.add('active');
+                } else {
+                    alert('E-mail ou senha incorretos!');
+                }
+            } else {
+                // Processar cadastro
+                const user = {
+                    id: Date.now(),
+                    name: document.getElementById('name').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    company: document.getElementById('company').value,
+                    password: document.getElementById('password').value,
+                    avatar: avatarFile || null,
+                    acceptedTerms: true,
+                    acceptedTermsDate: new Date().toISOString()
+                };
+                
+                // Salvar usuário (em uma aplicação real, isso seria uma chamada API)
+                const users = JSON.parse(localStorage.getItem('users') || '[]');
+                users.push(user);
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                currentUser = user;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                updateUserInterface();
+                showScreen('opportunitiesScreen');
+                
+                // Ativar a navegação de oportunidades
+                navItems.forEach(nav => nav.classList.remove('active'));
+                const opportunitiesNav = document.querySelector('[data-screen="opportunitiesScreen"]');
+                if (opportunitiesNav) opportunitiesNav.classList.add('active');
+                
+                // Atualizar estatísticas
+                updateStats();
+            }
+        }
+        
+        // Processar adição de negócio
+        function handleAddBusiness(e) {
+            e.preventDefault();
+            
+            const business = {
+                id: Date.now(),
+                type: document.getElementById('businessType').value,
+                category: document.getElementById('businessCategory').value,
+                title: document.getElementById('businessTitle').value,
+                description: document.getElementById('businessDescription').value,
+                image: businessImageFile || "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+                tags: document.getElementById('businessTags').value.split(',').map(tag => tag.trim()),
+                contact: currentUser.name,
+                phone: currentUser.phone,
+                userAvatar: currentUser.avatar,
+                userId: currentUser.id,
+                location: document.getElementById('businessLocation').value || ''
+            };
+            
+            userBusinesses.push(business);
+            localStorage.setItem(`businesses_${currentUser.id}`, JSON.stringify(userBusinesses));
+            
+            // Adicionar também às oportunidades gerais (em uma aplicação real, isso viria do backend)
+            businessOpportunities.unshift(business);
+            
+            renderUserBusinesses();
+            showScreen('profileScreen');
+            
+            // Atualizar estatísticas
+            updateStats();
+        }
+        
+        // Processar agendamento de reunião
+        function handleScheduleMeeting(e) {
+            e.preventDefault();
+            
+            if (!selectedDate || !selectedTime) {
+                alert('Por favor, selecione uma data e horário para a reunião.');
+                return;
+            }
+            
+            const meeting = {
+                id: Date.now(),
+                title: document.getElementById('meetingTitle').value,
+                type: selectedMeetingType,
+                location: document.getElementById('meetingLocation').value || (selectedMeetingType === 'online' ? 'Reunião Online' : 'Local a combinar'),
+                date: selectedDate,
+                time: selectedTime,
+                description: document.getElementById('meetingDescription').value,
+                withName: document.getElementById('meetingName').textContent,
+                withBusiness: document.getElementById('meetingBusiness').textContent,
+                withAvatar: currentMatch.userAvatar,
+                createdAt: new Date().toISOString()
+            };
+            
+            // Adicionar reunião ao usuário atual
+            userMeetings.push(meeting);
+            localStorage.setItem(`meetings_${currentUser.id}`, JSON.stringify(userMeetings));
+            
+            // Em uma aplicação real, aqui enviaríamos uma notificação para o outro usuário
+            alert('Reunião agendada com sucesso!');
+            
+            // Atualizar estatísticas
+            updateStats();
+            
+            // Voltar para a tela de oportunidades
+            showScreen('opportunitiesScreen');
+            matchOverlay.classList.remove('active');
+            nextCard();
+        }
+        
+        // Funções auxiliares para conversão de cores
+        function hexToHSL(hex) {
+            // Converte hex para RGB
+            let r = parseInt(hex.substr(0, 2), 16) / 255;
+            let g = parseInt(hex.substr(2, 2), 16) / 255;
+            let b = parseInt(hex.substr(4, 2), 16) / 255;
+            
+            // Encontra min e max valores
+            let max = Math.max(r, g, b);
+            let min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+            
+            if (max === min) {
+                h = s = 0; // Achromatic
+            } else {
+                let d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    case b: h = (r - g) / d + 4; break;
+                }
+                h /= 6;
+            }
+            
+            return {
+                h: Math.round(h * 360),
+                s: Math.round(s * 100),
+                l: Math.round(l * 100)
+            };
+        }
+        
+        function HSLToHex(h, s, l) {
+            s /= 100;
+            l /= 100;
+            
+            let c = (1 - Math.abs(2 * l - 1)) * s;
+            let x = c * (1 - Math.abs((h / 60) % 2 - 1));
+            let m = l - c / 2;
+            let r = 0, g = 0, b = 0;
+            
+            if (0 <= h && h < 60) {
+                r = c; g = x; b = 0;
+            } else if (60 <= h && h < 120) {
+                r = x; g = c; b = 0;
+            } else if (120 <= h && h < 180) {
+                r = 0; g = c; b = x;
+            } else if (180 <= h && h < 240) {
+                r = 0; g = x; b = c;
+            } else if (240 <= h && h < 300) {
+                r = x; g = 0; b = c;
+            } else if (300 <= h && h < 360) {
+                r = c; g = 0; b = x;
+            }
+            
+            r = Math.round((r + m) * 255);
+            g = Math.round((g + m) * 255);
+            b = Math.round((b + m) * 255);
+            
+            return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+        }
+
+        // Inicializar a aplicação
+        init();
+    </script>
+<script src="/app.api.js"></script>
+
+<style id="polimentoCSS">
+/* Calendário: evitar estouro de dia/semana */
+.calendar .weekday, .weekday { font-size: 12px; line-height: 1.1; }
+.calendar th, .calendar .dow { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Botões grandes (garantir contraste) */
+.btn.btn-primary { color: #fff; }
+/* Modal de filtros fallback */
+#filtersModal[hidden] { display: none !important; }
+</style>
+
+
+<script id="polimentoPack">
+document.addEventListener('DOMContentLoaded', function(){
+
+  function q(sel){ return document.querySelector(sel); }
+  function qa(sel){ return Array.from(document.querySelectorAll(sel)); }
+  function onlyDigits(s){ return (s||'').replace(/\D+/g,''); }
+
+  // 1) Entrar → Login (link e fallback)
+  (function(){
+    var btn = document.getElementById('loginBtn') || qa('a,button').find(el => (el.textContent||'').trim().toLowerCase()==='entrar');
+    function showLogin(e){
+      if(e) e.preventDefault();
+      var login = q('#login') || q('#loginSection') || q('[data-section="login"]') || q('.screen-login, .view-login, .login');
+      if (login){
+        var tab = q('[data-bs-toggle="tab"][href="#login"], [data-toggle="tab"][href="#login"]');
+        if (tab){ tab.click(); return; }
+        qa('.screen, .view, section[id^="screen-"], [data-section]').forEach(function(s){ if(s!==login) s.style.display='none'; });
+        login.style.display=''; login.removeAttribute('hidden');
+        try{ login.scrollIntoView({behavior:'smooth',block:'start'}); }catch(_){}
+      } else {
+        location.hash='#login';
+      }
+    }
+    if (btn){
+      btn.addEventListener('click', showLogin, {capture:true});
+      if (btn.tagName==='A') btn.setAttribute('href','#login');
+    }
+    if (location.hash==='#login') showLogin();
+  })();
+
+  // 2) Fechar Filtros ao aplicar
+  (function(){
+    var apply = document.getElementById('applyFiltersBtn') || qa('button').find(b=>/aplicar/i.test(b.textContent||''));
+    var modal = document.getElementById('filtersModal') || q('.filters-modal, [data-modal="filters"]');
+    if (apply && modal){
+      apply.addEventListener('click', function(){
+        if (typeof modal.close==='function') modal.close();
+        modal.removeAttribute('open');
+        modal.setAttribute('hidden','hidden');
+        modal.style.display='none';
+      });
+    }
+  })();
+
+  // 3) Botão "Sair" azul (visível)
+  (function(){
+    qa('a,button').filter(b => (b.textContent||'').trim().toLowerCase()==='sair')
+      .forEach(function(b){
+        b.classList.remove('btn-outline','btn-light');
+        b.classList.add('btn','btn-primary');
+        b.style.color='#fff';
+      });
+  })();
+
+  // 4) Máscaras/obrigatórios: Celular e CNPJ na tela de cadastro
+  (function(){
+    var f = q('form'); if(!f) return;
+    var phone = q('input[name="phone"], #phone, input[type="tel"]');
+    var cnpj  = q('input[name="cnpj"], #cnpj');
+    var name  = q('input[name="name"], #name');
+    var email = q('input[name="email"], #email');
+    var pass  = q('input[name="password"], #password');
+
+    [phone, cnpj, name, email, pass].forEach(function(el){ if(el) el.required = true; });
+
+    function maskPhone(v){
+      var d = onlyDigits(v).slice(0,11);
+      if (d.length>6) return '('+d.slice(0,2)+') '+d.slice(2,7)+'-'+d.slice(7);
+      if (d.length>2) return '('+d.slice(0,2)+') '+d.slice(2);
+      if (d.length>0) return '('+d;
+      return '';
+    }
+    function maskCNPJ(v){
+      var d = onlyDigits(v).slice(0,14);
+      var r = '';
+      if (d.length>0) r = d.slice(0,2);
+      if (d.length>2) r = d.slice(0,2)+'.'+d.slice(2,5);
+      if (d.length>5) r = d.slice(0,2)+'.'+d.slice(2,5)+'.'+d.slice(5,8);
+      if (d.length>8) r = d.slice(0,2)+'.'+d.slice(2,5)+'.'+d.slice(5,8)+'/'+d.slice(8,12);
+      if (d.length>12) r = d.slice(0,2)+'.'+d.slice(2,5)+'.'+d.slice(5,8)+'/'+d.slice(8,12)+'-'+d.slice(12,14);
+      return r;
+    }
+    if (phone){
+      phone.inputMode='numeric';
+      phone.addEventListener('input', function(){ this.value = maskPhone(this.value); });
+    }
+    if (cnpj){
+      cnpj.inputMode='numeric';
+      cnpj.addEventListener('input', function(){ this.value = maskCNPJ(this.value); });
+    }
+
+    // Validação mínima no submit
+    if (f){
+      f.addEventListener('submit', function(e){
+        if (email && !(email.value||'').includes('@')){ e.preventDefault(); alert('E-mail inválido'); email.focus(); return; }
+        if (phone && onlyDigits(phone.value).length<10){ e.preventDefault(); alert('Celular inválido'); phone.focus(); return; }
+        if (cnpj && onlyDigits(cnpj.value).length!==14){ e.preventDefault(); alert('CNPJ inválido'); cnpj.focus(); return; }
+        if (pass && (pass.value||'').length<6){ e.preventDefault(); alert('Senha muito curta (mín. 6)'); pass.focus(); return; }
+      }, {capture:true});
+    }
+  })();
+
+  // 5) Swipe no desktop (arrasto) + atalhos do teclado
+  (function(){
+    var startX=null, down=false;
+    function onDown(ev){ down=true; startX=(ev.touches?ev.touches[0].clientX:ev.clientX); }
+    function onUp(ev){
+      if(!down) return; down=false;
+      var x=(ev.changedTouches?ev.changedTouches[0].clientX:ev.clientX);
+      var dx=x-startX;
+      var yes = document.getElementById('btn-yes') || q('[data-action="yes"], .btn-success, .approve');
+      var no  = document.getElementById('btn-no')  || q('[data-action="no"],  .btn-danger, .reject');
+      if (dx>60 && yes){ yes.click(); }
+      else if (dx<-60 && no){ no.click(); }
+    }
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('touchstart', onDown, {passive:true});
+    document.addEventListener('mouseup', onUp);
+    document.addEventListener('touchend', onUp);
+
+    document.addEventListener('keydown', function(e){
+      var yes = document.getElementById('btn-yes') || q('[data-action="yes"], .btn-success, .approve');
+      var no  = document.getElementById('btn-no')  || q('[data-action="no"],  .btn-danger, .reject');
+      if (e.key==='ArrowRight' && yes){ e.preventDefault(); yes.click(); }
+      if (e.key==='ArrowLeft'  && no ){ e.preventDefault(); no.click(); }
+    });
+  })();
+
+});
+</script>
+
+
+<style id="iphoneHeroPatch">
+/* escopo só na home (classe aplicada via JS) */
+.iphone-hero-patch .hero-actions{
+  display:flex; gap:12px; justify-content:center; align-items:center; flex-wrap:wrap;
+}
+.iphone-hero-patch .fe-tag{
+  display:block; text-align:center; margin:6px auto 2px; font-weight:600; letter-spacing:.2px;
+  font-size:14px; opacity:.95;
+}
+/* iPhone e telas pequenas */
+@media (max-width: 480px){
+  .iphone-hero-patch h1 { font-size: clamp(22px, 6.2vw, 28px); line-height:1.15; }
+  .iphone-hero-patch h2, .iphone-hero-patch .subtitle { font-size: clamp(14px, 4.6vw, 18px); line-height:1.25; }
+  .iphone-hero-patch .hero, .iphone-hero-patch .banner, .iphone-hero-patch .container, .iphone-hero-patch header {
+    padding-top: 12px !important; padding-bottom: 16px !important;
+  }
+}
+</style>
+
+
+<script id="iphoneHeroPatch">
+document.addEventListener('DOMContentLoaded', function(){
+  // aplica só na home
+  if (location.pathname !== '/' && location.pathname !== '' ) return;
+  document.body.classList.add('iphone-hero-patch');
+
+  const q  = sel => document.querySelector(sel);
+  const qa = sel => Array.from(document.querySelectorAll(sel));
+  const textEq = (el, rx) => !!el && rx.test((el.textContent||'').trim().toLowerCase());
+
+  // 1) BOTÕES lado a lado: "Comece agora" + "Saiba Mais"
+  const btnComece = qa('a,button').find(el => textEq(el, /comece agora/));
+  const btnSaiba  = q('#learnMoreBtn') || qa('a,button').find(el => textEq(el, /saiba mais/));
+  if (btnComece && btnSaiba){
+    // cria contêiner flex, se ainda não existir
+    let actions = q('.hero-actions');
+    if (!actions){
+      actions = document.createElement('div');
+      actions.className = 'hero-actions';
+      // tenta posicionar logo abaixo do título principal
+      const h1 = qa('h1, .title, .hero-title')[0];
+      if (h1 && h1.parentElement) {
+        h1.parentElement.appendChild(actions);
+      } else {
+        // fallback: usa o ancestral comum dos botões
+        (btnComece.closest('section,header,div') || btnComece.parentElement).appendChild(actions);
+      }
+    }
+    // move os botões para o contêiner (sem clonar)
+    if (btnComece.parentElement !== actions) actions.appendChild(btnComece);
+    if (btnSaiba.parentElement   !== actions) actions.appendChild(btnSaiba);
+  }
+
+  // 2) Inserir a linha "Business Match FE2025" entre H1 e o subtítulo
+  const h1 = qa('h1, .title, .hero-title').find(el => /clube de neg[óo]cios sebrae/i.test((el.textContent||'')));
+  const h2 = qa('h2, .subtitle, p').find(el => /conecte.+ofertas.+demandas/i.test((el.textContent||'')));
+  if (h1){
+    const tag = document.createElement('div');
+    tag.className = 'fe-tag';
+    tag.textContent = 'Business Match FE2025';
+    if (h2 && h2.parentElement === h1.parentElement){
+      h1.insertAdjacentElement('afterend', tag); // exatamente entre h1 e h2
+    } else if (h1.parentElement){
+      h1.parentElement.insertBefore(tag, h1.nextSibling);
+    }
+  }
+
+  // 3) Garantir que o botão "Entrar" segue abrindo o Login
+  const btnEntrar = q('#loginBtn') || qa('a,button').find(el => textEq(el, /^entrar$/));
+  function showLogin(e){
+    if (e) e.preventDefault();
+    const login = q('#login') || q('#loginSection') || q('[data-section="login"]') || q('.screen-login, .view-login, .login');
+    if (login){
+      const tab = q('[data-bs-toggle="tab"][href="#login"], [data-toggle="tab"][href="#login"]');
+      if (tab){ tab.click(); return; }
+      qa('.screen, .view, section[id^="screen-"], [data-section]').forEach(s => { if (s !== login) s.style.display='none'; });
+      login.style.display=''; login.removeAttribute('hidden');
+      try{ login.scrollIntoView({behavior:'smooth', block:'start'}); }catch(_){}
+    } else { location.hash = '#login'; }
+  }
+  if (btnEntrar){
+    btnEntrar.addEventListener('click', showLogin, {capture:true});
+    if (btnEntrar.tagName === 'A') btnEntrar.setAttribute('href', '#login');
+  }
+});
+</script>
+
+
+<style id="homeHeaderCleanCSS">
+/* botão externo com boa responsividade */
+.home-patch .external-link-btn{
+  margin-top:12px; display:inline-block;
+}
+@media (max-width:480px){
+  .home-patch .external-link-btn{
+    width:100%; text-align:center;
+  }
+}
+</style>
+
+
+<script id="homeHeaderCleanJS">
+document.addEventListener('DOMContentLoaded',function(){
+  // só na página inicial
+  if (!(location.pathname === '/' || location.pathname === '')) return;
+  document.body.classList.add('home-patch');
+
+  // 1) Esconder textos dentro do topo azul (header) — só no index
+  const header = document.querySelector('header, .navbar, .app-header, .topbar');
+  if (header){
+    Array.from(header.querySelectorAll('*')).forEach(el=>{
+      const t = (el.textContent||'').trim().toLowerCase();
+      if (/clube de neg[óo]cios sebrae/.test(t) || /business\s*match/.test(t)){
+        el.style.display = 'none';
+      }
+    });
+  }
+
+  // 2) Botão "Visite nosso site" abaixo dos dois botões principais
+  const btnComecar = Array.from(document.querySelectorAll('a,button'))
+    .find(el => /come(ç|c)ar agora|comece agora/i.test((el.textContent||'')));
+  const btnSaiba   = document.getElementById('learnMoreBtn') ||
+    Array.from(document.querySelectorAll('a,button'))
+      .find(el => /saiba mais/i.test((el.textContent||'')));
+
+  // contêiner flex dos botões (se existir do patch anterior, reaproveita)
+  let actions = document.querySelector('.hero-actions');
+  if (!actions && (btnComecar || btnSaiba)){
+    actions = document.createElement('div');
+    actions.className = 'hero-actions';
+    // insere logo abaixo do h1 se possível; senão, ao lado dos botões
+    const h1 = document.querySelector('h1, .title, .hero-title');
+    if (h1 && h1.parentElement) h1.parentElement.appendChild(actions);
+    else (btnComecar||btnSaiba).parentElement.appendChild(actions);
+  }
+  if (actions){
+    if (btnComecar && btnComecar.parentElement !== actions) actions.appendChild(btnComecar);
+    if (btnSaiba   && btnSaiba.parentElement   !== actions) actions.appendChild(btnSaiba);
+
+    // cria o terceiro botão logo abaixo do bloco dos dois
+    const ext = document.createElement('a');
+    ext.className = 'btn btn-outline external-link-btn';
+    ext.href = 'https://linktr.ee/novoclubedenegociosSEBRAE?utm_source=qr_code';
+    ext.target = '_blank';
+    ext.rel = 'noopener';
+    ext.textContent = 'Visite nosso site';
+
+    // coloca logo depois do bloco de ações
+    actions.parentElement.insertBefore(ext, actions.nextSibling);
+  }
+});
+</script>
+
+
+<script id="forceLoginRoute">
+document.addEventListener('DOMContentLoaded',function(){
+  function q(s){return document.querySelector(s)}
+  function qa(s){return Array.from(document.querySelectorAll(s))}
+  function findLogin(){
+    var el=q('#login, #loginSection, [data-section="login"], .screen-login, .view-login, .login');
+    if(el) return el;
+    var forms=qa('form');
+    for(var i=0;i<forms.length;i++){
+      var f=forms[i];
+      var hasPwd=f.querySelector('input[type="password"]');
+      var hasMail=f.querySelector('input[type="email"], input[name="email"], input[name="username"], input[type="text"]');
+      if(hasPwd && hasMail){
+        var s=f; for(var k=0;k<5&&s&&s.tagName&&s.tagName.toLowerCase()!=='section';k++) s=s.parentElement;
+        return s||f;
+      }
+    }
+    var modal=q('#loginModal, .modal.login, [data-modal="login"]');
+    if(modal) return modal;
+    return null;
+  }
+  function showLogin(){
+    var el=findLogin();
+    if(!el){ location.hash='#login'; return; }
+    var tab=q('[data-bs-toggle="tab"][href="#login"], [data-toggle="tab"][href="#login"]');
+    if(tab){ tab.click(); return; }
+    if(el.classList && el.classList.contains('modal')){
+      try{ el.classList.add('show'); el.style.display='block'; }catch(e){}
+      return;
+    }
+    qa('.screen, .view, section[id], [data-section]').forEach(function(s){ if(s!==el) s.style.display='none'; });
+    el.style.removeProperty('display'); el.removeAttribute('hidden');
+    try{ el.scrollIntoView({behavior:'smooth',block:'start'});}catch(e){}
+  }
+  // botão Entrar
+  var btn = q('#loginBtn') || qa('a,button').find(function(el){return ((el.textContent||'').trim().toLowerCase()==='entrar')});
+  if(btn){
+    if(btn.tagName==='A'){ btn.setAttribute('href','#login'); }
+    btn.addEventListener('click', function(ev){ ev.preventDefault(); showLogin(); history.replaceState(null,'','#login'); }, {capture:true});
+  }
+  // hash router
+  function onHash(){ if(location.hash==='#login') showLogin(); }
+  window.addEventListener('hashchange', onHash);
+  onHash();
+});
+</script>
+
+
+<script id="login-modal-logic">
+(function(){
+  function q(s){return document.querySelector(s);}
+  function showLogin(open=true){
+    var lg = q('#login');
+    if (!lg) return;
+    if(open){
+      lg.removeAttribute('hidden');
+      document.body.style.overflow='hidden';
+    } else {
+      lg.setAttribute('hidden','');
+      document.body.style.overflow='';
+    }
+  }
+  function hideLogin(){
+    showLogin(false);
+    if (location.hash === '#login') history.replaceState(null, '', location.pathname + location.search);
+  }
+
+  // Botão "Entrar" no topo
+  var btn = q('#loginBtn');
+  if (btn){
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      showLogin(true);
+    });
+  }
+
+  // Botão "Cancelar" no modal
+  var cancel = q('#loginCancel');
+  if (cancel){
+    cancel.addEventListener('click', function(e){
+      e.preventDefault();
+      hideLogin();
+    });
+  }
+
+  // Submissão do formulário de login
+  var form = q('#login form, form#loginForm');
+  if (form){
+    form.addEventListener('submit', async function(e){
+      try {
+        // deixe o handler existente fazer o POST normalmente;
+        // este setTimeout fecha o modal depois do ciclo do handler
+        setTimeout(hideLogin, 100);
+      } catch(_) {}
+    });
+  }
+
+  // Abrir pelo hash (ex.: #login) sem autoabrir em carregamento normal
+  window.addEventListener('hashchange', function(){
+    if (location.hash === '#login') showLogin(true);
+  });
+})();
+</script>
+
+
+
+<script id="login-modal-guard-2">
+(function(){
+  function cleanHash(){ if(location.hash === '#login'){ history.replaceState(null,'',location.pathname+location.search); } }
+  function reloadHome(){ cleanHash(); location.replace(location.pathname + location.search); }
+  function gotoProfile(){ location.href = location.pathname + '#perfil'; location.reload(); }
+
+  // Garante que o modal fique oculto quando não for #login
+  document.addEventListener('DOMContentLoaded', function(){
+    var dlg = document.getElementById('login');
+    if (dlg && location.hash !== '#login') {
+      dlg.setAttribute('hidden','');
+      document.body.style.overflow='';
+    }
+  });
+
+  // Cancelar/backdrop -> fecha e recarrega home
+  document.addEventListener('click', function(e){
+    var id = (e.target && e.target.id) || '';
+    if (id === 'loginCancel' || id === 'loginClose') {
+      e.preventDefault();
+      var dlg = document.getElementById('login');
+      if (dlg){ dlg.setAttribute('hidden',''); document.body.style.overflow=''; }
+      reloadHome();
+    }
+    var dlg2 = document.getElementById('login');
+    if (dlg2 && !dlg2.hidden && e.target === dlg2) { // clique no backdrop
+      e.preventDefault();
+      dlg2.setAttribute('hidden','');
+      document.body.style.overflow='';
+      reloadHome();
+    }
+  });
+
+  // Hook leve no submit do login: se detectar sucesso (token salvo pelo app.api.js), envia para #perfil
+  // (fallback em 400ms para garantir em iOS)
+  document.addEventListener('click', function(e){
+    var btn = e.target;
+    if (!btn) return;
+    var txt = (btn.textContent || '').trim().toLowerCase();
+    if (txt === 'entrar') {
+      setTimeout(function(){
+        try {
+          var t = localStorage.getItem('bm_token');
+          if (t && t.length > 10) { gotoProfile(); }
+        } catch(_) { /* ignora */ }
+      }, 400);
+    }
+  });
+})();
+</script>
+</body>
+</html>
+<!-- ===== LOGIN SHEET (mínimo) ===== -->
+<style>
+  #login[hidden]{display:none}
+  #login.sheet{position:fixed;inset:0;background:rgba(0,0,0,.42);display:flex;align-items:center;justify-content:center;z-index:9999}
+  #login .sheet-body{background:#fff;border-radius:14px;padding:20px;max-width:420px;width:92%;box-shadow:0 10px 30px rgba(0,0,0,.15)}
+  #login h2{margin:0 0 12px;font-size:20px;color:#1f2937}
+  #login .field{margin:10px 0}
+  #login .field input{width:100%;padding:10px 12px;border:1px solid #D1D5DB;border-radius:10px;font-size:16px}
+  #login .row{display:flex;gap:10px;margin-top:14px}
+  #login .btn{flex:1;padding:10px 14px;border-radius:999px;border:1px solid #1F6FEB;background:#1F6FEB;color:#fff;font-weight:600}
+  #login .btn.outline{background:#fff;color:#1F6FEB}
+</style>
+
+<div id="login" class="sheet" hidden>
+  <div class="sheet-body">
+    <h2>Entrar</h2>
+    <form id="loginForm" autocomplete="on">
+      <div class="field">
+        <input type="email" id="loginEmail" placeholder="Seu e-mail" required inputmode="email" />
+      </div>
+      <div class="field">
+        <input type="password" id="loginPassword" placeholder="Sua senha" required />
+      </div>
+      <div class="row">
+        <button type="button" id="loginClose" class="btn outline">Cancelar</button>
+        <button type="submit" class="btn">Entrar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+(function(){
+  function showLogin(show){
+    var el=document.getElementById('login');
+    if(!el) return;
+    el.hidden=!show;
+    document.body.style.overflow = show ? 'hidden' : '';
+  }
+  function onHash(){ showLogin(location.hash==='#login'); }
+  window.addEventListener('hashchange', onHash);
+  window.addEventListener('DOMContentLoaded', onHash);
+
+  document.addEventListener('click', function(e){
+    if(e.target && e.target.id==='loginClose'){
+      // volta para a seção anterior sem recarregar
+      history.back();
+    }
+    // fecha se clicar no backdrop fora do card
+    var dlg=document.getElementById('login');
+    if(dlg && !dlg.hidden && e.target===dlg){ history.back(); }
+  });
+
+  document.addEventListener('submit', async function(e){
+    if(e.target && e.target.id==='loginForm'){
+      e.preventDefault();
+      var email=document.getElementById('loginEmail').value.trim();
+      var password=document.getElementById('loginPassword').value;
+      try{
+        await window.apiLogin({ email, password });
+        // após login, vá para Perfil (ajuste a âncora se seu perfil for outra)
+        location.hash = '#perfil';
+        showLogin(false);
+      }catch(err){
+        alert('Credenciais inválidas. Verifique e tente novamente.');
+      }
+    }
+  });
+})();
+</script>
+<!-- ===== /LOGIN SHEET ===== -->
