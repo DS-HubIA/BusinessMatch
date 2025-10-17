@@ -26,6 +26,23 @@ app.use(helmet.hsts({ maxAge: 15552000 })); // 180 dias
 // JSON com limite (evita payloads grandes)
 app.use(express.json({ limit: "200kb" }));
 
+
+
+function ensureAuthJWT(req, res, next) {
+  try {
+    const h = req.headers?.authorization || req.headers?.Authorization || '';
+    const token = (h.startsWith('Bearer ') ? h.slice(7) : '').trim();
+    if (!token) return res.status(401).json({ error: 'unauthorized' });
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    if (!payload?.id) return res.status(401).json({ error: 'unauthorized' });
+    req.user = req.user || {};
+    req.user.id = Number(payload.id);
+    return next();
+  } catch (e) {
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+}
+
 // CORS restrito (ajuste a lista conforme necessário)
 const ALLOWED = [
   "https://businessmatch-v2.onrender.com",
@@ -153,7 +170,7 @@ app.listen(port, () => console.log(`Server running on ${port}`));
 
 
 // PATCH: profile endpoints (agenda_url etc.)
-app.get('/api/me', auth, async (req, res) => {
+app.get('/api/me', ensureAuthJWT, async (req, res) => {
   try {
     const { rows } = await pool.query(
       `SELECT id, name, email, phone, company, cnpj, COALESCE(agenda_url, '') AS agenda_url FROM users WHERE id=$1`,
@@ -165,7 +182,7 @@ app.get('/api/me', auth, async (req, res) => {
   }
 });
 
-app.put('/api/me', auth, async (req, res) => {
+app.put('/api/me', ensureAuthJWT, async (req, res) => {
   try {
     const { name, phone, company, cnpj, agenda_url } = req.body || {};
     const { rows } = await pool.query(
