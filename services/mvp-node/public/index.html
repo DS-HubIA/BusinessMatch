@@ -4204,43 +4204,4 @@ document.addEventListener('DOMContentLoaded',function(){
   </div>
 </div>
 
-<script>
-(function(){
-  function showLogin(show){
-    var el=document.getElementById('login');
-    if(!el) return;
-    el.hidden=!show;
-    document.body.style.overflow = show ? 'hidden' : '';
-  }
-  function onHash(){ showLogin(location.hash==='#login'); }
-  window.addEventListener('hashchange', onHash);
-  window.addEventListener('DOMContentLoaded', onHash);
-
-  document.addEventListener('click', function(e){
-    if(e.target && e.target.id==='loginClose'){
-      // volta para a seção anterior sem recarregar
-      history.back();
-    }
-    // fecha se clicar no backdrop fora do card
-    var dlg=document.getElementById('login');
-    if(dlg && !dlg.hidden && e.target===dlg){ history.back(); }
-  });
-
-  document.addEventListener('submit', async function(e){
-    if(e.target && e.target.id==='loginForm'){
-      e.preventDefault();
-      var email=document.getElementById('loginEmail').value.trim();
-      var password=document.getElementById('loginPassword').value;
-      try{
-        await window.apiLogin({ email, password });
-        // após login, vá para Perfil (ajuste a âncora se seu perfil for outra)
-        location.hash = '#perfil';
-        showLogin(false);
-      }catch(err){
-        alert('Credenciais inválidas. Verifique e tente novamente.');
-      }
-    }
-  });
-})();
-</script>
 <!-- ===== /LOGIN SHEET ===== -->
