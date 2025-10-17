@@ -3886,5 +3886,71 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 </script>
 
+
+<style id="homeHeaderCleanCSS">
+/* botão externo com boa responsividade */
+.home-patch .external-link-btn{
+  margin-top:12px; display:inline-block;
+}
+@media (max-width:480px){
+  .home-patch .external-link-btn{
+    width:100%; text-align:center;
+  }
+}
+</style>
+
+
+<script id="homeHeaderCleanJS">
+document.addEventListener('DOMContentLoaded',function(){
+  // só na página inicial
+  if (!(location.pathname === '/' || location.pathname === '')) return;
+  document.body.classList.add('home-patch');
+
+  // 1) Esconder textos dentro do topo azul (header) — só no index
+  const header = document.querySelector('header, .navbar, .app-header, .topbar');
+  if (header){
+    Array.from(header.querySelectorAll('*')).forEach(el=>{
+      const t = (el.textContent||'').trim().toLowerCase();
+      if (/clube de neg[óo]cios sebrae/.test(t) || /business\s*match/.test(t)){
+        el.style.display = 'none';
+      }
+    });
+  }
+
+  // 2) Botão "Visite nosso site" abaixo dos dois botões principais
+  const btnComecar = Array.from(document.querySelectorAll('a,button'))
+    .find(el => /come(ç|c)ar agora|comece agora/i.test((el.textContent||'')));
+  const btnSaiba   = document.getElementById('learnMoreBtn') ||
+    Array.from(document.querySelectorAll('a,button'))
+      .find(el => /saiba mais/i.test((el.textContent||'')));
+
+  // contêiner flex dos botões (se existir do patch anterior, reaproveita)
+  let actions = document.querySelector('.hero-actions');
+  if (!actions && (btnComecar || btnSaiba)){
+    actions = document.createElement('div');
+    actions.className = 'hero-actions';
+    // insere logo abaixo do h1 se possível; senão, ao lado dos botões
+    const h1 = document.querySelector('h1, .title, .hero-title');
+    if (h1 && h1.parentElement) h1.parentElement.appendChild(actions);
+    else (btnComecar||btnSaiba).parentElement.appendChild(actions);
+  }
+  if (actions){
+    if (btnComecar && btnComecar.parentElement !== actions) actions.appendChild(btnComecar);
+    if (btnSaiba   && btnSaiba.parentElement   !== actions) actions.appendChild(btnSaiba);
+
+    // cria o terceiro botão logo abaixo do bloco dos dois
+    const ext = document.createElement('a');
+    ext.className = 'btn btn-outline external-link-btn';
+    ext.href = 'https://linktr.ee/novoclubedenegociosSEBRAE?utm_source=qr_code';
+    ext.target = '_blank';
+    ext.rel = 'noopener';
+    ext.textContent = 'Visite nosso site';
+
+    // coloca logo depois do bloco de ações
+    actions.parentElement.insertBefore(ext, actions.nextSibling);
+  }
+});
+</script>
+
 </body>
 </html>
