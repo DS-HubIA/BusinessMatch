@@ -4059,35 +4059,57 @@ document.addEventListener('DOMContentLoaded',function(){
 })();
 </script>
 
+
+
 <script id="login-modal-guard-2">
-document.addEventListener('DOMContentLoaded', function(){
-  var dlg = document.getElementById('login');
-  if (dlg && location.hash !== '#login') {
-    dlg.setAttribute('hidden','');
-    document.body.style.overflow='';
-  }
-});
-document.addEventListener('click', function(e){
-  // Cancelar por ambos IDs
-  if (e.target && (e.target.id==='loginCancel' || e.target.id==='loginClose')) {
-    e.preventDefault();
+(function(){
+  function cleanHash(){ if(location.hash === '#login'){ history.replaceState(null,'',location.pathname+location.search); } }
+  function reloadHome(){ cleanHash(); location.replace(location.pathname + location.search); }
+  function gotoProfile(){ location.href = location.pathname + '#perfil'; location.reload(); }
+
+  // Garante que o modal fique oculto quando não for #login
+  document.addEventListener('DOMContentLoaded', function(){
     var dlg = document.getElementById('login');
-    if (dlg){ dlg.setAttribute('hidden',''); document.body.style.overflow=''; }
-    if (location.hash === '#login') {
-      history.replaceState(null,'',location.pathname+location.search);
+    if (dlg && location.hash !== '#login') {
+      dlg.setAttribute('hidden','');
+      document.body.style.overflow='';
     }
-  }
-  // Fechar ao clicar no backdrop
-  var dlg2 = document.getElementById('login');
-  if (dlg2 && !dlg2.hidden && e.target === dlg2) {
-    e.preventDefault();
-    dlg2.setAttribute('hidden','');
-    document.body.style.overflow='';
-    if (location.hash === '#login') {
-      history.replaceState(null,'',location.pathname+location.search);
+  });
+
+  // Cancelar/backdrop -> fecha e recarrega home
+  document.addEventListener('click', function(e){
+    var id = (e.target && e.target.id) || '';
+    if (id === 'loginCancel' || id === 'loginClose') {
+      e.preventDefault();
+      var dlg = document.getElementById('login');
+      if (dlg){ dlg.setAttribute('hidden',''); document.body.style.overflow=''; }
+      reloadHome();
     }
-  }
-});
+    var dlg2 = document.getElementById('login');
+    if (dlg2 && !dlg2.hidden && e.target === dlg2) { // clique no backdrop
+      e.preventDefault();
+      dlg2.setAttribute('hidden','');
+      document.body.style.overflow='';
+      reloadHome();
+    }
+  });
+
+  // Hook leve no submit do login: se detectar sucesso (token salvo pelo app.api.js), envia para #perfil
+  // (fallback em 400ms para garantir em iOS)
+  document.addEventListener('click', function(e){
+    var btn = e.target;
+    if (!btn) return;
+    var txt = (btn.textContent || '').trim().toLowerCase();
+    if (txt === 'entrar') {
+      setTimeout(function(){
+        try {
+          var t = localStorage.getItem('bm_token');
+          if (t && t.length > 10) { gotoProfile(); }
+        } catch(_) { /* ignora */ }
+      }, 400);
+    }
+  });
+})();
 </script>
 </body>
 </html>
