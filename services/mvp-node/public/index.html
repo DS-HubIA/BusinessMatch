@@ -1380,6 +1380,19 @@
   .btn{ cursor:pointer; }
 </style>
 </head>
+<style id="login-guard-override">
+  #login[hidden]{ display:none !important; }
+  #login .btn.btn-outline{
+    background:#fff;
+    color: var(--secondary);
+    border: 1px solid var(--secondary);
+  }
+  #login .btn.btn-primary{
+    background: var(--secondary);
+    color: #fff;
+    border: 1px solid var(--secondary);
+  }
+</style>
 <body>
     <header>
         <div class="logo-container">
@@ -3969,6 +3982,7 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 </script>
 
+<<<<<<< HEAD
 <script id="login-modal-logic">
 (function(){
   const $ = (s)=>document.querySelector(s);
@@ -4032,6 +4046,10 @@ document.addEventListener('DOMContentLoaded',function(){
   if (location.hash==='#login') openModal();
 })();
 </script>
+=======
+
+
+>>>>>>> fb9d8c1 (fix(login): remove forcelogin, unifica script do modal e corrige estilos do botão Cancelar)
 
 <!-- MODAL LOGIN -->
 <section id="login" class="modal-overlay" hidden aria-modal="true" role="dialog">
@@ -4057,4 +4075,62 @@ document.addEventListener('DOMContentLoaded',function(){
     
     
 </body>
+<script id="login-modal-logic">
+(function(){
+  const $ = (s)=>document.querySelector(s);
+  const modal = $('#login');
+  const email = $('#loginEmail');
+  const pass  = $('#loginPassword');
+  const err   = $('#loginError');
+  const btnCancel = $('#loginCancelBtn');
+  const btnSubmit = $('#loginSubmitBtn');
+  const topLogin  = $('#loginBtn');
+
+  function openModal(){
+    if(!modal) return;
+    modal.removeAttribute('hidden');
+    document.body.style.overflow='hidden';
+    if(err) err.style.display='none';
+    if(email) email.focus();
+  }
+  function closeModal(){
+    if(!modal) return;
+    modal.setAttribute('hidden','');
+    document.body.style.overflow='';
+    if(location.hash==='#login') history.replaceState(null,'',location.pathname+location.search);
+  }
+
+  if (topLogin){
+    topLogin.addEventListener('click', (e)=>{ e.preventDefault(); openModal(); });
+  }
+  if (btnCancel){
+    btnCancel.addEventListener('click', (e)=>{ e.preventDefault(); closeModal(); });
+  }
+  if (modal){
+    modal.addEventListener('click', (e)=>{ if(e.target===modal) closeModal(); });
+  }
+
+  async function doLogin(){
+    if(err) err.style.display='none';
+    const mail=(email?.value||'').trim();
+    const pwd =(pass?.value||'').trim();
+    if(!mail || !pwd){ if(err){err.textContent='Preencha e-mail e senha.'; err.style.display='block';} return; }
+    try{
+      await window.apiLogin({ email: mail, password: pwd });
+      closeModal();
+      location.hash = '#perfil';
+      if (typeof window.init === 'function') window.init();
+      if (typeof window.renderProfile === 'function') window.renderProfile();
+    }catch{
+      if(err){ err.textContent='Credenciais inválidas.'; err.style.display='block'; }
+    }
+  }
+  if (btnSubmit) btnSubmit.addEventListener('click', doLogin);
+  if (pass) pass.addEventListener('keydown', (e)=>{ if(e.key==='Enter') doLogin(); });
+
+  function onHash(){ if(location.hash==='#login') openModal(); else closeModal(); }
+  window.addEventListener('hashchange', onHash);
+  if (location.hash==='#login') openModal();
+})();
+</script>
 </html>
