@@ -1362,6 +1362,8 @@
             margin-top: 1rem;
         }
     </style>
+
+<style id="login-guard">#login[hidden]{display:none !important}</style>
 </head>
 <body>
     <header>
@@ -4000,6 +4002,93 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 </script>
 
+
+<script id="login-modal-logic">
+(function(){
+  function q(s){return document.querySelector(s);}
+  function showLogin(open=true){
+    var lg = q('#login');
+    if (!lg) return;
+    if(open){
+      lg.removeAttribute('hidden');
+      document.body.style.overflow='hidden';
+    } else {
+      lg.setAttribute('hidden','');
+      document.body.style.overflow='';
+    }
+  }
+  function hideLogin(){
+    showLogin(false);
+    if (location.hash === '#login') history.replaceState(null, '', location.pathname + location.search);
+  }
+
+  // Botão "Entrar" no topo
+  var btn = q('#loginBtn');
+  if (btn){
+    btn.addEventListener('click', function(e){
+      e.preventDefault();
+      showLogin(true);
+    });
+  }
+
+  // Botão "Cancelar" no modal
+  var cancel = q('#loginCancel');
+  if (cancel){
+    cancel.addEventListener('click', function(e){
+      e.preventDefault();
+      hideLogin();
+    });
+  }
+
+  // Submissão do formulário de login
+  var form = q('#login form, form#loginForm');
+  if (form){
+    form.addEventListener('submit', async function(e){
+      try {
+        // deixe o handler existente fazer o POST normalmente;
+        // este setTimeout fecha o modal depois do ciclo do handler
+        setTimeout(hideLogin, 100);
+      } catch(_) {}
+    });
+  }
+
+  // Abrir pelo hash (ex.: #login) sem autoabrir em carregamento normal
+  window.addEventListener('hashchange', function(){
+    if (location.hash === '#login') showLogin(true);
+  });
+})();
+</script>
+
+<script id="login-modal-guard-2">
+document.addEventListener('DOMContentLoaded', function(){
+  var dlg = document.getElementById('login');
+  if (dlg && location.hash !== '#login') {
+    dlg.setAttribute('hidden','');
+    document.body.style.overflow='';
+  }
+});
+document.addEventListener('click', function(e){
+  // Cancelar por ambos IDs
+  if (e.target && (e.target.id==='loginCancel' || e.target.id==='loginClose')) {
+    e.preventDefault();
+    var dlg = document.getElementById('login');
+    if (dlg){ dlg.setAttribute('hidden',''); document.body.style.overflow=''; }
+    if (location.hash === '#login') {
+      history.replaceState(null,'',location.pathname+location.search);
+    }
+  }
+  // Fechar ao clicar no backdrop
+  var dlg2 = document.getElementById('login');
+  if (dlg2 && !dlg2.hidden && e.target === dlg2) {
+    e.preventDefault();
+    dlg2.setAttribute('hidden','');
+    document.body.style.overflow='';
+    if (location.hash === '#login') {
+      history.replaceState(null,'',location.pathname+location.search);
+    }
+  }
+});
+</script>
 </body>
 </html>
 <!-- ===== LOGIN SHEET (mínimo) ===== -->
