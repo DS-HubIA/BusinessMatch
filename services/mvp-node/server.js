@@ -150,3 +150,38 @@ app.get("/", (_req, res) => {
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Server running on ${port}`));
+
+
+// PATCH: profile endpoints (agenda_url etc.)
+app.get('/api/me', auth, async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      'SELECT id, name, email, phone, company, cnpj, COALESCE(agenda_url, '') AS agenda_url FROM users WHERE id=$1',
+      [req.user.id]
+    );
+    return res.json({ user: rows[0] });
+  } catch (e) {
+    return res.status(400).json({ error: 'me_failed' });
+  }
+});
+
+app.put('/api/me', auth, async (req, res) => {
+  try {
+    const { name, phone, company, cnpj, agenda_url } = req.body || {};
+    const { rows } = await pool.query(
+      `UPDATE users
+         SET name = COALESCE($1, name),
+             phone = COALESCE($2, phone),
+             company = COALESCE($3, company),
+             cnpj = COALESCE($4, cnpj),
+             agenda_url = COALESCE($5, agenda_url)
+       WHERE id = $6
+       RETURNING id, name, email, phone, company, cnpj, COALESCE(agenda_url, '') AS agenda_url`,
+      [name, phone, company, cnpj, agenda_url, req.user.id]
+    );
+    return res.json({ user: rows[0] });
+  } catch (e) {
+    return res.status(400).json({ error: 'update_failed' });
+  }
+});
+
