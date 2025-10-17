@@ -3655,5 +3655,236 @@ Implementamos medidas de segurança para proteger suas informações.`,
         init();
     </script>
 <script src="/app.api.js"></script>
+
+<style id="polimentoCSS">
+/* Calendário: evitar estouro de dia/semana */
+.calendar .weekday, .weekday { font-size: 12px; line-height: 1.1; }
+.calendar th, .calendar .dow { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Botões grandes (garantir contraste) */
+.btn.btn-primary { color: #fff; }
+/* Modal de filtros fallback */
+#filtersModal[hidden] { display: none !important; }
+</style>
+
+
+<script id="polimentoPack">
+document.addEventListener('DOMContentLoaded', function(){
+
+  function q(sel){ return document.querySelector(sel); }
+  function qa(sel){ return Array.from(document.querySelectorAll(sel)); }
+  function onlyDigits(s){ return (s||'').replace(/\D+/g,''); }
+
+  // 1) Entrar → Login (link e fallback)
+  (function(){
+    var btn = document.getElementById('loginBtn') || qa('a,button').find(el => (el.textContent||'').trim().toLowerCase()==='entrar');
+    function showLogin(e){
+      if(e) e.preventDefault();
+      var login = q('#login') || q('#loginSection') || q('[data-section="login"]') || q('.screen-login, .view-login, .login');
+      if (login){
+        var tab = q('[data-bs-toggle="tab"][href="#login"], [data-toggle="tab"][href="#login"]');
+        if (tab){ tab.click(); return; }
+        qa('.screen, .view, section[id^="screen-"], [data-section]').forEach(function(s){ if(s!==login) s.style.display='none'; });
+        login.style.display=''; login.removeAttribute('hidden');
+        try{ login.scrollIntoView({behavior:'smooth',block:'start'}); }catch(_){}
+      } else {
+        location.hash='#login';
+      }
+    }
+    if (btn){
+      btn.addEventListener('click', showLogin, {capture:true});
+      if (btn.tagName==='A') btn.setAttribute('href','#login');
+    }
+    if (location.hash==='#login') showLogin();
+  })();
+
+  // 2) Fechar Filtros ao aplicar
+  (function(){
+    var apply = document.getElementById('applyFiltersBtn') || qa('button').find(b=>/aplicar/i.test(b.textContent||''));
+    var modal = document.getElementById('filtersModal') || q('.filters-modal, [data-modal="filters"]');
+    if (apply && modal){
+      apply.addEventListener('click', function(){
+        if (typeof modal.close==='function') modal.close();
+        modal.removeAttribute('open');
+        modal.setAttribute('hidden','hidden');
+        modal.style.display='none';
+      });
+    }
+  })();
+
+  // 3) Botão "Sair" azul (visível)
+  (function(){
+    qa('a,button').filter(b => (b.textContent||'').trim().toLowerCase()==='sair')
+      .forEach(function(b){
+        b.classList.remove('btn-outline','btn-light');
+        b.classList.add('btn','btn-primary');
+        b.style.color='#fff';
+      });
+  })();
+
+  // 4) Máscaras/obrigatórios: Celular e CNPJ na tela de cadastro
+  (function(){
+    var f = q('form'); if(!f) return;
+    var phone = q('input[name="phone"], #phone, input[type="tel"]');
+    var cnpj  = q('input[name="cnpj"], #cnpj');
+    var name  = q('input[name="name"], #name');
+    var email = q('input[name="email"], #email');
+    var pass  = q('input[name="password"], #password');
+
+    [phone, cnpj, name, email, pass].forEach(function(el){ if(el) el.required = true; });
+
+    function maskPhone(v){
+      var d = onlyDigits(v).slice(0,11);
+      if (d.length>6) return '('+d.slice(0,2)+') '+d.slice(2,7)+'-'+d.slice(7);
+      if (d.length>2) return '('+d.slice(0,2)+') '+d.slice(2);
+      if (d.length>0) return '('+d;
+      return '';
+    }
+    function maskCNPJ(v){
+      var d = onlyDigits(v).slice(0,14);
+      var r = '';
+      if (d.length>0) r = d.slice(0,2);
+      if (d.length>2) r = d.slice(0,2)+'.'+d.slice(2,5);
+      if (d.length>5) r = d.slice(0,2)+'.'+d.slice(2,5)+'.'+d.slice(5,8);
+      if (d.length>8) r = d.slice(0,2)+'.'+d.slice(2,5)+'.'+d.slice(5,8)+'/'+d.slice(8,12);
+      if (d.length>12) r = d.slice(0,2)+'.'+d.slice(2,5)+'.'+d.slice(5,8)+'/'+d.slice(8,12)+'-'+d.slice(12,14);
+      return r;
+    }
+    if (phone){
+      phone.inputMode='numeric';
+      phone.addEventListener('input', function(){ this.value = maskPhone(this.value); });
+    }
+    if (cnpj){
+      cnpj.inputMode='numeric';
+      cnpj.addEventListener('input', function(){ this.value = maskCNPJ(this.value); });
+    }
+
+    // Validação mínima no submit
+    if (f){
+      f.addEventListener('submit', function(e){
+        if (email && !(email.value||'').includes('@')){ e.preventDefault(); alert('E-mail inválido'); email.focus(); return; }
+        if (phone && onlyDigits(phone.value).length<10){ e.preventDefault(); alert('Celular inválido'); phone.focus(); return; }
+        if (cnpj && onlyDigits(cnpj.value).length!==14){ e.preventDefault(); alert('CNPJ inválido'); cnpj.focus(); return; }
+        if (pass && (pass.value||'').length<6){ e.preventDefault(); alert('Senha muito curta (mín. 6)'); pass.focus(); return; }
+      }, {capture:true});
+    }
+  })();
+
+  // 5) Swipe no desktop (arrasto) + atalhos do teclado
+  (function(){
+    var startX=null, down=false;
+    function onDown(ev){ down=true; startX=(ev.touches?ev.touches[0].clientX:ev.clientX); }
+    function onUp(ev){
+      if(!down) return; down=false;
+      var x=(ev.changedTouches?ev.changedTouches[0].clientX:ev.clientX);
+      var dx=x-startX;
+      var yes = document.getElementById('btn-yes') || q('[data-action="yes"], .btn-success, .approve');
+      var no  = document.getElementById('btn-no')  || q('[data-action="no"],  .btn-danger, .reject');
+      if (dx>60 && yes){ yes.click(); }
+      else if (dx<-60 && no){ no.click(); }
+    }
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('touchstart', onDown, {passive:true});
+    document.addEventListener('mouseup', onUp);
+    document.addEventListener('touchend', onUp);
+
+    document.addEventListener('keydown', function(e){
+      var yes = document.getElementById('btn-yes') || q('[data-action="yes"], .btn-success, .approve');
+      var no  = document.getElementById('btn-no')  || q('[data-action="no"],  .btn-danger, .reject');
+      if (e.key==='ArrowRight' && yes){ e.preventDefault(); yes.click(); }
+      if (e.key==='ArrowLeft'  && no ){ e.preventDefault(); no.click(); }
+    });
+  })();
+
+});
+</script>
+
+
+<style id="iphoneHeroPatch">
+/* escopo só na home (classe aplicada via JS) */
+.iphone-hero-patch .hero-actions{
+  display:flex; gap:12px; justify-content:center; align-items:center; flex-wrap:wrap;
+}
+.iphone-hero-patch .fe-tag{
+  display:block; text-align:center; margin:6px auto 2px; font-weight:600; letter-spacing:.2px;
+  font-size:14px; opacity:.95;
+}
+/* iPhone e telas pequenas */
+@media (max-width: 480px){
+  .iphone-hero-patch h1 { font-size: clamp(22px, 6.2vw, 28px); line-height:1.15; }
+  .iphone-hero-patch h2, .iphone-hero-patch .subtitle { font-size: clamp(14px, 4.6vw, 18px); line-height:1.25; }
+  .iphone-hero-patch .hero, .iphone-hero-patch .banner, .iphone-hero-patch .container, .iphone-hero-patch header {
+    padding-top: 12px !important; padding-bottom: 16px !important;
+  }
+}
+</style>
+
+
+<script id="iphoneHeroPatch">
+document.addEventListener('DOMContentLoaded', function(){
+  // aplica só na home
+  if (location.pathname !== '/' && location.pathname !== '' ) return;
+  document.body.classList.add('iphone-hero-patch');
+
+  const q  = sel => document.querySelector(sel);
+  const qa = sel => Array.from(document.querySelectorAll(sel));
+  const textEq = (el, rx) => !!el && rx.test((el.textContent||'').trim().toLowerCase());
+
+  // 1) BOTÕES lado a lado: "Comece agora" + "Saiba Mais"
+  const btnComece = qa('a,button').find(el => textEq(el, /comece agora/));
+  const btnSaiba  = q('#learnMoreBtn') || qa('a,button').find(el => textEq(el, /saiba mais/));
+  if (btnComece && btnSaiba){
+    // cria contêiner flex, se ainda não existir
+    let actions = q('.hero-actions');
+    if (!actions){
+      actions = document.createElement('div');
+      actions.className = 'hero-actions';
+      // tenta posicionar logo abaixo do título principal
+      const h1 = qa('h1, .title, .hero-title')[0];
+      if (h1 && h1.parentElement) {
+        h1.parentElement.appendChild(actions);
+      } else {
+        // fallback: usa o ancestral comum dos botões
+        (btnComece.closest('section,header,div') || btnComece.parentElement).appendChild(actions);
+      }
+    }
+    // move os botões para o contêiner (sem clonar)
+    if (btnComece.parentElement !== actions) actions.appendChild(btnComece);
+    if (btnSaiba.parentElement   !== actions) actions.appendChild(btnSaiba);
+  }
+
+  // 2) Inserir a linha "Business Match FE2025" entre H1 e o subtítulo
+  const h1 = qa('h1, .title, .hero-title').find(el => /clube de neg[óo]cios sebrae/i.test((el.textContent||'')));
+  const h2 = qa('h2, .subtitle, p').find(el => /conecte.+ofertas.+demandas/i.test((el.textContent||'')));
+  if (h1){
+    const tag = document.createElement('div');
+    tag.className = 'fe-tag';
+    tag.textContent = 'Business Match FE2025';
+    if (h2 && h2.parentElement === h1.parentElement){
+      h1.insertAdjacentElement('afterend', tag); // exatamente entre h1 e h2
+    } else if (h1.parentElement){
+      h1.parentElement.insertBefore(tag, h1.nextSibling);
+    }
+  }
+
+  // 3) Garantir que o botão "Entrar" segue abrindo o Login
+  const btnEntrar = q('#loginBtn') || qa('a,button').find(el => textEq(el, /^entrar$/));
+  function showLogin(e){
+    if (e) e.preventDefault();
+    const login = q('#login') || q('#loginSection') || q('[data-section="login"]') || q('.screen-login, .view-login, .login');
+    if (login){
+      const tab = q('[data-bs-toggle="tab"][href="#login"], [data-toggle="tab"][href="#login"]');
+      if (tab){ tab.click(); return; }
+      qa('.screen, .view, section[id^="screen-"], [data-section]').forEach(s => { if (s !== login) s.style.display='none'; });
+      login.style.display=''; login.removeAttribute('hidden');
+      try{ login.scrollIntoView({behavior:'smooth', block:'start'}); }catch(_){}
+    } else { location.hash = '#login'; }
+  }
+  if (btnEntrar){
+    btnEntrar.addEventListener('click', showLogin, {capture:true});
+    if (btnEntrar.tagName === 'A') btnEntrar.setAttribute('href', '#login');
+  }
+});
+</script>
+
 </body>
 </html>
