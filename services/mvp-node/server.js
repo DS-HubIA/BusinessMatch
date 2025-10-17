@@ -156,7 +156,7 @@ app.listen(port, () => console.log(`Server running on ${port}`));
 app.get('/api/me', auth, async (req, res) => {
   try {
     const { rows } = await pool.query(
-      'SELECT id, name, email, phone, company, cnpj, COALESCE(agenda_url, '') AS agenda_url FROM users WHERE id=$1',
+      `SELECT id, name, email, phone, company, cnpj, COALESCE(agenda_url, '') AS agenda_url FROM users WHERE id=$1`,
       [req.user.id]
     );
     return res.json({ user: rows[0] });
