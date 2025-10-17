@@ -3952,5 +3952,53 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 </script>
 
+
+<script id="forceLoginRoute">
+document.addEventListener('DOMContentLoaded',function(){
+  function q(s){return document.querySelector(s)}
+  function qa(s){return Array.from(document.querySelectorAll(s))}
+  function findLogin(){
+    var el=q('#login, #loginSection, [data-section="login"], .screen-login, .view-login, .login');
+    if(el) return el;
+    var forms=qa('form');
+    for(var i=0;i<forms.length;i++){
+      var f=forms[i];
+      var hasPwd=f.querySelector('input[type="password"]');
+      var hasMail=f.querySelector('input[type="email"], input[name="email"], input[name="username"], input[type="text"]');
+      if(hasPwd && hasMail){
+        var s=f; for(var k=0;k<5&&s&&s.tagName&&s.tagName.toLowerCase()!=='section';k++) s=s.parentElement;
+        return s||f;
+      }
+    }
+    var modal=q('#loginModal, .modal.login, [data-modal="login"]');
+    if(modal) return modal;
+    return null;
+  }
+  function showLogin(){
+    var el=findLogin();
+    if(!el){ location.hash='#login'; return; }
+    var tab=q('[data-bs-toggle="tab"][href="#login"], [data-toggle="tab"][href="#login"]');
+    if(tab){ tab.click(); return; }
+    if(el.classList && el.classList.contains('modal')){
+      try{ el.classList.add('show'); el.style.display='block'; }catch(e){}
+      return;
+    }
+    qa('.screen, .view, section[id], [data-section]').forEach(function(s){ if(s!==el) s.style.display='none'; });
+    el.style.removeProperty('display'); el.removeAttribute('hidden');
+    try{ el.scrollIntoView({behavior:'smooth',block:'start'});}catch(e){}
+  }
+  // botão Entrar
+  var btn = q('#loginBtn') || qa('a,button').find(function(el){return ((el.textContent||'').trim().toLowerCase()==='entrar')});
+  if(btn){
+    if(btn.tagName==='A'){ btn.setAttribute('href','#login'); }
+    btn.addEventListener('click', function(ev){ ev.preventDefault(); showLogin(); history.replaceState(null,'','#login'); }, {capture:true});
+  }
+  // hash router
+  function onHash(){ if(location.hash==='#login') showLogin(); }
+  window.addEventListener('hashchange', onHash);
+  onHash();
+});
+</script>
+
 </body>
 </html>
