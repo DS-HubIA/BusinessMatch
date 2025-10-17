@@ -1,11 +1,12 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clube de Negócios Sebrae - Business Match 2025</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Clube de Negócios Sebrae - Business Match 2025</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
         :root {
             --primary: #2c3e50;
             --secondary: #3498db;
@@ -1379,487 +1380,447 @@
   .modal-actions{ display:flex; gap:12px; margin-top:14px; }
   .btn{ cursor:pointer; }
 </style>
-</head>
 <style id="login-guard-override">
+  /* mantém o overlay realmente fora quando hidden */
   #login[hidden]{ display:none !important; }
-  #login .btn.btn-outline{
-    background:#fff;
-    color: var(--secondary);
-    border: 1px solid var(--secondary);
-  }
-  #login .btn.btn-primary{
-    background: var(--secondary);
-    color: #fff;
-    border: 1px solid var(--secondary);
-  }
+  /* botões do modal */
+  #login .btn.btn-outline{ background:#fff; color: var(--secondary); border:1px solid var(--secondary); }
+  #login .btn.btn-primary{ background: var(--secondary); color:#fff; border:1px solid var(--secondary); }
+  /* evita zoom no iPhone */
+  #login input{ font-size:16px; }
+  html{ -webkit-text-size-adjust:100%; }
 </style>
+</head>
+
 <body>
-    <header>
-        <div class="logo-container">
-            <div class="logo">
-                <i class="fas fa-handshake logo-icon"></i>
-                <div>
-                    <div>Clube de Negócios Sebrae</div>
-                    <div class="logo-subtitle">Business Match 2025</div>
-                </div>
-            </div>
-        </div>
-        <div class="user-actions">
-            <a class="btn btn-outline" id="loginBtn" href="#login">Entrar</a>
-            <button class="btn btn-primary" id="registerBtn">Cadastrar</button>
-        </div>
-        <div class="admin-login">
-            <button class="admin-login-btn" id="adminLoginBtn">
-                <i class="fas fa-cog"></i>
-            </button>
-        </div>
-    </header>
-    
-    <main>
-        <!-- Tela de Boas-Vindas -->
-        <div class="screen active" id="welcomeScreen">
-            <div class="welcome-screen">
-                <div class="welcome-image" id="welcomeImage">
-                    <i class="fas fa-handshake"></i>
-                </div>
-                <h1 class="welcome-title">Clube de Negócios Sebrae</h1>
-                <p class="welcome-subtitle">
+<header>
+<div class="logo-container">
+<div class="logo">
+<i class="fas fa-handshake logo-icon"></i>
+<div>
+<div>Clube de Negócios Sebrae</div>
+<div class="logo-subtitle">Business Match 2025</div>
+</div>
+</div>
+</div>
+<div class="user-actions">
+<a class="btn btn-outline" href="#login" id="loginBtn">Entrar</a>
+<button class="btn btn-primary" id="registerBtn">Cadastrar</button>
+</div>
+<div class="admin-login">
+<button class="admin-login-btn" id="adminLoginBtn">
+<i class="fas fa-cog"></i>
+</button>
+</div>
+</header>
+<main>
+<!-- Tela de Boas-Vindas -->
+<div class="screen active" id="welcomeScreen">
+<div class="welcome-screen">
+<div class="welcome-image" id="welcomeImage">
+<i class="fas fa-handshake"></i>
+</div>
+<h1 class="welcome-title">Clube de Negócios Sebrae</h1>
+<p class="welcome-subtitle">
                     Conecte oferta e demanda de forma simples e intuitiva. 
                     Encontre oportunidades de negócio e parceiros comerciais 
                     através da plataforma Business Match 2025.
                 </p>
-                <div class="welcome-actions">
-                    <button class="btn btn-primary" id="getStartedBtn">Começar Agora</button>
-                    <button class="btn btn-primary" id="learnMoreBtn">Saiba Mais</button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Tela de Oportunidades -->
-        <div class="screen" id="opportunitiesScreen">
-            <!-- Filtros -->
-            <div class="filters-container">
-                <div class="filter-header">
-                    <h3>Filtros</h3>
-                    <button class="filter-toggle" id="filterToggle">
-                        <i class="fas fa-sliders-h"></i> Filtrar
+<div class="welcome-actions">
+<button class="btn btn-primary" id="getStartedBtn">Começar Agora</button>
+<button class="btn btn-primary" id="learnMoreBtn">Saiba Mais</button>
+</div>
+</div>
+</div>
+<!-- Tela de Oportunidades -->
+<div class="screen" id="opportunitiesScreen">
+<!-- Filtros -->
+<div class="filters-container">
+<div class="filter-header">
+<h3>Filtros</h3>
+<button class="filter-toggle" id="filterToggle">
+<i class="fas fa-sliders-h"></i> Filtrar
                     </button>
-                </div>
-                <div class="filter-content" id="filterContent">
-                    <div class="form-group">
-                        <label class="form-label" for="filterType">Tipo</label>
-                        <select id="filterType" class="form-select">
-                            <option value="">Todos</option>
-                            <option value="OFERTA">Oferta</option>
-                            <option value="DEMANDA">Demanda</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="filterCategory">Categoria</label>
-                        <select id="filterCategory" class="form-select">
-                            <option value="">Todas</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="filterTags">Tags</label>
-                        <input type="text" id="filterTags" class="form-input" placeholder="Ex: software, consultoria">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="filterLocation">Localização</label>
-                        <input type="text" id="filterLocation" class="form-input" placeholder="Cidade ou estado">
-                    </div>
-                    <div class="filter-actions">
-                        <button class="btn btn-outline" id="clearFiltersBtn">Limpar</button>
-                        <button class="btn btn-primary" id="applyFiltersBtn">Aplicar</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card-container">
-                <div class="swipe-indicator swipe-like">LIKE</div>
-                <div class="swipe-indicator swipe-dislike">NOPE</div>
-                
-                <div class="empty-state" id="emptyState">
-                    <h3>Nenhuma oportunidade disponível no momento</h3>
-                    <p>Volte mais tarde para novas conexões de negócios</p>
-                </div>
-                
-                <div class="match-overlay" id="matchOverlay">
-                    <div class="match-icon">🤝</div>
-                    <div class="match-text">Match de Negócios!</div>
-                    <p>Você e esta empresa têm interesses compatíveis</p>
-                    <div class="match-actions">
-                        <button class="match-btn send-message" id="whatsappMatchBtn">
-                            <i class="fab fa-whatsapp"></i> Enviar Mensagem
+</div>
+<div class="filter-content" id="filterContent">
+<div class="form-group">
+<label class="form-label" for="filterType">Tipo</label>
+<select class="form-select" id="filterType">
+<option value="">Todos</option>
+<option value="OFERTA">Oferta</option>
+<option value="DEMANDA">Demanda</option>
+</select>
+</div>
+<div class="form-group">
+<label class="form-label" for="filterCategory">Categoria</label>
+<select class="form-select" id="filterCategory">
+<option value="">Todas</option>
+</select>
+</div>
+<div class="form-group">
+<label class="form-label" for="filterTags">Tags</label>
+<input class="form-input" id="filterTags" placeholder="Ex: software, consultoria" type="text"/>
+</div>
+<div class="form-group">
+<label class="form-label" for="filterLocation">Localização</label>
+<input class="form-input" id="filterLocation" placeholder="Cidade ou estado" type="text"/>
+</div>
+<div class="filter-actions">
+<button class="btn btn-outline" id="clearFiltersBtn">Limpar</button>
+<button class="btn btn-primary" id="applyFiltersBtn">Aplicar</button>
+</div>
+</div>
+</div>
+<div class="card-container">
+<div class="swipe-indicator swipe-like">LIKE</div>
+<div class="swipe-indicator swipe-dislike">NOPE</div>
+<div class="empty-state" id="emptyState">
+<h3>Nenhuma oportunidade disponível no momento</h3>
+<p>Volte mais tarde para novas conexões de negócios</p>
+</div>
+<div class="match-overlay" id="matchOverlay">
+<div class="match-icon">🤝</div>
+<div class="match-text">Match de Negócios!</div>
+<p>Você e esta empresa têm interesses compatíveis</p>
+<div class="match-actions">
+<button class="match-btn send-message" id="whatsappMatchBtn">
+<i class="fab fa-whatsapp"></i> Enviar Mensagem
                         </button>
-                        <button class="match-btn schedule-meeting" id="scheduleMeetingBtn">
-                            <i class="fas fa-calendar-plus"></i> Agendar Reunião
+<button class="match-btn schedule-meeting" id="scheduleMeetingBtn">
+<i class="fas fa-calendar-plus"></i> Agendar Reunião
                         </button>
-                        <button class="match-btn keep-browsing">Continuar Navegando</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="actions">
-                <button class="action-btn dislike-btn" id="dislikeBtn">✕</button>
-                <button class="action-btn like-btn" id="likeBtn">✓</button>
-            </div>
-        </div>
-        
-        <!-- Tela de Matches -->
-        <div class="screen" id="matchesScreen">
-            <h2 class="form-title">Seus Matches</h2>
-            <div class="matches-list" id="matchesList">
-                <!-- Matches serão carregados dinamicamente -->
-            </div>
-        </div>
-        
-        <!-- Tela de Mensagens/Interesses -->
-        <div class="screen" id="interestsScreen">
-            <h2 class="form-title">Interesses Recebidos</h2>
-            <div class="interests-list" id="interestsList">
-                <!-- Interesses serão carregados dinamicamente -->
-            </div>
-        </div>
-        
-        <!-- Tela de Perfil -->
-        <div class="screen" id="profileScreen">
-            <div class="profile-header">
-                <div class="profile-avatar" id="profileAvatar">
-                    <div class="profile-avatar-edit">Alterar Foto</div>
-                </div>
-                <h2 class="profile-name" id="profileName">Usuário</h2>
-                <p class="profile-business" id="profileBusiness">Empresa</p>
-                <div class="profile-actions">
-                    <button class="btn btn-primary" id="editProfileBtn">Editar Perfil</button>
-                    <button class="btn btn-outline" id="logoutBtn">Sair</button>
-                </div>
-            </div>
-            
-            <div class="tab-container">
-                <div class="tab active" data-tab="myBusinesses">Meus Negócios</div>
-                <div class="tab" data-tab="myInterests">Meus Interesses</div>
-                <div class="tab" data-tab="myMeetings">Minhas Reuniões</div>
-            </div>
-            
-            <div class="tab-content active" id="myBusinesses">
-                <div class="my-businesses" id="myBusinessesList">
-                    <!-- Negócios do usuário serão carregados dinamicamente -->
-                </div>
-                <button class="btn btn-primary" id="addBusinessBtn" style="width: 100%; margin-top: 1rem;">
-                    <i class="fas fa-plus"></i> Adicionar Negócio
+<button class="match-btn keep-browsing">Continuar Navegando</button>
+</div>
+</div>
+</div>
+<div class="actions">
+<button class="action-btn dislike-btn" id="dislikeBtn">✕</button>
+<button class="action-btn like-btn" id="likeBtn">✓</button>
+</div>
+</div>
+<!-- Tela de Matches -->
+<div class="screen" id="matchesScreen">
+<h2 class="form-title">Seus Matches</h2>
+<div class="matches-list" id="matchesList">
+<!-- Matches serão carregados dinamicamente -->
+</div>
+</div>
+<!-- Tela de Mensagens/Interesses -->
+<div class="screen" id="interestsScreen">
+<h2 class="form-title">Interesses Recebidos</h2>
+<div class="interests-list" id="interestsList">
+<!-- Interesses serão carregados dinamicamente -->
+</div>
+</div>
+<!-- Tela de Perfil -->
+<div class="screen" id="profileScreen">
+<div class="profile-header">
+<div class="profile-avatar" id="profileAvatar">
+<div class="profile-avatar-edit">Alterar Foto</div>
+</div>
+<h2 class="profile-name" id="profileName">Usuário</h2>
+<p class="profile-business" id="profileBusiness">Empresa</p>
+<div class="profile-actions">
+<button class="btn btn-primary" id="editProfileBtn">Editar Perfil</button>
+<button class="btn btn-outline" id="logoutBtn">Sair</button>
+</div>
+</div>
+<div class="tab-container">
+<div class="tab active" data-tab="myBusinesses">Meus Negócios</div>
+<div class="tab" data-tab="myInterests">Meus Interesses</div>
+<div class="tab" data-tab="myMeetings">Minhas Reuniões</div>
+</div>
+<div class="tab-content active" id="myBusinesses">
+<div class="my-businesses" id="myBusinessesList">
+<!-- Negócios do usuário serão carregados dinamicamente -->
+</div>
+<button class="btn btn-primary" id="addBusinessBtn" style="width: 100%; margin-top: 1rem;">
+<i class="fas fa-plus"></i> Adicionar Negócio
                 </button>
-            </div>
-            
-            <div class="tab-content" id="myInterests">
-                <div class="interests-list" id="myInterestsList">
-                    <!-- Interesses do usuário serão carregados dinamicamente -->
-                </div>
-            </div>
-            
-            <div class="tab-content" id="myMeetings">
-                <div class="meetings-list" id="myMeetingsList">
-                    <!-- Reuniões do usuário serão carregados dinamicamente -->
-                </div>
-            </div>
-            
-            <!-- Área de perigo - Exclusão de conta -->
-            <div class="danger-zone">
-                <h3 class="danger-zone-title">Área de Perigo</h3>
-                <p>Ações nesta área são irreversíveis. Tenha certeza do que está fazendo.</p>
-                <div class="danger-actions">
-                    <button class="btn btn-danger" id="deleteAccountBtn">Excluir Conta Permanentemente</button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Tela de Cadastro/Login -->
-        <div class="screen" id="authScreen">
-            <div class="form-container">
-                <h2 class="form-title" id="authTitle">Cadastre-se</h2>
-                <form id="authForm">
-                    <div class="upload-container">
-                        <div class="upload-btn" id="avatarUploadBtn">
-                            <i class="fas fa-camera"></i> Clique para adicionar foto de perfil
+</div>
+<div class="tab-content" id="myInterests">
+<div class="interests-list" id="myInterestsList">
+<!-- Interesses do usuário serão carregados dinamicamente -->
+</div>
+</div>
+<div class="tab-content" id="myMeetings">
+<div class="meetings-list" id="myMeetingsList">
+<!-- Reuniões do usuário serão carregados dinamicamente -->
+</div>
+</div>
+<!-- Área de perigo - Exclusão de conta -->
+<div class="danger-zone">
+<h3 class="danger-zone-title">Área de Perigo</h3>
+<p>Ações nesta área são irreversíveis. Tenha certeza do que está fazendo.</p>
+<div class="danger-actions">
+<button class="btn btn-danger" id="deleteAccountBtn">Excluir Conta Permanentemente</button>
+</div>
+</div>
+</div>
+<!-- Tela de Cadastro/Login -->
+<div class="screen" id="authScreen">
+<div class="form-container">
+<h2 class="form-title" id="authTitle">Cadastre-se</h2>
+<form id="authForm">
+<div class="upload-container">
+<div class="upload-btn" id="avatarUploadBtn">
+<i class="fas fa-camera"></i> Clique para adicionar foto de perfil
                         </div>
-                        <input type="file" id="avatarInput" class="upload-input" accept="image/*">
-                    </div>
-                    <div class="image-preview" id="avatarPreview"></div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="name">Nome Completo</label>
-                        <input type="text" id="name" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="email">E-mail</label>
-                        <input type="email" id="email" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="phone">WhatsApp</label>
-                        <input type="tel" id="phone" class="form-input" placeholder="(11) 99999-9999" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="company">Empresa</label>
-                        <input type="text" id="company" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="password">Senha</label>
-                        <input type="password" id="password" class="form-input" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <div class="terms-container">
-                            <div class="terms-content" id="termsContent">
-                                <!-- Termos de uso serão carregados dinamicamente -->
-                            </div>
-                        </div>
-                        <div class="terms-checkbox">
-                            <input type="checkbox" id="acceptTerms" required>
-                            <label class="terms-label" for="acceptTerms">
+<input accept="image/*" class="upload-input" id="avatarInput" type="file"/>
+</div>
+<div class="image-preview" id="avatarPreview"></div>
+<div class="form-group">
+<label class="form-label" for="name">Nome Completo</label>
+<input class="form-input" id="name" required="" type="text"/>
+</div>
+<div class="form-group">
+<label class="form-label" for="email">E-mail</label>
+<input class="form-input" id="email" required="" type="email"/>
+</div>
+<div class="form-group">
+<label class="form-label" for="phone">WhatsApp</label>
+<input class="form-input" id="phone" placeholder="(11) 99999-9999" required="" type="tel"/>
+</div>
+<div class="form-group">
+<label class="form-label" for="company">Empresa</label>
+<input class="form-input" id="company" required="" type="text"/>
+</div>
+<div class="form-group">
+<label class="form-label" for="password">Senha</label>
+<input class="form-input" id="password" required="" type="password"/>
+</div>
+<div class="form-group">
+<div class="terms-container">
+<div class="terms-content" id="termsContent">
+<!-- Termos de uso serão carregados dinamicamente -->
+</div>
+</div>
+<div class="terms-checkbox">
+<input id="acceptTerms" required="" type="checkbox"/>
+<label class="terms-label" for="acceptTerms">
                                 Li e aceito os <span class="terms-link" id="viewTerms">Termos de Uso</span> e 
                                 <span class="terms-link" id="viewPrivacy">Política de Privacidade</span>
-                            </label>
+</label>
+</div>
+</div>
+<div class="form-actions">
+<button class="btn btn-outline" id="switchAuthMode" type="button">Já tenho conta</button>
+<button class="btn btn-primary" type="submit">Cadastrar</button>
+</div>
+</form>
+</div>
+</div>
+<!-- Tela de Adicionar Negócio -->
+<div class="screen" id="addBusinessScreen">
+<div class="form-container">
+<h2 class="form-title">Adicionar Negócio</h2>
+<form id="businessForm">
+<div class="form-group">
+<label class="form-label" for="businessType">Tipo</label>
+<select class="form-select" id="businessType" required="">
+<option value="">Selecione...</option>
+<option value="OFERTA">Oferta</option>
+<option value="DEMANDA">Demanda</option>
+</select>
+</div>
+<div class="form-group">
+<label class="form-label" for="businessCategory">Categoria</label>
+<select class="form-select" id="businessCategory" required="">
+<!-- Categorias serão carregadas dinamicamente -->
+</select>
+</div>
+<div class="form-group">
+<label class="form-label" for="businessTitle">Título</label>
+<input class="form-input" id="businessTitle" required="" type="text"/>
+</div>
+<div class="form-group">
+<label class="form-label" for="businessDescription">Descrição</label>
+<textarea class="form-textarea" id="businessDescription" required=""></textarea>
+</div>
+<div class="upload-container">
+<div class="upload-btn" id="businessImageUploadBtn">
+<i class="fas fa-image"></i> Clique para adicionar imagem do negócio
                         </div>
-                    </div>
-                    
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-outline" id="switchAuthMode">Já tenho conta</button>
-                        <button type="submit" class="btn btn-primary">Cadastrar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        
-        <!-- Tela de Adicionar Negócio -->
-        <div class="screen" id="addBusinessScreen">
-            <div class="form-container">
-                <h2 class="form-title">Adicionar Negócio</h2>
-                <form id="businessForm">
-                    <div class="form-group">
-                        <label class="form-label" for="businessType">Tipo</label>
-                        <select id="businessType" class="form-select" required>
-                            <option value="">Selecione...</option>
-                            <option value="OFERTA">Oferta</option>
-                            <option value="DEMANDA">Demanda</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="businessCategory">Categoria</label>
-                        <select id="businessCategory" class="form-select" required>
-                            <!-- Categorias serão carregadas dinamicamente -->
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="businessTitle">Título</label>
-                        <input type="text" id="businessTitle" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="businessDescription">Descrição</label>
-                        <textarea id="businessDescription" class="form-textarea" required></textarea>
-                    </div>
-                    
-                    <div class="upload-container">
-                        <div class="upload-btn" id="businessImageUploadBtn">
-                            <i class="fas fa-image"></i> Clique para adicionar imagem do negócio
-                        </div>
-                        <input type="file" id="businessImageInput" class="upload-input" accept="image/*">
-                    </div>
-                    <div class="image-preview" id="businessImagePreview"></div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="businessTags">Tags (separadas por vírgula)</label>
-                        <input type="text" id="businessTags" class="form-input" placeholder="Ex: Software, ERP, Gestão">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="businessLocation">Localização</label>
-                        <input type="text" id="businessLocation" class="form-input" placeholder="Cidade, Estado">
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-outline" id="cancelBusinessBtn">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Salvar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        
-        <!-- Tela de Agendamento -->
-        <div class="screen" id="scheduleScreen">
-            <div class="form-container">
-                <h2 class="form-title">Agendar Reunião</h2>
-                <div class="meeting-with">
-                    <div class="match-item">
-                        <div class="match-avatar" id="meetingAvatar"></div>
-                        <div class="match-info">
-                            <div class="match-name" id="meetingName">Nome</div>
-                            <div class="match-business" id="meetingBusiness">Negócio</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <form id="scheduleForm">
-                    <div class="form-group">
-                        <label class="form-label" for="meetingTitle">Título da Reunião</label>
-                        <input type="text" id="meetingTitle" class="form-input" placeholder="Ex: Apresentação de Proposta" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Tipo de Reunião</label>
-                        <div class="meeting-type">
-                            <div class="meeting-type-option" data-type="presencial">
-                                <i class="fas fa-building"></i>
-                                <div>Presencial</div>
-                            </div>
-                            <div class="meeting-type-option" data-type="online">
-                                <i class="fas fa-video"></i>
-                                <div>Online</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group" id="locationGroup">
-                        <label class="form-label" for="meetingLocation">Local da Reunião</label>
-                        <input type="text" id="meetingLocation" class="form-input" placeholder="Endereço ou link da reunião">
-                    </div>
-                    
-                    <div class="calendar-container">
-                        <div class="calendar-header">
-                            <button type="button" class="btn btn-outline" id="prevMonth">
-                                <i class="fas fa-chevron-left"></i>
-                            </button>
-                            <h3 id="currentMonth">Junho 2023</h3>
-                            <button type="button" class="btn btn-outline" id="nextMonth">
-                                <i class="fas fa-chevron-right"></i>
-                            </button>
-                        </div>
-                        
-                        <div class="calendar-grid" id="calendarDays">
-                            <!-- Dias da semana -->
-                        </div>
-                        
-                        <div class="calendar-grid" id="calendarDates">
-                            <!-- Datas do mês -->
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Horário</label>
-                        <div class="time-slots" id="timeSlots">
-                            <!-- Horários disponíveis -->
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="meetingDescription">Descrição (opcional)</label>
-                        <textarea id="meetingDescription" class="form-textarea" placeholder="Detalhes adicionais sobre a reunião"></textarea>
-                    </div>
-                    
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-outline" id="cancelScheduleBtn">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Agendar Reunião</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        
-        <!-- Tela de Administração -->
-        <div class="screen" id="adminScreen">
-            <div class="admin-panel">
-                <div class="admin-header">
-                    <h1 class="admin-title">Painel Administrativo</h1>
-                    <div class="admin-actions">
-                        <button class="btn btn-outline" id="logoutAdminBtn">Sair</button>
-                    </div>
-                </div>
-                
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-value" id="usersCount">0</div>
-                        <div class="stat-label">Usuários Cadastrados</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="meetingsCount">0</div>
-                        <div class="stat-label">Reuniões Agendadas</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="whatsappCount">0</div>
-                        <div class="stat-label">Acionamentos WhatsApp</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="offersCount">0</div>
-                        <div class="stat-label">Ofertas Cadastradas</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="demandsCount">0</div>
-                        <div class="stat-label">Demandas Cadastradas</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="matchesCount">0</div>
-                        <div class="stat-label">Matches Realizados</div>
-                    </div>
-                </div>
-                
-                <div class="admin-section">
-                    <div class="section-header">
-                        <h2 class="section-title">Gerenciar Categorias</h2>
-                        <button class="btn btn-primary" id="addCategoryBtn">Adicionar Categoria</button>
-                    </div>
-                    <div class="categories-list" id="categoriesList">
-                        <!-- Categorias serão carregadas dinamicamente -->
-                    </div>
-                </div>
-                
-                <div class="admin-section">
-                    <div class="section-header">
-                        <h2 class="section-title">Personalizar Cores</h2>
-                    </div>
-                    <div class="color-picker">
-                        <div class="color-option selected" style="background-color: #2c3e50;" data-color="2c3e50"></div>
-                        <div class="color-option" style="background-color: #34495e;" data-color="34495e"></div>
-                        <div class="color-option" style="background-color: #16a085;" data-color="16a085"></div>
-                        <div class="color-option" style="background-color: #27ae60;" data-color="27ae60"></div>
-                        <div class="color-option" style="background-color: #2980b9;" data-color="2980b9"></div>
-                        <div class="color-option" style="background-color: #8e44ad;" data-color="8e44ad"></div>
-                        <div class="color-option" style="background-color: #f39c12;" data-color="f39c12"></div>
-                        <div class="color-option" style="background-color: #d35400;" data-color="d35400"></div>
-                        <div class="color-option" style="background-color: #c0392b;" data-color="c0392b"></div>
-                    </div>
-                </div>
-                
-                <div class="admin-section">
-                    <div class="section-header">
-                        <h2 class="section-title">Termos de Uso</h2>
-                        <button class="btn btn-primary" id="editTermsBtn">Editar Termos</button>
-                    </div>
-                    <div class="terms-container">
-                        <div class="terms-content" id="adminTermsContent">
-                            <!-- Termos de uso serão carregados dinamicamente -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-    
-    <div class="navigation">
-        <div class="nav-item active" data-screen="opportunitiesScreen">
-            <div class="nav-icon"><i class="fas fa-briefcase"></i></div>
-            <div class="nav-text">Oportunidades</div>
-        </div>
-        <div class="nav-item" data-screen="matchesScreen">
-            <div class="nav-icon"><i class="fas fa-handshake"></i></div>
-            <div class="nav-text">Matches</div>
-        </div>
-        <div class="nav-item" data-screen="interestsScreen">
-            <div class="nav-icon"><i class="fas fa-heart"></i></div>
-            <div class="nav-text">Interesses</div>
-        </div>
-        <div class="nav-item" data-screen="profileScreen">
-            <div class="nav-icon"><i class="fas fa-user"></i></div>
-            <div class="nav-text">Perfil</div>
-        </div>
-    </div>
-
-    <script>
+<input accept="image/*" class="upload-input" id="businessImageInput" type="file"/>
+</div>
+<div class="image-preview" id="businessImagePreview"></div>
+<div class="form-group">
+<label class="form-label" for="businessTags">Tags (separadas por vírgula)</label>
+<input class="form-input" id="businessTags" placeholder="Ex: Software, ERP, Gestão" type="text"/>
+</div>
+<div class="form-group">
+<label class="form-label" for="businessLocation">Localização</label>
+<input class="form-input" id="businessLocation" placeholder="Cidade, Estado" type="text"/>
+</div>
+<div class="form-actions">
+<button class="btn btn-outline" id="cancelBusinessBtn" type="button">Cancelar</button>
+<button class="btn btn-primary" type="submit">Salvar</button>
+</div>
+</form>
+</div>
+</div>
+<!-- Tela de Agendamento -->
+<div class="screen" id="scheduleScreen">
+<div class="form-container">
+<h2 class="form-title">Agendar Reunião</h2>
+<div class="meeting-with">
+<div class="match-item">
+<div class="match-avatar" id="meetingAvatar"></div>
+<div class="match-info">
+<div class="match-name" id="meetingName">Nome</div>
+<div class="match-business" id="meetingBusiness">Negócio</div>
+</div>
+</div>
+</div>
+<form id="scheduleForm">
+<div class="form-group">
+<label class="form-label" for="meetingTitle">Título da Reunião</label>
+<input class="form-input" id="meetingTitle" placeholder="Ex: Apresentação de Proposta" required="" type="text"/>
+</div>
+<div class="form-group">
+<label class="form-label">Tipo de Reunião</label>
+<div class="meeting-type">
+<div class="meeting-type-option" data-type="presencial">
+<i class="fas fa-building"></i>
+<div>Presencial</div>
+</div>
+<div class="meeting-type-option" data-type="online">
+<i class="fas fa-video"></i>
+<div>Online</div>
+</div>
+</div>
+</div>
+<div class="form-group" id="locationGroup">
+<label class="form-label" for="meetingLocation">Local da Reunião</label>
+<input class="form-input" id="meetingLocation" placeholder="Endereço ou link da reunião" type="text"/>
+</div>
+<div class="calendar-container">
+<div class="calendar-header">
+<button class="btn btn-outline" id="prevMonth" type="button">
+<i class="fas fa-chevron-left"></i>
+</button>
+<h3 id="currentMonth">Junho 2023</h3>
+<button class="btn btn-outline" id="nextMonth" type="button">
+<i class="fas fa-chevron-right"></i>
+</button>
+</div>
+<div class="calendar-grid" id="calendarDays">
+<!-- Dias da semana -->
+</div>
+<div class="calendar-grid" id="calendarDates">
+<!-- Datas do mês -->
+</div>
+</div>
+<div class="form-group">
+<label class="form-label">Horário</label>
+<div class="time-slots" id="timeSlots">
+<!-- Horários disponíveis -->
+</div>
+</div>
+<div class="form-group">
+<label class="form-label" for="meetingDescription">Descrição (opcional)</label>
+<textarea class="form-textarea" id="meetingDescription" placeholder="Detalhes adicionais sobre a reunião"></textarea>
+</div>
+<div class="form-actions">
+<button class="btn btn-outline" id="cancelScheduleBtn" type="button">Cancelar</button>
+<button class="btn btn-primary" type="submit">Agendar Reunião</button>
+</div>
+</form>
+</div>
+</div>
+<!-- Tela de Administração -->
+<div class="screen" id="adminScreen">
+<div class="admin-panel">
+<div class="admin-header">
+<h1 class="admin-title">Painel Administrativo</h1>
+<div class="admin-actions">
+<button class="btn btn-outline" id="logoutAdminBtn">Sair</button>
+</div>
+</div>
+<div class="stats-grid">
+<div class="stat-card">
+<div class="stat-value" id="usersCount">0</div>
+<div class="stat-label">Usuários Cadastrados</div>
+</div>
+<div class="stat-card">
+<div class="stat-value" id="meetingsCount">0</div>
+<div class="stat-label">Reuniões Agendadas</div>
+</div>
+<div class="stat-card">
+<div class="stat-value" id="whatsappCount">0</div>
+<div class="stat-label">Acionamentos WhatsApp</div>
+</div>
+<div class="stat-card">
+<div class="stat-value" id="offersCount">0</div>
+<div class="stat-label">Ofertas Cadastradas</div>
+</div>
+<div class="stat-card">
+<div class="stat-value" id="demandsCount">0</div>
+<div class="stat-label">Demandas Cadastradas</div>
+</div>
+<div class="stat-card">
+<div class="stat-value" id="matchesCount">0</div>
+<div class="stat-label">Matches Realizados</div>
+</div>
+</div>
+<div class="admin-section">
+<div class="section-header">
+<h2 class="section-title">Gerenciar Categorias</h2>
+<button class="btn btn-primary" id="addCategoryBtn">Adicionar Categoria</button>
+</div>
+<div class="categories-list" id="categoriesList">
+<!-- Categorias serão carregadas dinamicamente -->
+</div>
+</div>
+<div class="admin-section">
+<div class="section-header">
+<h2 class="section-title">Personalizar Cores</h2>
+</div>
+<div class="color-picker">
+<div class="color-option selected" data-color="2c3e50" style="background-color: #2c3e50;"></div>
+<div class="color-option" data-color="34495e" style="background-color: #34495e;"></div>
+<div class="color-option" data-color="16a085" style="background-color: #16a085;"></div>
+<div class="color-option" data-color="27ae60" style="background-color: #27ae60;"></div>
+<div class="color-option" data-color="2980b9" style="background-color: #2980b9;"></div>
+<div class="color-option" data-color="8e44ad" style="background-color: #8e44ad;"></div>
+<div class="color-option" data-color="f39c12" style="background-color: #f39c12;"></div>
+<div class="color-option" data-color="d35400" style="background-color: #d35400;"></div>
+<div class="color-option" data-color="c0392b" style="background-color: #c0392b;"></div>
+</div>
+</div>
+<div class="admin-section">
+<div class="section-header">
+<h2 class="section-title">Termos de Uso</h2>
+<button class="btn btn-primary" id="editTermsBtn">Editar Termos</button>
+</div>
+<div class="terms-container">
+<div class="terms-content" id="adminTermsContent">
+<!-- Termos de uso serão carregados dinamicamente -->
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<div class="navigation">
+<div class="nav-item active" data-screen="opportunitiesScreen">
+<div class="nav-icon"><i class="fas fa-briefcase"></i></div>
+<div class="nav-text">Oportunidades</div>
+</div>
+<div class="nav-item" data-screen="matchesScreen">
+<div class="nav-icon"><i class="fas fa-handshake"></i></div>
+<div class="nav-text">Matches</div>
+</div>
+<div class="nav-item" data-screen="interestsScreen">
+<div class="nav-icon"><i class="fas fa-heart"></i></div>
+<div class="nav-text">Interesses</div>
+</div>
+<div class="nav-item" data-screen="profileScreen">
+<div class="nav-icon"><i class="fas fa-user"></i></div>
+<div class="nav-text">Perfil</div>
+</div>
+</div>
+<script>
         // Dados de exemplo para demonstração
         let businessOpportunities = [
             {
@@ -3685,7 +3646,6 @@ Implementamos medidas de segurança para proteger suas informações.`,
         init();
     </script>
 <script src="/app.api.js"></script>
-
 <style id="polimentoCSS">
 /* Calendário: evitar estouro de dia/semana */
 .calendar .weekday, .weekday { font-size: 12px; line-height: 1.1; }
@@ -3695,8 +3655,6 @@ Implementamos medidas de segurança para proteger suas informações.`,
 /* Modal de filtros fallback */
 #filtersModal[hidden] { display: none !important; }
 </style>
-
-
 <script id="polimentoPack">
 document.addEventListener('DOMContentLoaded', function(){
 
@@ -3827,8 +3785,6 @@ document.addEventListener('DOMContentLoaded', function(){
 
 });
 </script>
-
-
 <style id="iphoneHeroPatch">
 /* escopo só na home (classe aplicada via JS) */
 .iphone-hero-patch .hero-actions{
@@ -3847,8 +3803,6 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 }
 </style>
-
-
 <script id="iphoneHeroPatch">
 document.addEventListener('DOMContentLoaded', function(){
   // aplica só na home
@@ -3915,8 +3869,6 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 });
 </script>
-
-
 <style id="homeHeaderCleanCSS">
 /* botão externo com boa responsividade */
 .home-patch .external-link-btn{
@@ -3928,8 +3880,6 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 }
 </style>
-
-
 <script id="homeHeaderCleanJS">
 document.addEventListener('DOMContentLoaded',function(){
   // só na página inicial
@@ -3981,7 +3931,22 @@ document.addEventListener('DOMContentLoaded',function(){
   }
 });
 </script>
-
+<!-- MODAL LOGIN -->
+<section aria-modal="true" class="modal-overlay" hidden="" id="login" role="dialog">
+<div class="modal-card">
+<h3 style="margin:0 0 12px;">Entrar</h3>
+<label style="display:block; margin:8px 0 4px;">Seu e-mail</label>
+<input id="loginEmail" placeholder="Seu e-mail" style="width:100%; padding:10px; border:1px solid #ccd; border-radius:10px;" type="email"/>
+<label style="display:block; margin:12px 0 4px;">Sua senha</label>
+<input id="loginPassword" placeholder="Sua senha" style="width:100%; padding:10px; border:1px solid #ccd; border-radius:10px;" type="password"/>
+<div class="modal-actions">
+<button class="btn btn-outline" id="loginCancelBtn" type="button">Cancelar</button>
+<button class="btn btn-primary" id="loginSubmitBtn" type="button">Entrar</button>
+</div>
+<p id="loginError" style="color:#c00; margin-top:8px; display:none;">Erro ao entrar. Verifique e-mail/senha.</p>
+</div>
+</section>
+</body>
 <script id="login-modal-logic">
 (function(){
   const $ = (s)=>document.querySelector(s);
@@ -3993,18 +3958,27 @@ document.addEventListener('DOMContentLoaded',function(){
   const btnSubmit = $('#loginSubmitBtn');
   const topLogin  = $('#loginBtn');
 
+  function ensureHashLogin(){
+    if (location.hash !== '#login') {
+      history.pushState({m:'login'}, '', '#login');
+    }
+  }
   function openModal(){
     if(!modal) return;
     modal.removeAttribute('hidden');
     document.body.style.overflow='hidden';
-    if(err) err.style.display='none';
-    if(email) email.focus();
+    if (err) err.style.display='none';
+    if (email) email.focus();
+    ensureHashLogin();
   }
   function closeModal(){
     if(!modal) return;
     modal.setAttribute('hidden','');
     document.body.style.overflow='';
-    if(location.hash==='#login') history.replaceState(null,'',location.pathname+location.search);
+    // Se estamos em #login, volta para o estado anterior (home ou a seção que estava)
+    if (location.hash === '#login') {
+      history.back();
+    }
   }
 
   // Botão do topo
@@ -4019,18 +3993,24 @@ document.addEventListener('DOMContentLoaded',function(){
   if (modal){
     modal.addEventListener('click', (e)=>{ if(e.target===modal) closeModal(); });
   }
+  // Esc fecha
+  document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
+
   // Submit
   async function doLogin(){
-    if(err) err.style.display='none';
+    if (err) err.style.display='none';
     const mail=(email?.value||'').trim();
     const pwd =(pass?.value||'').trim();
-    if(!mail || !pwd){ if(err){err.textContent='Preencha e-mail e senha.'; err.style.display='block';} return; }
+    if(!mail || !pwd){
+      if(err){ err.textContent='Preencha e-mail e senha.'; err.style.display='block'; }
+      return;
+    }
     try{
       await window.apiLogin({ email: mail, password: pwd });
       closeModal();
       location.hash = '#perfil';
-      if (typeof window.init === 'function') window.init();
-      if (typeof window.renderProfile === 'function') window.renderProfile();
+      if (typeof window.init==='function') window.init();
+      if (typeof window.renderProfile==='function') window.renderProfile();
     }catch{
       if(err){ err.textContent='Credenciais inválidas.'; err.style.display='block'; }
     }
@@ -4038,94 +4018,12 @@ document.addEventListener('DOMContentLoaded',function(){
   if (btnSubmit) btnSubmit.addEventListener('click', doLogin);
   if (pass) pass.addEventListener('keydown', (e)=>{ if(e.key==='Enter') doLogin(); });
 
-  // Só abre via hash #login (sem auto-abrir no load normal)
-  function onHash(){ if(location.hash==='#login') openModal(); else closeModal(); }
-  window.addEventListener('hashchange', onHash);
-  // Não chamamos onHash() agora para evitar auto-abrir; se quiser suportar visita direta a /#login:
+  // Só abre automaticamente quando acessa diretamente /#login
   if (location.hash==='#login') openModal();
-})();
-</script>
-
-<!-- MODAL LOGIN -->
-<section id="login" class="modal-overlay" hidden aria-modal="true" role="dialog">
-  <div class="modal-card">
-    <h3 style="margin:0 0 12px;">Entrar</h3>
-
-    <label style="display:block; margin:8px 0 4px;">Seu e-mail</label>
-    <input id="loginEmail" type="email" placeholder="Seu e-mail"
-           style="width:100%; padding:10px; border:1px solid #ccd; border-radius:10px;">
-
-    <label style="display:block; margin:12px 0 4px;">Sua senha</label>
-    <input id="loginPassword" type="password" placeholder="Sua senha"
-           style="width:100%; padding:10px; border:1px solid #ccd; border-radius:10px;">
-
-    <div class="modal-actions">
-      <button type="button" class="btn btn-outline" id="loginCancelBtn">Cancelar</button>
-      <button type="button" class="btn btn-primary" id="loginSubmitBtn">Entrar</button>
-    </div>
-
-    <p id="loginError" style="color:#c00; margin-top:8px; display:none;">Erro ao entrar. Verifique e-mail/senha.</p>
-  </div>
-</section>
-    
-    
-</body>
-<script id="login-modal-logic">
-(function(){
-  const $ = (s)=>document.querySelector(s);
-  const modal = $('#login');
-  const email = $('#loginEmail');
-  const pass  = $('#loginPassword');
-  const err   = $('#loginError');
-  const btnCancel = $('#loginCancelBtn');
-  const btnSubmit = $('#loginSubmitBtn');
-  const topLogin  = $('#loginBtn');
-
-  function openModal(){
-    if(!modal) return;
-    modal.removeAttribute('hidden');
-    document.body.style.overflow='hidden';
-    if(err) err.style.display='none';
-    if(email) email.focus();
-  }
-  function closeModal(){
-    if(!modal) return;
-    modal.setAttribute('hidden','');
-    document.body.style.overflow='';
-    if(location.hash==='#login') history.replaceState(null,'',location.pathname+location.search);
-  }
-
-  if (topLogin){
-    topLogin.addEventListener('click', (e)=>{ e.preventDefault(); openModal(); });
-  }
-  if (btnCancel){
-    btnCancel.addEventListener('click', (e)=>{ e.preventDefault(); closeModal(); });
-  }
-  if (modal){
-    modal.addEventListener('click', (e)=>{ if(e.target===modal) closeModal(); });
-  }
-
-  async function doLogin(){
-    if(err) err.style.display='none';
-    const mail=(email?.value||'').trim();
-    const pwd =(pass?.value||'').trim();
-    if(!mail || !pwd){ if(err){err.textContent='Preencha e-mail e senha.'; err.style.display='block';} return; }
-    try{
-      await window.apiLogin({ email: mail, password: pwd });
-      closeModal();
-      location.hash = '#perfil';
-      if (typeof window.init === 'function') window.init();
-      if (typeof window.renderProfile === 'function') window.renderProfile();
-    }catch{
-      if(err){ err.textContent='Credenciais inválidas.'; err.style.display='block'; }
-    }
-  }
-  if (btnSubmit) btnSubmit.addEventListener('click', doLogin);
-  if (pass) pass.addEventListener('keydown', (e)=>{ if(e.key==='Enter') doLogin(); });
-
-  function onHash(){ if(location.hash==='#login') openModal(); else closeModal(); }
-  window.addEventListener('hashchange', onHash);
-  if (location.hash==='#login') openModal();
+  window.addEventListener('hashchange', ()=>{
+    if (location.hash==='#login') openModal();
+    else if (modal && !modal.hasAttribute('hidden')) closeModal();
+  });
 })();
 </script>
 </html>
