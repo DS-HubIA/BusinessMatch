@@ -1361,9 +1361,24 @@
             justify-content: center;
             margin-top: 1rem;
         }
-    </style>
+        id="login-guard">
+  /* mantém a seção #login realmente escondida quando usar hidden */
+  #login[hidden]{ display:none !important; }
 
-<style id="login-guard">#login[hidden]{display:none !important}</style>
+  /* estilo básico do modal + overlay */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,.45);
+    display:flex; align-items:center; justify-content:center;
+    z-index: 1000;
+  }
+  .modal-card{
+    width:min(92vw, 520px);
+    background:#fff; border-radius:16px; padding:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,.25);
+  }
+  .modal-actions{ display:flex; gap:12px; margin-top:14px; }
+  .btn{ cursor:pointer; }
+    </style>
 </head>
 <body>
     <header>
@@ -4002,7 +4017,6 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 </script>
 
-
 <script id="login-modal-logic">
 (function(){
   function q(s){return document.querySelector(s);}
@@ -4059,58 +4073,104 @@ document.addEventListener('DOMContentLoaded',function(){
 })();
 </script>
 
+<!-- MODAL LOGIN -->
+<section id="login" class="modal-overlay" hidden aria-modal="true" role="dialog">
+  <div class="modal-card">
+    <h3 style="margin:0 0 12px;">Entrar</h3>
 
+    <label style="display:block; margin:8px 0 4px;">Seu e-mail</label>
+    <input id="loginEmail" type="email" placeholder="Seu e-mail"
+           style="width:100%; padding:10px; border:1px solid #ccd; border-radius:10px;">
 
-<script id="login-modal-guard-2">
+    <label style="display:block; margin:12px 0 4px;">Sua senha</label>
+    <input id="loginPassword" type="password" placeholder="Sua senha"
+           style="width:100%; padding:10px; border:1px solid #ccd; border-radius:10px;">
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-outline" id="loginCancelBtn">Cancelar</button>
+      <button type="button" class="btn btn-primary" id="loginSubmitBtn">Entrar</button>
+    </div>
+
+    <p id="loginError" style="color:#c00; margin-top:8px; display:none;">Erro ao entrar. Verifique e-mail/senha.</p>
+  </div>
+</section>
+    
+<script id="login-modal-logic">
 (function(){
-  function cleanHash(){ if(location.hash === '#login'){ history.replaceState(null,'',location.pathname+location.search); } }
-  function reloadHome(){ cleanHash(); location.replace(location.pathname + location.search); }
-  function gotoProfile(){ location.href = location.pathname + '#perfil'; location.reload(); }
+  const $ = (sel) => document.querySelector(sel);
+  const modal = $('#login');
+  const email = $('#loginEmail');
+  const pass  = $('#loginPassword');
+  const err   = $('#loginError');
+  const btnCancel = $('#loginCancelBtn');
+  const btnSubmit = $('#loginSubmitBtn');
+  const loginBtn  = $('#loginBtn'); // o botão “Entrar” do topo
 
-  // Garante que o modal fique oculto quando não for #login
-  document.addEventListener('DOMContentLoaded', function(){
-    var dlg = document.getElementById('login');
-    if (dlg && location.hash !== '#login') {
-      dlg.setAttribute('hidden','');
-      document.body.style.overflow='';
-    }
-  });
+  function openLoginModal(){
+    // mostra modal e trava o scroll do fundo
+    modal.removeAttribute('hidden');
+    document.body.style.overflow = 'hidden';
+    err.style.display = 'none';
+    email.focus();
+  }
+  function closeLoginModal(){
+    modal.setAttribute('hidden','');
+    document.body.style.overflow = '';
+    // limpa hash se estiver como #login
+    if (location.hash === '#login') history.replaceState(null,'',location.pathname+location.search);
+  }
 
-  // Cancelar/backdrop -> fecha e recarrega home
-  document.addEventListener('click', function(e){
-    var id = (e.target && e.target.id) || '';
-    if (id === 'loginCancel' || id === 'loginClose') {
+  // abre ao clicar no botão do topo
+  if (loginBtn) {
+    loginBtn.addEventListener('click', (e)=>{
+      // se for <a href="#login">, evita rolagem/loop visual
       e.preventDefault();
-      var dlg = document.getElementById('login');
-      if (dlg){ dlg.setAttribute('hidden',''); document.body.style.overflow=''; }
-      reloadHome();
-    }
-    var dlg2 = document.getElementById('login');
-    if (dlg2 && !dlg2.hidden && e.target === dlg2) { // clique no backdrop
-      e.preventDefault();
-      dlg2.setAttribute('hidden','');
-      document.body.style.overflow='';
-      reloadHome();
-    }
+      openLoginModal();
+    });
+  }
+
+  // fecha no cancelar
+  btnCancel.addEventListener('click', closeLoginModal);
+
+  // clique fora do card fecha o modal
+  modal.addEventListener('click', (e)=>{
+    if (e.target === modal) closeLoginModal();
   });
 
-  // Hook leve no submit do login: se detectar sucesso (token salvo pelo app.api.js), envia para #perfil
-  // (fallback em 400ms para garantir em iOS)
-  document.addEventListener('click', function(e){
-    var btn = e.target;
-    if (!btn) return;
-    var txt = (btn.textContent || '').trim().toLowerCase();
-    if (txt === 'entrar') {
-      setTimeout(function(){
-        try {
-          var t = localStorage.getItem('bm_token');
-          if (t && t.length > 10) { gotoProfile(); }
-        } catch(_) { /* ignora */ }
-      }, 400);
+  // submit
+  async function doLogin(){
+    err.style.display = 'none';
+    const mail = (email.value||'').trim();
+    const pwd  = (pass.value||'').trim();
+    if (!mail || !pwd) { err.textContent = 'Preencha e-mail e senha.'; err.style.display='block'; return; }
+    try{
+      // usa a API já existente em app.api.js
+      await window.apiLogin({ email: mail, password: pwd });
+      closeLoginModal();
+      // navega para perfil
+      location.hash = '#perfil';
+      // se seu front usa algum renderizador/ini, pode chamar aqui:
+      if (typeof window.init === 'function') window.init();
+      if (typeof window.renderProfile === 'function') window.renderProfile();
+    }catch(e){
+      err.textContent = 'Credenciais inválidas.';
+      err.style.display = 'block';
     }
-  });
+  }
+  btnSubmit.addEventListener('click', doLogin);
+  pass.addEventListener('keydown', (e)=>{ if (e.key === 'Enter') doLogin(); });
+
+  // abre modal se alguém acessar /#login diretamente
+  function syncFromHash(){
+    if (location.hash === '#login') openLoginModal();
+    else closeLoginModal();
+  }
+  window.addEventListener('hashchange', syncFromHash);
+  // na carga inicial
+  syncFromHash();
 })();
 </script>
+    
 </body>
 </html>
 <!-- ===== LOGIN SHEET (mínimo) ===== -->
