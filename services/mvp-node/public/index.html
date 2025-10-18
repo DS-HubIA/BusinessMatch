@@ -3965,6 +3965,20 @@ document.addEventListener('DOMContentLoaded',function(){
 <p id="loginError" style="color:#c00; margin-top:8px; display:none;">Erro ao entrar. Verifique e-mail/senha.</p>
 </div>
 </section>
+
+<script id="visibility-guard">
+(function(){
+  function unhideAll(){
+    var list = document.querySelectorAll('main, section[id], [data-section]');
+    list.forEach(function(el){
+      if (el){ el.hidden = false; if (el.style){ el.style.display = ""; } }
+    });
+  }
+  // Em qualquer cenário, assegura que nada fique permanentemente oculto
+  document.addEventListener('DOMContentLoaded', unhideAll);
+  window.addEventListener('hashchange', function(){ setTimeout(unhideAll, 0); });
+})();
+</script>
 </body>
 <script id="final-guard">
 (function(){
@@ -4027,62 +4041,7 @@ document.addEventListener('DOMContentLoaded',function(){
   });
 })();
 </script>
-<script id="mini-router">
-(function(){
-  var IDs = ["home","perfil","oportunidades","matches","register"];
-  var els = {};
-  IDs.forEach(function(id){
-    var el = document.getElementById(id);
-    if (el) els[id] = el;
-  });
-  function unhideAll(){
-    Object.keys(els).forEach(function(k){
-      var el = els[k];
-      el.hidden = false;
-      if (el.style){ el.style.display=""; el.style.visibility="visible"; }
-    });
-  }
-  function show(id){
-    var keys = Object.keys(els);
-    if (!keys.length) return false;
-    var has = !!els[id];
-    if (!has){ unhideAll(); return false; }
-    keys.forEach(function(k){
-      var on = (k===id);
-      var el = els[k];
-      el.hidden = !on;
-      if (el.style){ el.style.display = on ? "" : "none"; }
-    });
-    return true;
-  }
-  function current(){
-    var h = (location.hash || "").replace(/^#/, "");
-    if (!h) h = "home";
-    return h;
-  }
-  function route(){
-    if (location.hash === "#login") return; // modal controla essa tela
-    var tgt = current();
-    var ok = show(tgt);
-    if (!ok){ unhideAll(); }
-    try { if (typeof window.init === "function") window.init(); } catch(e){}
-    try { if (typeof window.renderProfile === "function") window.renderProfile(); } catch(e){}
-  }
-  window.addEventListener("hashchange", route);
-  window.addEventListener("DOMContentLoaded", route);
-  document.addEventListener("click", function(e){
-    var id = (e.target && e.target.id) || "";
-    if (id === "loginCancelBtn" || id === "loginClose") {
-      if (location.hash !== "#home") location.hash = "#home";
-      route();
-    }
-  });
-  document.addEventListener("bm-login-success", function(){
-    if (location.hash !== "#perfil") location.hash = "#perfil";
-    route();
-  });
-})();
-</script>
+<script id="mini-router">(function(){ function route(){} window.addEventListener("hashchange", route); window.addEventListener("DOMContentLoaded", route); })();</script>
 <script id="login-modal-logic">
 (function(){
   const $ = (s)=>document.querySelector(s);
