@@ -3995,11 +3995,11 @@ document.addEventListener('DOMContentLoaded',function(){
     hideLogin();
     showMain();
     // dispara um hashchange “manual” para SPAs que reagem a ele
-    try { window.dispatchEvent(new HashChangeEvent('hashchange')); } catch(_) {}
+    /* removed manual hashchange dispatch (anti-loop) */
   }
 
   window.addEventListener('DOMContentLoaded', fix);
-  window.addEventListener('hashchange', fix);
+  /* removed hashchange listener for fix() to avoid recursion */
 
   // pós-login: quando clicam em Entrar no modal, esperamos o token e levamos pro perfil
   document.addEventListener('click', function(e){
@@ -4097,7 +4097,7 @@ document.addEventListener('DOMContentLoaded',function(){
   // tenta identificar um "home" conhecido
   const HOME_HASH = (document.getElementById('home') ? '#home' : '');
 
-  function dispatchHash(){ try{ window.dispatchEvent(new HashChangeEvent('hashchange')); }catch{} }
+  function dispatchHash(){ try{ /* removed manual hashchange dispatch (anti-loop) */ }catch{} }
 
   function openModal(){
     if(!modal) return;
