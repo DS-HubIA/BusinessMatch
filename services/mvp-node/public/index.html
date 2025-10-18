@@ -3966,6 +3966,62 @@ document.addEventListener('DOMContentLoaded',function(){
 </div>
 </section>
 </body>
+<script id="mini-router">
+(function(){
+  var IDs = ["home","perfil","oportunidades","matches","register"];
+  var els = {};
+  IDs.forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) els[id] = el;
+  });
+
+  function show(id){
+    var any = false;
+    Object.keys(els).forEach(function(k){
+      any = true;
+      els[k].hidden = (k !== id);
+    });
+    return any;
+  }
+
+  function current(){
+    var h = (location.hash || "").replace(/^#/, "");
+    if (!h) h = "home";
+    return h;
+  }
+
+  function route(){
+    var tgt = current();
+    var existed = show(tgt);
+    if (!existed) {
+      // Se não temos IDs mapeados, não esconda nada
+    }
+    // Pequeno "ping" em apps que tenham renderizadores próprios
+    try { if (typeof window.init === "function") window.init(); } catch(e){}
+    try { if (typeof window.renderProfile === "function") window.renderProfile(); } catch(e){}
+  }
+
+  window.addEventListener("hashchange", route);
+  window.addEventListener("DOMContentLoaded", route);
+
+  // Integra com o modal de login, se existir
+  document.addEventListener("click", function(e){
+    var id = (e.target && e.target.id) || "";
+    if (id === "loginCancelBtn" || id === "loginClose") {
+      // garante que a home volte visível
+      if (location.hash !== "#home") location.hash = "#home";
+      route();
+    }
+  });
+
+  // Se o script de login chamar location.hash = "#perfil", isso já é suficiente;
+  // ainda assim, deixamos este listener por redundância:
+  document.addEventListener("bm-login-success", function(){
+    if (location.hash !== "#perfil") location.hash = "#perfil";
+    route();
+  });
+})();
+</script>
 <script id="login-modal-logic">
 (function(){
   const $ = (s)=>document.querySelector(s);
