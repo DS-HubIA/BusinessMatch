@@ -1407,6 +1407,7 @@
   .external-link-btn:hover{ filter:brightness(0.95); }
 </style>
 
+<style id="spa-visibility">.screen{display:none}.screen.active{display:flex}</style>
 </head>
 <style id="login-guard-override">
   /* mantém #login realmente escondido */
@@ -2051,9 +2052,9 @@ Implementamos medidas de segurança para proteger suas informações.`,
             if (savedUser) {
                 currentUser = JSON.parse(savedUser);
                 updateUserInterface();
-                showScreen('opportunitiesScreen');
+                setActive('opportunitiesScreen');
             } else {
-                showScreen('welcomeScreen');
+                setActive('welcomeScreen');
             }
             
             renderCards();
@@ -2314,7 +2315,7 @@ Implementamos medidas de segurança para proteger suas informações.`,
                 const currentScreen = document.querySelector('.screen.active');
                 if (currentScreen && currentScreen.id !== 'authScreen' && 
                     currentScreen.id !== 'welcomeScreen') {
-                    showScreen('welcomeScreen');
+                    setActive('welcomeScreen');
                 }
             }
         }
@@ -3184,7 +3185,7 @@ Implementamos medidas de segurança para proteger suas informações.`,
                         currentUser = null;
                         localStorage.removeItem('currentUser');
                         updateUserInterface();
-                        showScreen('welcomeScreen');
+                        setActive('welcomeScreen');
                     }
                 });
             }
@@ -3273,7 +3274,7 @@ Implementamos medidas de segurança para proteger suas informações.`,
             // Agendamento
             const cancelScheduleBtn = document.getElementById('cancelScheduleBtn');
             if (cancelScheduleBtn) {
-                cancelScheduleBtn.addEventListener('click', () => showScreen('opportunitiesScreen'));
+                cancelScheduleBtn.addEventListener('click', () => setActive('opportunitiesScreen'));
             }
             
             const scheduleForm = document.getElementById('scheduleForm');
@@ -3323,7 +3324,7 @@ Implementamos medidas de segurança para proteger suas informações.`,
             const logoutAdminBtn = document.getElementById('logoutAdminBtn');
             if (logoutAdminBtn) {
                 logoutAdminBtn.addEventListener('click', () => {
-                    showScreen('welcomeScreen');
+                    setActive('welcomeScreen');
                 });
             }
             
@@ -3401,7 +3402,7 @@ Implementamos medidas de segurança para proteger suas informações.`,
                         currentUser = null;
                         localStorage.removeItem('currentUser');
                         updateUserInterface();
-                        showScreen('welcomeScreen');
+                        setActive('welcomeScreen');
                         
                         alert('Sua conta e todos os seus dados foram excluídos permanentemente do sistema.');
                         
@@ -3502,7 +3503,7 @@ Implementamos medidas de segurança para proteger suas informações.`,
                     localStorage.setItem('currentUser', JSON.stringify(currentUser));
                     updateUserInterface();
                     loadUserData();
-                    showScreen('opportunitiesScreen');
+                    setActive('opportunitiesScreen');
                     
                     // Ativar a navegação de oportunidades
                     navItems.forEach(nav => nav.classList.remove('active'));
@@ -3533,7 +3534,7 @@ Implementamos medidas de segurança para proteger suas informações.`,
                 currentUser = user;
                 localStorage.setItem('currentUser', JSON.stringify(currentUser));
                 updateUserInterface();
-                showScreen('opportunitiesScreen');
+                setActive('opportunitiesScreen');
                 
                 // Ativar a navegação de oportunidades
                 navItems.forEach(nav => nav.classList.remove('active'));
@@ -3611,7 +3612,7 @@ Implementamos medidas de segurança para proteger suas informações.`,
             updateStats();
             
             // Voltar para a tela de oportunidades
-            showScreen('opportunitiesScreen');
+            setActive('opportunitiesScreen');
             matchOverlay.classList.remove('active');
             nextCard();
         }
@@ -3707,8 +3708,6 @@ document.addEventListener('DOMContentLoaded', function(){
       if (login){
         var tab = q('[data-bs-toggle="tab"][href="#login"], [data-toggle="tab"][href="#login"]');
         if (tab){ tab.click(); return; }
-        qa('.screen, .view, section[id^="screen-"], [data-section]').forEach(function(s){ if(s!==login) s.style.display='none'; });
-        login.style.display=''; login.removeAttribute('hidden');
         try{ login.scrollIntoView({behavior:'smooth',block:'start'}); }catch(_){}
       } else {
         location.hash='#login';
@@ -3894,8 +3893,6 @@ document.addEventListener('DOMContentLoaded', function(){
     if (login){
       const tab = q('[data-bs-toggle="tab"][href="#login"], [data-toggle="tab"][href="#login"]');
       if (tab){ tab.click(); return; }
-      qa('.screen, .view, section[id^="screen-"], [data-section]').forEach(s => { if (s !== login) s.style.display='none'; });
-      login.style.display=''; login.removeAttribute('hidden');
       try{ login.scrollIntoView({behavior:'smooth', block:'start'}); }catch(_){}
     } else { location.hash = '#login'; }
   }
@@ -4011,12 +4008,12 @@ document.addEventListener('DOMContentLoaded',function(){
           // deixa o modal visível; o script do modal controla isso
           return;
         }
-        if (!isLoginEl){ el.hidden = false; if (el.style) el.style.display = ''; }
+        if (!isLoginEl){ el.hidden = false; if (el.style) ?; }
       });
       // Se não é a rota #login, garanta o modal oculto
       if (!isLogin){
         var dlg = document.getElementById('login');
-        if (dlg){ dlg.hidden = true; if (dlg.style) dlg.style.display = 'none'; }
+        if(dlg){ dlg.hidden=true; }
         document.body.style.overflow = '';
       }
     }catch(e){}
@@ -4064,14 +4061,14 @@ document.addEventListener('DOMContentLoaded',function(){
     document.querySelectorAll('.screen').forEach(function(el){
       var on = (el.id === id);
       el.classList.toggle('active', on);
-      el.style.display = on ? 'flex' : 'none';
+      el.classList.toggle('active', on);
       if (on) found = true;
     });
     // Caso não exista a section, não esconda tudo
     if (!found) {
       document.querySelectorAll('.screen').forEach(function(el){
         el.classList.remove('active');
-        el.style.display = '';
+        ?;
       });
     }
   }
@@ -4118,14 +4115,14 @@ document.addEventListener('DOMContentLoaded',function(){
     document.querySelectorAll('.screen').forEach(function(el){
       var on = (el.id === id);
       el.classList.toggle('active', on);
-      el.style.display = on ? 'flex' : 'none';
+      el.classList.toggle('active', on);
       if(on) found = true;
     });
     // Se a tela-alvo não existe, não esconda tudo
     if(!found){
       document.querySelectorAll('.screen').forEach(function(el){
         el.classList.remove('active');
-        el.style.display = '';
+        ?;
       });
     }
   }
@@ -4210,7 +4207,7 @@ document.addEventListener('DOMContentLoaded',function(){
     document.querySelectorAll('.screen').forEach(el=>{
       const on = el.id === screenId;
       el.classList.toggle('active', on);
-      el.style.display = on ? 'flex' : 'none';
+      el.classList.toggle('active', on);
     });
   }
 
@@ -4339,7 +4336,7 @@ document.addEventListener('DOMContentLoaded',function(){
       el.hidden = false;
       el.removeAttribute('hidden');
       // limpa "display:none" inline, caso algum script tenha aplicado
-      el.style.display = '';
+      ?;
     });
   }
 
