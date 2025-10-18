@@ -4014,67 +4014,116 @@ document.addEventListener('DOMContentLoaded',function(){
 </script>
 
 
-<script id="visibility-guard-ultimate-2">
+
+
+
+<script id="login-modal-logic">
 (function(){
-  function unhideAll(){
-    try{
-      var nodes = document.querySelectorAll('main, section, [data-section], .screen, .view, .page, [id]');
-      for(var i=0;i<nodes.length;i++){
-        var el = nodes[i];
-        var isLoginEl = (el.id === 'login') || ((' '+el.className+' ').indexOf(' modal-overlay ')>=0);
-        if (!isLoginEl){
-          el.hidden = false;
-          if (el.style) el.style.display = '';
+  function $(s){ return document.querySelector(s); }
+  function $all(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); }
+
+  var modal = $('#login');
+  var email = $('#loginEmail');
+  var pass  = $('#loginPassword');
+  var err   = $('#loginError');
+  var btnCancel = $('#loginCancelBtn');
+  var btnSubmit = $('#loginSubmitBtn');
+  var topLogin  = $('#loginBtn');
+
+  function openModal(){
+    if(!modal) return;
+    modal.removeAttribute('hidden');
+    if (modal.style) modal.style.display = 'flex';
+    document.body.style.overflow='hidden';
+    if (err) err.style.display='none';
+    if (email) try{ email.focus(); }catch(_){}
+  }
+  function closeModal(){
+    if(!modal) return;
+    modal.setAttribute('hidden','');
+    if (modal.style) modal.style.display = 'none';
+    document.body.style.overflow='';
+  }
+
+  function setActiveScreen(id){
+    var screens = $all('.screen');
+    for (var i=0;i<screens.length;i++){
+      var el = screens[i];
+      var isTarget = (el.id === id);
+      if (isTarget){
+        el.classList.add('active');
+        if (el.style) el.style.display = 'flex';
+      } else {
+        el.classList.remove('active');
+        if (el.style) el.style.display = 'none';
+      }
+    }
+  }
+
+  if (topLogin){
+    topLogin.addEventListener('click', function(e){
+      e.preventDefault();
+      openModal();
+    });
+  }
+  if (btnCancel){
+    btnCancel.addEventListener('click', function(e){
+      e.preventDefault();
+      closeModal();
+      setTimeout(function(){
+        // reassegura conteúdo visível da tela atual
+        var active = document.querySelector('.screen.active');
+        if (!active){
+          // fallback: mostra welcome se existir
+          if (document.getElementById('welcomeScreen')) setActiveScreen('welcomeScreen');
         }
+      }, 0);
+    });
+  }
+  if (modal){
+    modal.addEventListener('click', function(e){
+      if (e.target === modal){
+        closeModal();
+        setTimeout(function(){
+          var active = document.querySelector('.screen.active');
+          if (!active){
+            if (document.getElementById('welcomeScreen')) setActiveScreen('welcomeScreen');
+          }
+        }, 0);
       }
-      var dlg = document.getElementById('login');
-      if (location.hash !== '#login'){
-        if (dlg){ dlg.hidden = true; if (dlg.style) dlg.style.display='none'; }
-        document.body.style.overflow = '';
-      }
-    }catch(e){}
+    });
   }
 
-  function ensureVisibleLoop(times){
-    unhideAll();
-    if (times>0){ setTimeout(function(){ ensureVisibleLoop(times-1); }, 100); }
+  async function doLogin(){
+    if (err) err.style.display='none';
+    var mail = (email && email.value || '').trim();
+    var pwd  = (pass  && pass.value  || '').trim();
+    if (!mail || !pwd){
+      if (err){ err.textContent = 'Preencha e-mail e senha.'; err.style.display='block'; }
+      return;
+    }
+    try{
+      if (!window.apiLogin) throw new Error('apiLogin ausente');
+      await window.apiLogin({ email: mail, password: pwd });
+      // sucesso: fecha modal e vai para profileScreen
+      closeModal();
+      setActiveScreen('profileScreen');
+      try { document.body.setAttribute('data-auth', 'yes'); } catch(_){}
+      // se o app tiver renderizadores próprios, chame-os sem bloquear
+      try { if (typeof window.init === 'function') setTimeout(window.init, 0); } catch(_){}
+      try { if (typeof window.renderProfile === 'function') setTimeout(window.renderProfile, 0); } catch(_){}
+    }catch(e){
+      if (err){ err.textContent = 'Credenciais inválidas.'; err.style.display='block'; }
+      console.warn('Login falhou:', e);
+    }
   }
 
-  // Corrige na carga e a cada mudança de hash
-  window.addEventListener('DOMContentLoaded', function(){ if(location.hash!=='#login'){ ensureVisibleLoop(5); } });
-  window.addEventListener('load', function(){ if(location.hash!=='#login'){ ensureVisibleLoop(5); } });
-  window.addEventListener('hashchange', function(){
-    if (location.hash !== '#login'){ ensureVisibleLoop(5); }
-  });
+  if (btnSubmit) btnSubmit.addEventListener('click', doLogin);
+  if (pass) pass.addEventListener('keydown', function(e){ if (e.key === 'Enter') doLogin(); });
 
-  // Escuta cliques de fechar (cancelar e backdrop)
-  document.addEventListener('click', function(e){
-    var id = (e && e.target && e.target.id) || '';
-    if (id === 'loginCancelBtn' || id === 'loginClose'){
-      setTimeout(function(){ ensureVisibleLoop(10); }, 0);
-    }
-    var dlg = document.getElementById('login');
-    if (dlg && !dlg.hidden && e && e.target === dlg){
-      setTimeout(function(){ ensureVisibleLoop(10); }, 0);
-    }
-  });
-
-  // Após login bem-sucedido (se o script de login disparar esse evento ou mudar o hash)
-  document.addEventListener('bm-login-success', function(){
-    ensureVisibleLoop(10);
-  });
-
-  // Plano extra: pequeno watchdog por 2 segundos após qualquer clique
-  var clickTimer = null;
-  document.addEventListener('click', function(){
-    if (clickTimer) clearInterval(clickTimer);
-    var count = 0;
-    clickTimer = setInterval(function(){
-      if (location.hash !== '#login'){ unhideAll(); }
-      count++;
-      if (count >= 20){ clearInterval(clickTimer); clickTimer = null; }
-    }, 100);
-  });
+  // IMPORTANTE: nunca mexer em location.hash aqui.
+  // Se o usuário entrar por /#login, apenas abrimos o modal uma vez.
+  if (location.hash === '#login'){ openModal(); }
 })();
 </script>
 
@@ -4140,87 +4189,6 @@ document.addEventListener('DOMContentLoaded',function(){
   });
 })();
 </script>
-<script id="mini-router">(function(){ function route(){} window.addEventListener("hashchange", route); window.addEventListener("DOMContentLoaded", route); })();</script>
-<script id="login-modal-logic">
-(function(){
-  const $ = (s)=>document.querySelector(s);
-  const modal = $('#login');
-  const email = $('#loginEmail');
-  const pass  = $('#loginPassword');
-  const err   = $('#loginError');
-  const btnCancel = $('#loginCancelBtn');
-  const btnSubmit = $('#loginSubmitBtn');
-  const topLogin  = $('#loginBtn');
 
-  // tenta identificar um "home" conhecido
-  const HOME_HASH = (document.getElementById('home') ? '#home' : '');
 
-  function dispatchHash(){ try{ /* removed manual hashchange dispatch (anti-loop) */ }catch{} }
-
-  function openModal(){
-    if(!modal) return;
-    modal.removeAttribute('hidden');
-    modal.setAttribute('aria-hidden','false');
-    document.body.style.overflow='hidden';
-    if(err) err.style.display='none';
-    if(email) email.focus();
-  }
-  function closeModal(){
-    if(!modal) return;
-    modal.setAttribute('hidden','');
-    modal.setAttribute('aria-hidden','true');
-    document.body.style.overflow='';
-    // se a URL estava em #login, retire o hash e dispare hashchange
-    if (location.hash === '#login') {
-      history.replaceState(null,'',location.pathname+location.search+(HOME_HASH||''));
-      dispatchHash();
-    }
-  }
-
-  // Botão "Entrar" no topo
-  if (topLogin){
-    topLogin.addEventListener('click', (e)=>{ e.preventDefault(); openModal(); });
-  }
-  // Cancelar
-  if (btnCancel){
-    btnCancel.addEventListener('click', (e)=>{ e.preventDefault(); closeModal(); });
-  }
-  // Backdrop
-  if (modal){
-    modal.addEventListener('click', (e)=>{ if(e.target===modal) closeModal(); });
-  }
-
-  // Submit do login
-  async function doLogin(){
-    if(err) err.style.display='none';
-    const mail=(email?.value||'').trim();
-    const pwd =(pass?.value||'').trim();
-    if(!mail || !pwd){ if(err){err.textContent='Preencha e-mail e senha.'; err.style.display='block';} return; }
-    try{
-      // usa a API existente
-      await window.apiLogin({ email: mail, password: pwd });
-      closeModal();
-      // navega para perfil e força o roteador/renderer a atualizar
-      if (location.hash !== '#perfil') {
-        location.hash = '#perfil';
-      }
-      dispatchHash();
-      // fallbacks para SPAs sem ou com init/render próprios
-      if (typeof window.init === 'function') window.init();
-      if (typeof window.renderProfile === 'function') window.renderProfile();
-      // plano B: pequeno repaint assíncrono
-      setTimeout(dispatchHash, 200);
-    }catch{
-      if(err){ err.textContent='Credenciais inválidas.'; err.style.display='block'; }
-    }
-  }
-  if (btnSubmit) btnSubmit.addEventListener('click', doLogin);
-  if (pass) pass.addEventListener('keydown', (e)=>{ if(e.key==='Enter') doLogin(); });
-
-  // Abre só quando a navegação pedir #login (sem auto-abrir de cara)
-  function onHash(){ if(location.hash==='#login') openModal(); }
-  window.addEventListener('hashchange', onHash);
-  if (location.hash==='#login') openModal(); // suporta visita direta /#login
-})();
-</script>
 </html>
