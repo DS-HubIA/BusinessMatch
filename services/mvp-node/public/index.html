@@ -4013,6 +4013,71 @@ document.addEventListener('DOMContentLoaded',function(){
 })();
 </script>
 
+
+<script id="visibility-guard-ultimate-2">
+(function(){
+  function unhideAll(){
+    try{
+      var nodes = document.querySelectorAll('main, section, [data-section], .screen, .view, .page, [id]');
+      for(var i=0;i<nodes.length;i++){
+        var el = nodes[i];
+        var isLoginEl = (el.id === 'login') || ((' '+el.className+' ').indexOf(' modal-overlay ')>=0);
+        if (!isLoginEl){
+          el.hidden = false;
+          if (el.style) el.style.display = '';
+        }
+      }
+      var dlg = document.getElementById('login');
+      if (location.hash !== '#login'){
+        if (dlg){ dlg.hidden = true; if (dlg.style) dlg.style.display='none'; }
+        document.body.style.overflow = '';
+      }
+    }catch(e){}
+  }
+
+  function ensureVisibleLoop(times){
+    unhideAll();
+    if (times>0){ setTimeout(function(){ ensureVisibleLoop(times-1); }, 100); }
+  }
+
+  // Corrige na carga e a cada mudança de hash
+  window.addEventListener('DOMContentLoaded', function(){ if(location.hash!=='#login'){ ensureVisibleLoop(5); } });
+  window.addEventListener('load', function(){ if(location.hash!=='#login'){ ensureVisibleLoop(5); } });
+  window.addEventListener('hashchange', function(){
+    if (location.hash !== '#login'){ ensureVisibleLoop(5); }
+  });
+
+  // Escuta cliques de fechar (cancelar e backdrop)
+  document.addEventListener('click', function(e){
+    var id = (e && e.target && e.target.id) || '';
+    if (id === 'loginCancelBtn' || id === 'loginClose'){
+      setTimeout(function(){ ensureVisibleLoop(10); }, 0);
+    }
+    var dlg = document.getElementById('login');
+    if (dlg && !dlg.hidden && e && e.target === dlg){
+      setTimeout(function(){ ensureVisibleLoop(10); }, 0);
+    }
+  });
+
+  // Após login bem-sucedido (se o script de login disparar esse evento ou mudar o hash)
+  document.addEventListener('bm-login-success', function(){
+    ensureVisibleLoop(10);
+  });
+
+  // Plano extra: pequeno watchdog por 2 segundos após qualquer clique
+  var clickTimer = null;
+  document.addEventListener('click', function(){
+    if (clickTimer) clearInterval(clickTimer);
+    var count = 0;
+    clickTimer = setInterval(function(){
+      if (location.hash !== '#login'){ unhideAll(); }
+      count++;
+      if (count >= 20){ clearInterval(clickTimer); clickTimer = null; }
+    }, 100);
+  });
+})();
+</script>
+
 </body>
 <script id="final-guard">
 (function(){
