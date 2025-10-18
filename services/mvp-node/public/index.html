@@ -3966,6 +3966,67 @@ document.addEventListener('DOMContentLoaded',function(){
 </div>
 </section>
 </body>
+<script id="final-guard">
+(function(){
+  function qs(s){ return document.querySelector(s); }
+
+  function hideLogin(){
+    var m = qs('#login');
+    if (m){
+      m.setAttribute('hidden','');
+      document.body.style.overflow = '';
+    }
+  }
+
+  function showMain(){
+    // Mostra contêineres principais se existirem (não cria nada novo)
+    ['#app','main','#home','#perfil','#oportunidades','#matches'].forEach(function(sel){
+      var el = qs(sel);
+      if (!el) return;
+      el.hidden = false;
+      el.removeAttribute('hidden');
+      // limpa "display:none" inline, caso algum script tenha aplicado
+      el.style.display = '';
+    });
+  }
+
+  function fix(){
+    if (location.hash === '#login') return; // deixa o modal abrir naturalmente
+    hideLogin();
+    showMain();
+    // dispara um hashchange “manual” para SPAs que reagem a ele
+    try { window.dispatchEvent(new HashChangeEvent('hashchange')); } catch(_) {}
+  }
+
+  window.addEventListener('DOMContentLoaded', fix);
+  window.addEventListener('hashchange', fix);
+
+  // pós-login: quando clicam em Entrar no modal, esperamos o token e levamos pro perfil
+  document.addEventListener('click', function(e){
+    var id = (e.target && e.target.id) || '';
+    if (id === 'loginSubmitBtn'){
+      setTimeout(function(){
+        try{
+          var t = localStorage.getItem('bm_token') || '';
+          if (t.length > 10){
+            location.hash = '#perfil';
+            fix();
+            // fallback extra para reidratar cards/área central (se existirem essas funções)
+            if (typeof window.init === 'function') window.init();
+            if (typeof window.renderProfile === 'function') window.renderProfile();
+          }
+        }catch(_){}
+      }, 300);
+    }
+    if (id === 'loginCancelBtn'){
+      // cancelar: fecha modal, limpa hash e garante conteúdo visível
+      hideLogin();
+      history.replaceState(null,'',location.pathname + location.search);
+      fix();
+    }
+  });
+})();
+</script>
 <script id="mini-router">
 (function(){
   var IDs = ["home","perfil","oportunidades","matches","register"];
