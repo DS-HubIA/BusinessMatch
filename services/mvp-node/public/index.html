@@ -1381,15 +1381,25 @@
   .btn{ cursor:pointer; }
 </style>
 <style id="login-guard-override">
-  /* mantém o overlay realmente fora quando hidden */
+  /* mantém #login realmente escondido quando hidden */
   #login[hidden]{ display:none !important; }
+
   /* botões do modal */
-  #login .btn.btn-outline{ background:#fff; color: var(--secondary); border:1px solid var(--secondary); }
-  #login .btn.btn-primary{ background: var(--secondary); color:#fff; border:1px solid var(--secondary); }
-  /* evita zoom no iPhone */
+  #login .btn.btn-outline{
+    background:#fff;
+    color: var(--secondary, #1F6FEB);
+    border: 1px solid var(--secondary, #1F6FEB);
+  }
+  #login .btn.btn-primary{
+    background: var(--secondary, #1F6FEB);
+    color:#fff;
+    border: 1px solid var(--secondary, #1F6FEB);
+  }
+
+  /* evita zoom no iOS ao focar */
   #login input{ font-size:16px; }
-  html{ -webkit-text-size-adjust:100%; }
 </style>
+        
 <script id="safe-current-user">(function(){ window.currentUser = window.currentUser || {}; })();</script>
 
 <style id="external-cta-contrast">
@@ -1408,25 +1418,6 @@
 </style>
 
 </head>
-<style id="login-guard-override">
-  /* mantém #login realmente escondido */
-  #login[hidden]{ display:none !important; }
-
-  /* botões do modal */
-  #login .btn.btn-outline{
-    background:#fff;
-    color: var(--secondary, #1F6FEB);
-    border: 1px solid var(--secondary, #1F6FEB);
-  }
-  #login .btn.btn-primary{
-    background: var(--secondary, #1F6FEB);
-    color: #fff;
-    border: 1px solid var(--secondary, #1F6FEB);
-  }
-
-  /* evita zoom no iOS */
-  #login input{ font-size:16px; }
-</style>
 
 <body>
 <header>
@@ -4030,163 +4021,82 @@ document.addEventListener('DOMContentLoaded',function(){
 })();
 </script>
 
-<script id="mini-router">
-(function(){
-  // IDs reais existentes no HTML:
-  const IDS = [
-    'welcomeScreen','opportunitiesScreen','matchesScreen','interestsScreen',
-    'profileScreen','authScreen','addBusinessScreen','scheduleScreen','adminScreen'
-  ];
-  const els = {};
-  IDS.forEach(id => { const el = document.getElementById(id); if (el) els[id] = el; });
-
-  function setActive(id){
-    const target = els[id] ? id : 'welcomeScreen';
-    Object.keys(els).forEach(k => {
-      const on = (k === target);
-      els[k].classList.toggle('active', on);
-      els[k].style.display = on ? 'flex' : 'none';
-    });
-    // expõe pra outros scripts
-    window.setActive = setActive;
-    window.__activeScreenId = target;
-  }
-
-  // 1) Clique em <a href="#algumaCoisa">
-  document.addEventListener('click', (e)=>{
-    const a = e.target.closest('a[href^="#"]');
-    if (!a) return;
-    const id = (a.getAttribute('href') || '').slice(1);
-    if (!id) return;
-
-    // #login abre o modal de login (sem mexer em telas)
-    if (id === 'login') {
-      e.preventDefault();
-      const dlg = document.getElementById('login');
-      if (dlg){ dlg.removeAttribute('hidden'); document.body.style.overflow='hidden'; }
-      return;
-    }
-
-    // Se for uma das telas, faz navegação SPA (sem depender de hashchange)
-    if (els[id]) {
-      e.preventDefault();
-      setActive(id);
-    }
-    // Caso contrário, deixa o navegador seguir (ex.: âncora interna qualquer)
-  });
-
-  // 2) Clique em elementos com data-target="id"
-  document.addEventListener('click', (e)=>{
-    const t = e.target.closest('[data-target]');
-    if (!t) return;
-    const id = t.getAttribute('data-target');
-    if (id && els[id]) {
-      e.preventDefault();
-      setActive(id);
-    }
-  });
-
-  // 3) Estado inicial: se nada está visível, mostra welcome
-  (function initStart(){
-    const anyVisible = Object.values(els).some(el => getComputedStyle(el).display !== 'none');
-    if (!anyVisible) setActive('welcomeScreen');
-  })();
-})();
-</script>
-
 <script id="login-modal-logic">
 (function(){
-  const $ = (s)=>document.querySelector(s);
-  const modal = $('#login');
-  const email = $('#loginEmail');
-  const pass  = $('#loginPassword');
-  const err   = $('#loginError');
-  const btnCancel = $('#loginCancelBtn');
-  const btnSubmit = $('#loginSubmitBtn');
-  const btnTop    = $('#loginBtn');
+  // helpers
+  function $(s){ return document.querySelector(s); }
+  function $all(s){ return Array.from(document.querySelectorAll(s)); }
 
-  let prevScreenId = null;
+  // telas gerenciadas pelo app (sem hash!)
+  function setActive(id){
+    var screens = $all('.screen');
+    screens.forEach(function(el){
+      var on = el.id === id;
+      el.classList.toggle('active', on);
+      el.style.display = on ? 'flex' : 'none';
+    });
+    // Se seu app tem renderizadores, chame-os com segurança
+    try { if (typeof window.init === 'function') window.init(); } catch(_){}
+    try { if (typeof window.renderProfile === 'function' && id==='profileScreen') window.renderProfile(); } catch(_){}
+  }
+
+  // elementos do modal
+  var modal   = $('#login');
+  var email   = $('#loginEmail');
+  var pass    = $('#loginPassword');
+  var err     = $('#loginError');
+  var btnOpen = $('#loginBtn');            // botão "Entrar" do topo
+  var btnOk   = $('#loginSubmitBtn');      // "Entrar" no modal
+  var btnNo   = $('#loginCancelBtn');      // "Cancelar" no modal
 
   function openModal(){
     if (!modal) return;
-    // guarda a tela atual (se existir) para restaurar depois
-    prevScreenId = window.__activeScreenId || null;
     modal.removeAttribute('hidden');
-    document.body.style.overflow='hidden';
-    if (err) err.style.display='none';
-    if (email) { try{ email.focus(); }catch(_){} }
+    document.body.style.overflow = 'hidden';
+    if (err) err.style.display = 'none';
+    if (email) email.focus();
   }
   function closeModal(){
     if (!modal) return;
     modal.setAttribute('hidden','');
-    document.body.style.overflow='';
-    // restaura a tela anterior (se existir)
-    if (prevScreenId && typeof window.setActive === 'function') {
-      window.setActive(prevScreenId);
-    } else if (typeof window.setActive === 'function') {
-      window.setActive('welcomeScreen');
-    }
-    prevScreenId = null;
+    document.body.style.overflow = '';
+    // NÃO mexe em location.hash, NÃO dispara hashchange
   }
 
-  async function hydrateProfile(){
-    try{
-      const t = localStorage.getItem('bm_token') || '';
-      if (!t) return;
-      const r = await fetch('/api/me', { headers: { Authorization: 'Bearer ' + t }});
-      const j = await r.json().catch(()=>({}));
-      if (!j || !j.user) return;
-      window.currentUser = j.user;
+  // Abertura/fechamento
+  if (btnOpen)  btnOpen.addEventListener('click', function(e){ e.preventDefault(); openModal(); });
+  if (btnNo)    btnNo.addEventListener('click',  function(e){ e.preventDefault(); closeModal(); });
+  if (modal)    modal.addEventListener('click',   function(e){ if (e.target === modal) closeModal(); });
 
-      // preenche defensivamente, sem travar navegação
-      const map = {
-        name: ['name','profileName','inputName'],
-        email:['email','profileEmail','inputEmail'],
-        phone:['phone','profilePhone','inputPhone'],
-        company:['company','profileCompany','inputCompany'],
-        cnpj:['cnpj','profileCnpj','inputCnpj'],
-        agenda_url:['agenda_url','agendaUrl','inputAgendaUrl']
-      };
-      Object.entries(map).forEach(([k, ids])=>{
-        ids.forEach(id=>{
-          const el = document.getElementById(id);
-          if (el) { try{ el.value = j.user[k] ?? ''; }catch(_){} }
-        });
-      });
-
-      try{ if (typeof window.renderProfile === 'function') window.renderProfile(); }catch(_){}
-    }catch(_){}
-  }
-
+  // Login
   async function doLogin(){
-    if (err) err.style.display='none';
-    const mail=(email?.value||'').trim();
-    const pwd =(pass?.value||'').trim();
+    if (err) err.style.display = 'none';
+    var mail = (email && email.value || '').trim();
+    var pwd  = (pass  && pass.value  || '').trim();
     if (!mail || !pwd){
-      if (err){ err.textContent='Preencha e-mail e senha.'; err.style.display='block'; }
+      if (err){ err.textContent = 'Preencha e-mail e senha.'; err.style.display = 'block'; }
       return;
     }
     try{
-      if (typeof window.apiLogin !== 'function') throw new Error('apiLogin ausente');
+      if (!window.apiLogin) throw new Error('apiLogin não encontrado');
       await window.apiLogin({ email: mail, password: pwd });
+
+      // sucesso: fecha modal e mostra perfil (sem hash)
       closeModal();
-      if (typeof window.setActive === 'function') window.setActive('profileScreen');
-      await hydrateProfile();
+      setActive('profileScreen');
+
+      // opcional: emitir um evento para outros scripts ouvirem
+      try { document.dispatchEvent(new CustomEvent('bm-login-success')); } catch(_){}
+
     }catch(e){
-      if (err){ err.textContent='Credenciais inválidas.'; err.style.display='block'; }
+      if (err){ err.textContent = 'Credenciais inválidas.'; err.style.display = 'block'; }
       console.warn(e);
     }
   }
+  if (btnOk)   btnOk.addEventListener('click', doLogin);
+  if (pass)    pass.addEventListener('keydown', function(e){ if (e.key === 'Enter') doLogin(); });
 
-  // wiring
-  if (btnTop)    btnTop.addEventListener('click',(e)=>{ e.preventDefault(); openModal(); });
-  if (btnCancel) btnCancel.addEventListener('click',(e)=>{ e.preventDefault(); closeModal(); });
-  if (modal)     modal.addEventListener('click',(e)=>{ if (e.target === modal) closeModal(); });
-  if (btnSubmit) btnSubmit.addEventListener('click',(e)=>{ e.preventDefault(); doLogin(); });
-  if (pass)      pass.addEventListener('keydown',(e)=>{ if (e.key==='Enter') doLogin(); });
-
-  // chegada direta por /#login: abre modal, mas não mexe em telas
-  if (location.hash === '#login') openModal();
+  // Não auto-abrir por hash; não observar hashchange
 })();
 </script>
 
