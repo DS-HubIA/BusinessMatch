@@ -4119,6 +4119,7 @@ document.addEventListener('DOMContentLoaded',function(){
       await window.apiLogin({email:mail,password:pwd});
       document.dispatchEvent(new Event('bm-login-success'));
 document.dispatchEvent(new Event('bm-login-success'));
+document.dispatchEvent(new Event('bm-login-success'));
 closeModal(); setActive('profileScreen');
       try{ if(window.renderProfile) setTimeout(window.renderProfile,0);}catch(_){}
     }catch(e){ if(err){err.textContent='Credenciais inválidas.';err.style.display='block';} console.warn(e); }
