@@ -1407,7 +1407,6 @@
   .external-link-btn:hover{ filter:brightness(0.95); }
 </style>
 
-<style id="spa-visibility">.screen{display:none}.screen.active{display:flex}</style>
 </head>
 <style id="login-guard-override">
   /* mantém #login realmente escondido */
@@ -2052,9 +2051,9 @@ Implementamos medidas de segurança para proteger suas informações.`,
             if (savedUser) {
                 currentUser = JSON.parse(savedUser);
                 updateUserInterface();
-                setActive('opportunitiesScreen');
+                showScreen('opportunitiesScreen');
             } else {
-                setActive('welcomeScreen');
+                showScreen('welcomeScreen');
             }
             
             renderCards();
@@ -2280,7 +2279,10 @@ Implementamos medidas de segurança para proteger suas informações.`,
         function updateUserInterface() {
             if (currentUser) {
                 // Usuário logado
-                loginBtn.                registerBtn.                // Atualizar perfil
+                loginBtn.style.display = 'none';
+                registerBtn.style.display = 'none';
+                
+                // Atualizar perfil
                 const profileName = document.getElementById('profileName');
                 const profileBusiness = document.getElementById('profileBusiness');
                 const profileAvatar = document.getElementById('profileAvatar');
@@ -2312,7 +2314,7 @@ Implementamos medidas de segurança para proteger suas informações.`,
                 const currentScreen = document.querySelector('.screen.active');
                 if (currentScreen && currentScreen.id !== 'authScreen' && 
                     currentScreen.id !== 'welcomeScreen') {
-                    setActive('welcomeScreen');
+                    showScreen('welcomeScreen');
                 }
             }
         }
@@ -2320,7 +2322,9 @@ Implementamos medidas de segurança para proteger suas informações.`,
         // Renderizar cards na tela
         function renderCards() {
             cardContainer.innerHTML = '';
-            emptyState.            let opportunitiesToShow = businessOpportunities;
+            emptyState.style.display = 'none';
+            
+            let opportunitiesToShow = businessOpportunities;
             
             // Aplicar filtros se existirem
             if (Object.keys(activeFilters).some(key => activeFilters[key])) {
@@ -3180,7 +3184,7 @@ Implementamos medidas de segurança para proteger suas informações.`,
                         currentUser = null;
                         localStorage.removeItem('currentUser');
                         updateUserInterface();
-                        setActive('welcomeScreen');
+                        showScreen('welcomeScreen');
                     }
                 });
             }
@@ -3269,7 +3273,7 @@ Implementamos medidas de segurança para proteger suas informações.`,
             // Agendamento
             const cancelScheduleBtn = document.getElementById('cancelScheduleBtn');
             if (cancelScheduleBtn) {
-                cancelScheduleBtn.addEventListener('click', () => setActive('opportunitiesScreen'));
+                cancelScheduleBtn.addEventListener('click', () => showScreen('opportunitiesScreen'));
             }
             
             const scheduleForm = document.getElementById('scheduleForm');
@@ -3319,7 +3323,7 @@ Implementamos medidas de segurança para proteger suas informações.`,
             const logoutAdminBtn = document.getElementById('logoutAdminBtn');
             if (logoutAdminBtn) {
                 logoutAdminBtn.addEventListener('click', () => {
-                    setActive('welcomeScreen');
+                    showScreen('welcomeScreen');
                 });
             }
             
@@ -3397,7 +3401,7 @@ Implementamos medidas de segurança para proteger suas informações.`,
                         currentUser = null;
                         localStorage.removeItem('currentUser');
                         updateUserInterface();
-                        setActive('welcomeScreen');
+                        showScreen('welcomeScreen');
                         
                         alert('Sua conta e todos os seus dados foram excluídos permanentemente do sistema.');
                         
@@ -3498,7 +3502,7 @@ Implementamos medidas de segurança para proteger suas informações.`,
                     localStorage.setItem('currentUser', JSON.stringify(currentUser));
                     updateUserInterface();
                     loadUserData();
-                    setActive('opportunitiesScreen');
+                    showScreen('opportunitiesScreen');
                     
                     // Ativar a navegação de oportunidades
                     navItems.forEach(nav => nav.classList.remove('active'));
@@ -3529,7 +3533,7 @@ Implementamos medidas de segurança para proteger suas informações.`,
                 currentUser = user;
                 localStorage.setItem('currentUser', JSON.stringify(currentUser));
                 updateUserInterface();
-                setActive('opportunitiesScreen');
+                showScreen('opportunitiesScreen');
                 
                 // Ativar a navegação de oportunidades
                 navItems.forEach(nav => nav.classList.remove('active'));
@@ -3607,7 +3611,7 @@ Implementamos medidas de segurança para proteger suas informações.`,
             updateStats();
             
             // Voltar para a tela de oportunidades
-            setActive('opportunitiesScreen');
+            showScreen('opportunitiesScreen');
             matchOverlay.classList.remove('active');
             nextCard();
         }
@@ -3703,6 +3707,8 @@ document.addEventListener('DOMContentLoaded', function(){
       if (login){
         var tab = q('[data-bs-toggle="tab"][href="#login"], [data-toggle="tab"][href="#login"]');
         if (tab){ tab.click(); return; }
+        qa('.screen, .view, section[id^="screen-"], [data-section]').forEach(function(s){ if(s!==login) s.style.display='none'; });
+        login.style.display=''; login.removeAttribute('hidden');
         try{ login.scrollIntoView({behavior:'smooth',block:'start'}); }catch(_){}
       } else {
         location.hash='#login';
@@ -3724,7 +3730,8 @@ document.addEventListener('DOMContentLoaded', function(){
         if (typeof modal.close==='function') modal.close();
         modal.removeAttribute('open');
         modal.setAttribute('hidden','hidden');
-        modal.      });
+        modal.style.display='none';
+      });
     }
   })();
 
@@ -3887,6 +3894,8 @@ document.addEventListener('DOMContentLoaded', function(){
     if (login){
       const tab = q('[data-bs-toggle="tab"][href="#login"], [data-toggle="tab"][href="#login"]');
       if (tab){ tab.click(); return; }
+      qa('.screen, .view, section[id^="screen-"], [data-section]').forEach(s => { if (s !== login) s.style.display='none'; });
+      login.style.display=''; login.removeAttribute('hidden');
       try{ login.scrollIntoView({behavior:'smooth', block:'start'}); }catch(_){}
     } else { location.hash = '#login'; }
   }
@@ -3919,7 +3928,8 @@ document.addEventListener('DOMContentLoaded',function(){
     Array.from(header.querySelectorAll('*')).forEach(el=>{
       const t = (el.textContent||'').trim().toLowerCase();
       if (/clube de neg[óo]cios sebrae/.test(t) || /business\s*match/.test(t)){
-        el.      }
+        el.style.display = 'none';
+      }
     });
   }
 
@@ -4001,12 +4011,12 @@ document.addEventListener('DOMContentLoaded',function(){
           // deixa o modal visível; o script do modal controla isso
           return;
         }
-        if (!isLoginEl){ el.hidden = false; if (el.style) ?; }
+        if (!isLoginEl){ el.hidden = false; if (el.style) el.style.display = ''; }
       });
       // Se não é a rota #login, garanta o modal oculto
       if (!isLogin){
         var dlg = document.getElementById('login');
-        
+        if (dlg){ dlg.hidden = true; if (dlg.style) dlg.style.display = 'none'; }
         document.body.style.overflow = '';
       }
     }catch(e){}
@@ -4030,9 +4040,98 @@ document.addEventListener('DOMContentLoaded',function(){
 
 
 
+<script id="mini-router">
+(function(){
+  const ROUTES = {
+    home: "welcomeScreen",
+    perfil: "profileScreen",
+    oportunidades: "opportunitiesScreen",
+    matches: "matchesScreen",
+    register: "authScreen"
+  };
 
+  function setActiveScreen(id){
+    const screens = document.querySelectorAll('.screen');
+    let target = document.getElementById(id);
+    screens.forEach(el=>{
+      const isTarget = el===target;
+      el.classList.toggle('active', isTarget);
+      el.style.display = isTarget ? 'flex' : 'none';
+    });
+  }
 
+  function normalize(){
+    const active = document.querySelector('.screen.active');
+    if (!active || getComputedStyle(active).display==='none'){
+      const first = document.getElementById('welcomeScreen') || document.querySelector('.screen');
+      if(first){
+        first.classList.add('active');
+        first.style.display='flex';
+      }
+    }
+  }
 
+  function route(){
+    const hash = location.hash.replace('#','');
+    const id = ROUTES[hash] || 'welcomeScreen';
+    setActiveScreen(id);
+  }
+
+  window.addEventListener('hashchange', route);
+  document.addEventListener('DOMContentLoaded', ()=>{route(); normalize();});
+})();
+</script>
+
+<script id="login-modal-logic">
+(function(){
+  function $(s){return document.querySelector(s);}
+  const modal=$('#login'), email=$('#loginEmail'), pass=$('#loginPassword'),
+        err=$('#loginError'), cancel=$('#loginCancelBtn'), submit=$('#loginSubmitBtn'), topBtn=$('#loginBtn');
+
+  function openModal(){
+    modal.hidden=false; modal.style.display='flex'; document.body.style.overflow='hidden';
+    if(err)err.style.display='none'; if(email)email.focus();
+  }
+  function closeModal(){
+    modal.hidden=true; modal.style.display='none'; document.body.style.overflow='';
+    setTimeout(()=>{ const a=document.querySelector('.screen.active');
+      if(!a||getComputedStyle(a).display==='none'){
+        const w=document.getElementById('welcomeScreen');
+        if(w){w.classList.add('active');w.style.display='flex';}
+      }
+    },0);
+  }
+
+  function setActive(id){
+    document.querySelectorAll('.screen').forEach(el=>{
+      const ok=el.id===id;
+      el.classList.toggle('active',ok);
+      el.style.display=ok?'flex':'none';
+    });
+  }
+
+  async function doLogin(){
+    if(err)err.style.display='none';
+    const mail=(email?.value||'').trim(), pwd=(pass?.value||'').trim();
+    if(!mail||!pwd){ if(err){err.textContent='Preencha e-mail e senha.';err.style.display='block';} return; }
+    try{
+      if(!window.apiLogin)throw new Error('apiLogin ausente');
+      await window.apiLogin({email:mail,password:pwd});
+      document.dispatchEvent(new Event('bm-login-success'));
+document.dispatchEvent(new Event('bm-login-success'));
+document.dispatchEvent(new Event('bm-login-success'));
+closeModal(); setActive('profileScreen');
+      try{ if(window.renderProfile) setTimeout(window.renderProfile,0);}catch(_){}
+    }catch(e){ if(err){err.textContent='Credenciais inválidas.';err.style.display='block';} console.warn(e); }
+  }
+
+  if(topBtn)topBtn.onclick=(e)=>{e.preventDefault();openModal();};
+  if(cancel)cancel.onclick=(e)=>{e.preventDefault();closeModal();};
+  if(modal)modal.onclick=(e)=>{if(e.target===modal)closeModal();};
+  if(submit)submit.onclick=doLogin;
+  if(pass)pass.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+})();
+</script>
 
 <script id="profile-hydrator">
 (function(){
@@ -4054,14 +4153,14 @@ document.addEventListener('DOMContentLoaded',function(){
     document.querySelectorAll('.screen').forEach(function(el){
       var on = (el.id === id);
       el.classList.toggle('active', on);
-      el.classList.toggle('active', on);
+      el.style.display = on ? 'flex' : 'none';
       if (on) found = true;
     });
     // Caso não exista a section, não esconda tudo
     if (!found) {
       document.querySelectorAll('.screen').forEach(function(el){
         el.classList.remove('active');
-        ?;
+        el.style.display = '';
       });
     }
   }
@@ -4108,14 +4207,14 @@ document.addEventListener('DOMContentLoaded',function(){
     document.querySelectorAll('.screen').forEach(function(el){
       var on = (el.id === id);
       el.classList.toggle('active', on);
-      el.classList.toggle('active', on);
+      el.style.display = on ? 'flex' : 'none';
       if(on) found = true;
     });
     // Se a tela-alvo não existe, não esconda tudo
     if(!found){
       document.querySelectorAll('.screen').forEach(function(el){
         el.classList.remove('active');
-        ?;
+        el.style.display = '';
       });
     }
   }
@@ -4181,220 +4280,68 @@ document.addEventListener('DOMContentLoaded',function(){
 })();
 </script>
 
-
-
-
-
-
-
-
-<script id="router-guard-v2">
-(function(){
-  var SCREENS = {
-    '#home': 'welcomeScreen',
-    '#oportunidades': 'opportunitiesScreen',
-    '#matches': 'matchesScreen',
-    '#interesses': 'interestsScreen',
-    '#perfil': 'profileScreen',
-    '#cadastro': 'authScreen',
-    '#login': '(modal)'
-  };
-  var DEFAULT_HASH = '#home';
-
-  function byId(id){ return document.getElementById(id); }
-  function $$ (sel, ctx){ return (ctx||document).querySelectorAll(sel); }
-
-  function showModalLogin(on){
-    var dlg = byId('login');
-    if (!dlg) return;
-    if (on){ dlg.removeAttribute('hidden'); document.body.style.overflow='hidden'; }
-    else   { dlg.setAttribute('hidden','');  document.body.style.overflow='';      }
-  }
-
-  function activateScreen(id){
-    // liga .active somente em uma tela; não mexe em display inline
-    $$('.screen').forEach(function(el){
-      el.classList.toggle('active', el.id === id);
-    });
-  }
-
-  function resolveHash(h){
-    // normaliza hash
-    if (!h || !SCREENS[h]) return DEFAULT_HASH;
-    return h;
-  }
-
-  function applyRouteFromHash(){
-    var h = resolveHash(location.hash);
-    if (h === '#login'){
-      showModalLogin(true);
-      // mantém tela atual por baixo
-      return;
-    }
-    showModalLogin(false);
-    var screenId = SCREENS[h] || 'welcomeScreen';
-    activateScreen(screenId);
-  }
-
-  // Vínculos de UI (menu/botões) -> hash
-  function bindNav(){
-    $$('.nav-item[data-screen]').forEach(function(item){
-      item.addEventListener('click', function(e){
-        var id = item.getAttribute('data-screen');
-        var hash = Object.keys(SCREENS).find(k => SCREENS[k] === id) || '#home';
-        if (hash !== '#login'){
-          location.hash = hash;
-        }
-      });
-    });
-    // topo
-    var loginBtn = byId('loginBtn');
-    if (loginBtn){
-      loginBtn.addEventListener('click', function(e){
-        e.preventDefault();
-        location.hash = '#login';
-      });
-    }
-    var registerBtn = byId('registerBtn');
-    if (registerBtn){
-      registerBtn.addEventListener('click', function(e){
-        e.preventDefault();
-        location.hash = '#cadastro';
-      });
-    }
-    // modal: fechar em overlay/cancelar
-    var modal = byId('login');
-    if (modal){
-      modal.addEventListener('click', function(e){
-        if (e.target.id === 'login' || e.target.id === 'loginCancelBtn'){
-          // volta para a tela que estiver ativa; se nenhuma, home
-          if (!location.hash || location.hash === '#login'){ history.replaceState(null,'',location.pathname+location.search+'#home'); }
-          showModalLogin(false);
-          applyRouteFromHash();
-        }
-      });
-    }
-  }
-
-  // Pós-login: detecta token/usuário e navega ao perfil
-  function bindPostLogin(){
-    document.addEventListener('click', function(e){
-      var id = e.target && e.target.id;
-      if (id === 'loginSubmitBtn'){
-        setTimeout(function(){
-          try{
-            var t = localStorage.getItem('bm_token') || '';
-            var cu = localStorage.getItem('currentUser') || '';
-            if ((t && t.length>10) || cu){
-              location.hash = '#perfil';
-              showModalLogin(false);
-              applyRouteFromHash();
-            }
-          }catch(_){}
-        }, 300);
-      }
-    });
-  }
-
-  window.addEventListener('DOMContentLoaded', function(){
-    bindNav();
-    bindPostLogin();
-    // hash vazio -> home
-    if (!location.hash) { location.hash = DEFAULT_HASH; }
-    applyRouteFromHash();
-  });
-
-  window.addEventListener('hashchange', applyRouteFromHash);
-})();
-</script>
-
-
-<script id="mini-router">
-(function(){
-  const MAP = { home:'welcomeScreen', perfil:'profileScreen', oportunidades:'opportunitiesScreen', matches:'matchesScreen', register:'authScreen' };
-  function setActive(id){
-    const target = document.getElementById(id);
-    document.querySelectorAll('.screen').forEach(el=>{
-      const on = (el === target);
-      el.classList.toggle('active', on);
-      if (el.style) el.style.display = ''; 
-    });
-    if (target && target.style) target.style.display = ''; 
-    const main = document.querySelector('main');
-    if (main){ main.hidden = false; main.removeAttribute('hidden'); if (main.style) main.style.display = ''; }
-  }
-  function current(){
-    let h = (location.hash||'').replace(/^#/, '');
-    if(!h) h = 'home';
-    return h;
-  }
-  function route(){
-    const tgt = MAP[current()] || MAP.home;
-    setActive(tgt);
-  }
-  window.addEventListener('hashchange', route);
-  window.addEventListener('DOMContentLoaded', route);
-})();
-</script>
-
-
-<script id="login-modal-logic">
-(function(){
-  const $ = s => document.querySelector(s);
-  const modal = $('#login');
-  const email = $('#loginEmail');
-  const pass  = $('#loginPassword');
-  const err   = $('#loginError');
-  const btnCancel = $('#loginCancelBtn');
-  const btnSubmit = $('#loginSubmitBtn');
-  const topLogin  = $('#loginBtn');
-
-  function unhideMainAndScreens(){
-    try{
-      const main = document.querySelector('main');
-      if (main){ main.hidden=false; main.removeAttribute('hidden'); if (main.style) main.style.display=''; }
-      document.querySelectorAll('.screen').forEach(el=>{ if(el && el.style) el.style.display=''; });
-    }catch(_){}
-  }
-
-  function openModal(){
-    if (!modal) return;
-    modal.removeAttribute('hidden');
-    if (modal.style) modal.style.display='';
-    document.body.style.overflow='hidden';
-    if (err) err.    if (email) email.focus();
-  }
-  function closeModal(){
-    if (!modal) return;
-    modal.setAttribute('hidden','');
-    if (modal.style) modal.    document.body.style.overflow='';
-    unhideMainAndScreens();
-  }
-
-  if (topLogin){ topLogin.addEventListener('click', e=>{ e.preventDefault(); openModal(); }); }
-  if (btnCancel){ btnCancel.addEventListener('click', e=>{ e.preventDefault(); closeModal(); history.replaceState(null,'',location.pathname+location.search); location.hash='#home'; }); }
-  if (modal){ modal.addEventListener('click', e=>{ if(e.target===modal){ closeModal(); history.replaceState(null,'',location.pathname+location.search); location.hash='#home'; } }); }
-
-  async function doLogin(){
-    if (err) err.    const mail=(email?.value||'').trim(), pwd=(pass?.value||'').trim();
-    if (!mail || !pwd){ if(err){ err.textContent='Preencha e-mail e senha.'; err.style.display='block'; } return; }
-    try{
-      if(!window.apiLogin) throw new Error('apiLogin ausente');
-      await window.apiLogin({ email: mail, password: pwd });
-      closeModal();
-      location.hash = '#perfil';
-      try{ if (window.renderProfile) setTimeout(window.renderProfile,0); }catch(_){}
-    }catch(e){
-      if(err){ err.textContent='Credenciais inválidas.'; err.style.display='block'; }
-      console.warn(e);
-    }
-  }
-  if (btnSubmit) btnSubmit.addEventListener('click', doLogin);
-  if (pass) pass.addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
-
-  document.addEventListener('DOMContentLoaded', unhideMainAndScreens);
-})();
-</script>
-
 </body>
+<script id="final-guard">
+(function(){
+  function qs(s){ return document.querySelector(s); }
+
+  function hideLogin(){
+    var m = qs('#login');
+    if (m){
+      m.setAttribute('hidden','');
+      document.body.style.overflow = '';
+    }
+  }
+
+  function showMain(){
+    // Mostra contêineres principais se existirem (não cria nada novo)
+    ['#app','main','#home','#perfil','#oportunidades','#matches'].forEach(function(sel){
+      var el = qs(sel);
+      if (!el) return;
+      el.hidden = false;
+      el.removeAttribute('hidden');
+      // limpa "display:none" inline, caso algum script tenha aplicado
+      el.style.display = '';
+    });
+  }
+
+  function fix(){
+    if (location.hash === '#login') return; // deixa o modal abrir naturalmente
+    hideLogin();
+    showMain();
+    // dispara um hashchange “manual” para SPAs que reagem a ele
+    /* removed manual hashchange dispatch (anti-loop) */
+  }
+
+  window.addEventListener('DOMContentLoaded', fix);
+  /* removed hashchange listener for fix() to avoid recursion */
+
+  // pós-login: quando clicam em Entrar no modal, esperamos o token e levamos pro perfil
+  document.addEventListener('click', function(e){
+    var id = (e.target && e.target.id) || '';
+    if (id === 'loginSubmitBtn'){
+      setTimeout(function(){
+        try{
+          var t = localStorage.getItem('bm_token') || '';
+          if (t.length > 10){
+            location.hash = '#perfil';
+            fix();
+            // fallback extra para reidratar cards/área central (se existirem essas funções)
+            if (typeof window.init === 'function') window.init();
+            if (typeof window.renderProfile === 'function') window.renderProfile();
+          }
+        }catch(_){}
+      }, 300);
+    }
+    if (id === 'loginCancelBtn'){
+      // cancelar: fecha modal, limpa hash e garante conteúdo visível
+      hideLogin();
+      history.replaceState(null,'',location.pathname + location.search);
+      fix();
+    }
+  });
+})();
+</script>
+
+
 </html>
