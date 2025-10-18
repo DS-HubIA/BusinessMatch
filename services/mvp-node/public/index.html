@@ -4030,24 +4030,15 @@ document.addEventListener('DOMContentLoaded',function(){
 })();
 </script>
 
-
-
-
-
-
-
-
-
-
-
 <script id="mini-router">
 (function(){
+  // IDs reais existentes no HTML:
   const IDS = [
     'welcomeScreen','opportunitiesScreen','matchesScreen','interestsScreen',
     'profileScreen','authScreen','addBusinessScreen','scheduleScreen','adminScreen'
   ];
   const els = {};
-  IDS.forEach(id => { const el = document.getElementById(id); if (el) els[id]=el; });
+  IDS.forEach(id => { const el = document.getElementById(id); if (el) els[id] = el; });
 
   function setActive(id){
     const target = els[id] ? id : 'welcomeScreen';
@@ -4056,36 +4047,86 @@ document.addEventListener('DOMContentLoaded',function(){
       els[k].classList.toggle('active', on);
       els[k].style.display = on ? 'flex' : 'none';
     });
+    // expõe pra outros scripts
+    window.setActive = setActive;
+    window.__activeScreenId = target;
   }
 
-  // navegação por botões/links com data-target (sem hash)
+  // 1) Clique em <a href="#algumaCoisa">
+  document.addEventListener('click', (e)=>{
+    const a = e.target.closest('a[href^="#"]');
+    if (!a) return;
+    const id = (a.getAttribute('href') || '').slice(1);
+    if (!id) return;
+
+    // #login abre o modal de login (sem mexer em telas)
+    if (id === 'login') {
+      e.preventDefault();
+      const dlg = document.getElementById('login');
+      if (dlg){ dlg.removeAttribute('hidden'); document.body.style.overflow='hidden'; }
+      return;
+    }
+
+    // Se for uma das telas, faz navegação SPA (sem depender de hashchange)
+    if (els[id]) {
+      e.preventDefault();
+      setActive(id);
+    }
+    // Caso contrário, deixa o navegador seguir (ex.: âncora interna qualquer)
+  });
+
+  // 2) Clique em elementos com data-target="id"
   document.addEventListener('click', (e)=>{
     const t = e.target.closest('[data-target]');
     if (!t) return;
-    const tgt = t.getAttribute('data-target');
-    if (tgt && els[tgt]) {
+    const id = t.getAttribute('data-target');
+    if (id && els[id]) {
       e.preventDefault();
-      setActive(tgt);
+      setActive(id);
     }
   });
 
-  // estado inicial: se nenhuma tela ativa, mostra welcome (ou a primeira disponível)
+  // 3) Estado inicial: se nada está visível, mostra welcome
   (function initStart(){
-    const anyActive = Object.values(els).some(el => el.classList.contains('active') || getComputedStyle(el).display !== 'none');
-    if (!anyActive) setActive('welcomeScreen');
+    const anyVisible = Object.values(els).some(el => getComputedStyle(el).display !== 'none');
+    if (!anyVisible) setActive('welcomeScreen');
   })();
 })();
 </script>
 
 <script id="login-modal-logic">
 (function(){
-  // util: ligar/desligar uma tela .screen por id (sem mexer em hash)
-  function setActive(id){
-    document.querySelectorAll('.screen').forEach(el=>{
-      const on = el.id === id;
-      el.classList.toggle('active', on);
-      el.style.display = on ? 'flex' : 'none';
-    });
+  const $ = (s)=>document.querySelector(s);
+  const modal = $('#login');
+  const email = $('#loginEmail');
+  const pass  = $('#loginPassword');
+  const err   = $('#loginError');
+  const btnCancel = $('#loginCancelBtn');
+  const btnSubmit = $('#loginSubmitBtn');
+  const btnTop    = $('#loginBtn');
+
+  let prevScreenId = null;
+
+  function openModal(){
+    if (!modal) return;
+    // guarda a tela atual (se existir) para restaurar depois
+    prevScreenId = window.__activeScreenId || null;
+    modal.removeAttribute('hidden');
+    document.body.style.overflow='hidden';
+    if (err) err.style.display='none';
+    if (email) { try{ email.focus(); }catch(_){} }
+  }
+  function closeModal(){
+    if (!modal) return;
+    modal.setAttribute('hidden','');
+    document.body.style.overflow='';
+    // restaura a tela anterior (se existir)
+    if (prevScreenId && typeof window.setActive === 'function') {
+      window.setActive(prevScreenId);
+    } else if (typeof window.setActive === 'function') {
+      window.setActive('welcomeScreen');
+    }
+    prevScreenId = null;
   }
 
   async function hydrateProfile(){
@@ -4095,52 +4136,26 @@ document.addEventListener('DOMContentLoaded',function(){
       const r = await fetch('/api/me', { headers: { Authorization: 'Bearer ' + t }});
       const j = await r.json().catch(()=>({}));
       if (!j || !j.user) return;
-
-      // torna disponível para quem usa currentUser
       window.currentUser = j.user;
 
-      // preenche campos comuns se existirem (defensivo)
+      // preenche defensivamente, sem travar navegação
       const map = {
-        name: ['name', 'profileName', 'inputName'],
-        email: ['email', 'profileEmail', 'inputEmail'],
-        phone: ['phone','profilePhone','inputPhone'],
-        company: ['company','profileCompany','inputCompany'],
-        cnpj: ['cnpj','profileCnpj','inputCnpj'],
-        agenda_url: ['agenda_url','agendaUrl','inputAgendaUrl']
+        name: ['name','profileName','inputName'],
+        email:['email','profileEmail','inputEmail'],
+        phone:['phone','profilePhone','inputPhone'],
+        company:['company','profileCompany','inputCompany'],
+        cnpj:['cnpj','profileCnpj','inputCnpj'],
+        agenda_url:['agenda_url','agendaUrl','inputAgendaUrl']
       };
       Object.entries(map).forEach(([k, ids])=>{
-        for (const id of ids){
+        ids.forEach(id=>{
           const el = document.getElementById(id);
-          if (el){ try{ el.value = j.user[k] ?? ''; }catch(_){} }
-        }
+          if (el) { try{ el.value = j.user[k] ?? ''; }catch(_){} }
+        });
       });
-      // se existir um renderizador próprio
+
       try{ if (typeof window.renderProfile === 'function') window.renderProfile(); }catch(_){}
     }catch(_){}
-  }
-
-  const $ = (s)=>document.querySelector(s);
-  const modal = $('#login');
-  const email = $('#loginEmail');
-  const pass  = $('#loginPassword');
-  const err   = $('#loginError');
-  const btnCancel = $('#loginCancelBtn');
-  const btnSubmit = $('#loginSubmitBtn');
-  const btnTop    = $('#loginBtn'); // botão "Entrar" do topo
-
-  function openModal(){
-    if (!modal) return;
-    modal.removeAttribute('hidden');
-    document.body.style.overflow='hidden';
-    if (err) err.style.display='none';
-    if (email) { try{ email.focus(); }catch(_){} }
-    // ao abrir o modal, mostre a tela de autenticação se existir
-    if (document.getElementById('authScreen')) setActive('authScreen');
-  }
-  function closeModal(){
-    if (!modal) return;
-    modal.setAttribute('hidden','');
-    document.body.style.overflow='';
   }
 
   async function doLogin(){
@@ -4154,9 +4169,8 @@ document.addEventListener('DOMContentLoaded',function(){
     try{
       if (typeof window.apiLogin !== 'function') throw new Error('apiLogin ausente');
       await window.apiLogin({ email: mail, password: pwd });
-      // token salvo com sucesso -> fecha modal, ativa perfil e hidrata dados
       closeModal();
-      setActive('profileScreen');
+      if (typeof window.setActive === 'function') window.setActive('profileScreen');
       await hydrateProfile();
     }catch(e){
       if (err){ err.textContent='Credenciais inválidas.'; err.style.display='block'; }
@@ -4164,14 +4178,14 @@ document.addEventListener('DOMContentLoaded',function(){
     }
   }
 
-  // wiring de botões/áreas
-  if (btnTop)    btnTop.addEventListener('click', (e)=>{ e.preventDefault(); openModal(); });
-  if (btnCancel) btnCancel.addEventListener('click', (e)=>{ e.preventDefault(); closeModal(); });
-  if (modal)     modal.addEventListener('click', (e)=>{ if (e.target === modal) closeModal(); });
-  if (btnSubmit) btnSubmit.addEventListener('click', (e)=>{ e.preventDefault(); doLogin(); });
-  if (pass)      pass.addEventListener('keydown', (e)=>{ if (e.key==='Enter') doLogin(); });
+  // wiring
+  if (btnTop)    btnTop.addEventListener('click',(e)=>{ e.preventDefault(); openModal(); });
+  if (btnCancel) btnCancel.addEventListener('click',(e)=>{ e.preventDefault(); closeModal(); });
+  if (modal)     modal.addEventListener('click',(e)=>{ if (e.target === modal) closeModal(); });
+  if (btnSubmit) btnSubmit.addEventListener('click',(e)=>{ e.preventDefault(); doLogin(); });
+  if (pass)      pass.addEventListener('keydown',(e)=>{ if (e.key==='Enter') doLogin(); });
 
-  // Se o usuário entrar direto em /#login, abrimos o modal. Não mexemos mais em hash depois disso.
+  // chegada direta por /#login: abre modal, mas não mexe em telas
   if (location.hash === '#login') openModal();
 })();
 </script>
