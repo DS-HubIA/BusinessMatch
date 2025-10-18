@@ -4020,141 +4020,96 @@ document.addEventListener('DOMContentLoaded',function(){
 
 
 
-<script id="login-modal-logic">
+
+
+
+<script id="mini-router">
 (function(){
-  function $(s){ return document.querySelector(s); }
-  function $all(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); }
-
-  // ===== Screen Keeper: garante que ao menos 1 .screen esteja visível =====
-  function normalizeScreens(preferId){
-    var screens = $all('.screen');
-    if (!screens.length) return;
-
-    function isVisible(el){
-      var cs = getComputedStyle(el);
-      return cs && cs.display !== 'none';
-    }
-
-    var anyVisible = screens.some(isVisible);
-    if (anyVisible) return; // já tem alguém visível, não faz nada
-
-    var target = null;
-    if (preferId && document.getElementById(preferId)) target = document.getElementById(preferId);
-    if (!target){
-      target = document.querySelector('.screen.active') ||
-               document.getElementById('welcomeScreen') ||
-               screens[0];
-    }
-
-    // Mostra só a escolhida
-    screens.forEach(function(el){
-      if (el === target){
-        el.classList.add('active');
-        if (el.style) el.style.display = 'flex';
-      } else {
-        el.classList.remove('active');
-        if (el.style) el.style.display = 'none';
-      }
-    });
-  }
-
-  // Tenta normalizar nas primeiras cargas também
-  document.addEventListener('DOMContentLoaded', function(){
-    setTimeout(function(){ normalizeScreens(); }, 0);
-  });
-
-  // ===== Login Modal =====
-  var modal = $('#login');
-  var email = $('#loginEmail');
-  var pass  = $('#loginPassword');
-  var err   = $('#loginError');
-  var btnCancel = $('#loginCancelBtn');
-  var btnSubmit = $('#loginSubmitBtn');
-  var topLogin  = $('#loginBtn');
-
-  function openModal(){
-    if(!modal) return;
-    modal.removeAttribute('hidden');
-    if (modal.style) modal.style.display = 'flex';
-    document.body.style.overflow='hidden';
-    if (err) err.style.display='none';
-    if (email) try{ email.focus(); }catch(_){}
-  }
-  function closeModal(){
-    if(!modal) return;
-    modal.setAttribute('hidden','');
-    if (modal.style) modal.style.display = 'none';
-    document.body.style.overflow='';
-    // ao fechar, garante que uma tela volte a aparecer
-    setTimeout(function(){ normalizeScreens(); }, 0);
-  }
+  const ROUTES = {
+    home: "welcomeScreen",
+    perfil: "profileScreen",
+    oportunidades: "opportunitiesScreen",
+    matches: "matchesScreen",
+    register: "authScreen"
+  };
 
   function setActiveScreen(id){
-    var screens = $all('.screen');
-    var target = document.getElementById(id);
-    screens.forEach(function(el){
-      if (el === target){
-        el.classList.add('active');
-        if (el.style) el.style.display = 'flex';
-      } else {
-        el.classList.remove('active');
-        if (el.style) el.style.display = 'none';
-      }
+    const screens = document.querySelectorAll('.screen');
+    let target = document.getElementById(id);
+    screens.forEach(el=>{
+      const isTarget = el===target;
+      el.classList.toggle('active', isTarget);
+      el.style.display = isTarget ? 'flex' : 'none';
     });
   }
 
-  if (topLogin){
-    topLogin.addEventListener('click', function(e){
-      e.preventDefault();
-      openModal();
-    });
+  function normalize(){
+    const active = document.querySelector('.screen.active');
+    if (!active || getComputedStyle(active).display==='none'){
+      const first = document.getElementById('welcomeScreen') || document.querySelector('.screen');
+      if(first){
+        first.classList.add('active');
+        first.style.display='flex';
+      }
+    }
   }
-  if (btnCancel){
-    btnCancel.addEventListener('click', function(e){
-      e.preventDefault();
-      closeModal();
-    });
+
+  function route(){
+    const hash = location.hash.replace('#','');
+    const id = ROUTES[hash] || 'welcomeScreen';
+    setActiveScreen(id);
   }
-  if (modal){
-    modal.addEventListener('click', function(e){
-      if (e.target === modal) closeModal();
+
+  window.addEventListener('hashchange', route);
+  document.addEventListener('DOMContentLoaded', ()=>{route(); normalize();});
+})();
+</script>
+
+<script id="login-modal-logic">
+(function(){
+  function $(s){return document.querySelector(s);}
+  const modal=$('#login'), email=$('#loginEmail'), pass=$('#loginPassword'),
+        err=$('#loginError'), cancel=$('#loginCancelBtn'), submit=$('#loginSubmitBtn'), topBtn=$('#loginBtn');
+
+  function openModal(){
+    modal.hidden=false; modal.style.display='flex'; document.body.style.overflow='hidden';
+    if(err)err.style.display='none'; if(email)email.focus();
+  }
+  function closeModal(){
+    modal.hidden=true; modal.style.display='none'; document.body.style.overflow='';
+    setTimeout(()=>{ const a=document.querySelector('.screen.active');
+      if(!a||getComputedStyle(a).display==='none'){
+        const w=document.getElementById('welcomeScreen');
+        if(w){w.classList.add('active');w.style.display='flex';}
+      }
+    },0);
+  }
+
+  function setActive(id){
+    document.querySelectorAll('.screen').forEach(el=>{
+      const ok=el.id===id;
+      el.classList.toggle('active',ok);
+      el.style.display=ok?'flex':'none';
     });
   }
 
   async function doLogin(){
-    if (err) err.style.display='none';
-    var mail = (email && email.value || '').trim();
-    var pwd  = (pass  && pass.value  || '').trim();
-    if (!mail || !pwd){
-      if (err){ err.textContent = 'Preencha e-mail e senha.'; err.style.display='block'; }
-      return;
-    }
+    if(err)err.style.display='none';
+    const mail=(email?.value||'').trim(), pwd=(pass?.value||'').trim();
+    if(!mail||!pwd){ if(err){err.textContent='Preencha e-mail e senha.';err.style.display='block';} return; }
     try{
-      if (!window.apiLogin) throw new Error('apiLogin ausente');
-      await window.apiLogin({ email: mail, password: pwd });
-      closeModal();
-      setActiveScreen('profileScreen');         // vai para Perfil
-      setTimeout(function(){                    // normalize redundante (defensivo)
-        normalizeScreens('profileScreen');
-      }, 0);
-      try { if (typeof window.init === 'function') setTimeout(window.init, 0); } catch(_){}
-      try { if (typeof window.renderProfile === 'function') setTimeout(window.renderProfile, 0); } catch(_){}
-    }catch(e){
-      if (err){ err.textContent = 'Credenciais inválidas.'; err.style.display='block'; }
-      console.warn('Login falhou:', e);
-    }
+      if(!window.apiLogin)throw new Error('apiLogin ausente');
+      await window.apiLogin({email:mail,password:pwd});
+      closeModal(); setActive('profileScreen');
+      try{ if(window.renderProfile) setTimeout(window.renderProfile,0);}catch(_){}
+    }catch(e){ if(err){err.textContent='Credenciais inválidas.';err.style.display='block';} console.warn(e); }
   }
 
-  if (btnSubmit) btnSubmit.addEventListener('click', doLogin);
-  if (pass) pass.addEventListener('keydown', function(e){ if (e.key === 'Enter') doLogin(); });
-
-  // Se o usuário veio por /#login, apenas abre o modal uma vez (não mexe em hash)
-  if (location.hash === '#login'){ openModal(); }
-
-  // Failsafe adicional: após qualquer clique, se tudo ficou oculto, reativa a tela atual.
-  document.addEventListener('click', function(){
-    setTimeout(function(){ normalizeScreens(); }, 0);
-  });
+  if(topBtn)topBtn.onclick=(e)=>{e.preventDefault();openModal();};
+  if(cancel)cancel.onclick=(e)=>{e.preventDefault();closeModal();};
+  if(modal)modal.onclick=(e)=>{if(e.target===modal)closeModal();};
+  if(submit)submit.onclick=doLogin;
+  if(pass)pass.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 })();
 </script>
 
