@@ -1390,6 +1390,23 @@
   #login input{ font-size:16px; }
   html{ -webkit-text-size-adjust:100%; }
 </style>
+<script id="safe-current-user">(function(){ window.currentUser = window.currentUser || {}; })();</script>
+
+<style id="external-cta-contrast">
+  .external-link-btn{
+    display:inline-block;
+    margin-top:12px;
+    border:1px solid var(--secondary, #1F6FEB);
+    color: var(--secondary, #1F6FEB);
+    background:#fff;
+    padding:10px 14px;
+    border-radius:999px;
+    font-weight:600;
+    text-decoration:none;
+  }
+  .external-link-btn:hover{ filter:brightness(0.95); }
+</style>
+
 </head>
 <style id="login-guard-override">
   /* mantém #login realmente escondido */
@@ -4101,6 +4118,7 @@ document.addEventListener('DOMContentLoaded',function(){
       if(!window.apiLogin)throw new Error('apiLogin ausente');
       await window.apiLogin({email:mail,password:pwd});
       document.dispatchEvent(new Event('bm-login-success'));
+document.dispatchEvent(new Event('bm-login-success'));
 closeModal(); setActive('profileScreen');
       try{ if(window.renderProfile) setTimeout(window.renderProfile,0);}catch(_){}
     }catch(e){ if(err){err.textContent='Credenciais inválidas.';err.style.display='block';} console.warn(e); }
@@ -4179,6 +4197,88 @@ closeModal(); setActive('profileScreen');
   }
 })();
 </script>
+
+<script id="bm-router-hydrator">
+(function(){
+  // util: ativa uma tela .screen por id e desativa as outras
+  function setActive(id){
+    var found = false;
+    document.querySelectorAll('.screen').forEach(function(el){
+      var on = (el.id === id);
+      el.classList.toggle('active', on);
+      el.style.display = on ? 'flex' : 'none';
+      if(on) found = true;
+    });
+    // Se a tela-alvo não existe, não esconda tudo
+    if(!found){
+      document.querySelectorAll('.screen').forEach(function(el){
+        el.classList.remove('active');
+        el.style.display = '';
+      });
+    }
+  }
+
+  // map de hash -> id real da section
+  function mapHashToScreen(h){
+    if (!h) return 'welcomeScreen';
+    if (h === '#perfil') return 'profileScreen';
+    if (h === '#register') return 'authScreen';
+    if (h === '#home') return 'welcomeScreen';
+    return null; // deixa outra lógica cuidar
+  }
+
+  // hidrata perfil e atualiza window.currentUser
+  async function hydrateProfile(){
+    try{
+      var t = localStorage.getItem('bm_token');
+      if(!t) return null;
+      var r = await fetch('/api/me', { headers: { Authorization: 'Bearer '+t }});
+      if(!r.ok) return null;
+      var j = await r.json();
+      var u = j && j.user ? j.user : null;
+      if(!u) return null;
+
+      window.currentUser = u; // <- evita null em scripts legados
+      try{
+        var q = function(id){ return document.getElementById(id); };
+        if(q('name'))       q('name').value       = u.name || '';
+        if(q('email'))      q('email').value      = u.email || '';
+        if(q('phone'))      q('phone').value      = u.phone || '';
+        if(q('company'))    q('company').value    = u.company || '';
+        if(q('cnpj'))       q('cnpj').value       = u.cnpj || '';
+        if(q('agenda_url')) q('agenda_url').value = u.agenda_url || '';
+      }catch{}
+      document.dispatchEvent(new Event('bm-profile-updated'));
+      return u;
+    }catch(e){ return null; }
+  }
+
+  // router mínimo por hash, respeitando o modal #login
+  function route(){
+    if (location.hash === '#login') return; // modal controla
+    var target = mapHashToScreen(location.hash);
+    if (target) setActive(target);
+  }
+
+  window.addEventListener('hashchange', route);
+  window.addEventListener('DOMContentLoaded', route);
+
+  // integra com o fluxo de login já existente:
+  //  - depois do apiLogin: vai para #perfil, ativa profileScreen e hidrata
+  document.addEventListener('bm-login-success', function(){
+    if (location.hash !== '#perfil') location.hash = '#perfil';
+    setActive('profileScreen');
+    hydrateProfile();
+  });
+
+  // visita direta a #perfil: ativa e hidrata
+  if (location.hash === '#perfil'){
+    setActive('profileScreen');
+    hydrateProfile();
+  }
+})();
+</script>
+
 </body>
 <script id="final-guard">
 (function(){
