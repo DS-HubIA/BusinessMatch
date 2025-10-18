@@ -4315,68 +4315,126 @@ document.addEventListener('DOMContentLoaded',function(){
 })();
 </script>
 
-</body>
-<script id="final-guard">
-(function(){
-  function qs(s){ return document.querySelector(s); }
 
-  function hideLogin(){
-    var m = qs('#login');
-    if (m){
-      m.setAttribute('hidden','');
-      document.body.style.overflow = '';
-    }
+<script id="router-guard-v2">
+(function(){
+  var SCREENS = {
+    '#home': 'welcomeScreen',
+    '#oportunidades': 'opportunitiesScreen',
+    '#matches': 'matchesScreen',
+    '#interesses': 'interestsScreen',
+    '#perfil': 'profileScreen',
+    '#cadastro': 'authScreen',
+    '#login': '(modal)'
+  };
+  var DEFAULT_HASH = '#home';
+
+  function byId(id){ return document.getElementById(id); }
+  function $$ (sel, ctx){ return (ctx||document).querySelectorAll(sel); }
+
+  function showModalLogin(on){
+    var dlg = byId('login');
+    if (!dlg) return;
+    if (on){ dlg.removeAttribute('hidden'); document.body.style.overflow='hidden'; }
+    else   { dlg.setAttribute('hidden','');  document.body.style.overflow='';      }
   }
 
-  function showMain(){
-    // Mostra contêineres principais se existirem (não cria nada novo)
-    ['#app','main','#home','#perfil','#oportunidades','#matches'].forEach(function(sel){
-      var el = qs(sel);
-      if (!el) return;
-      el.hidden = false;
-      el.removeAttribute('hidden');
-      // limpa "display:none" inline, caso algum script tenha aplicado
-      ?;
+  function activateScreen(id){
+    // liga .active somente em uma tela; não mexe em display inline
+    $$('.screen').forEach(function(el){
+      el.classList.toggle('active', el.id === id);
     });
   }
 
-  function fix(){
-    if (location.hash === '#login') return; // deixa o modal abrir naturalmente
-    hideLogin();
-    showMain();
-    // dispara um hashchange “manual” para SPAs que reagem a ele
-    /* removed manual hashchange dispatch (anti-loop) */
+  function resolveHash(h){
+    // normaliza hash
+    if (!h || !SCREENS[h]) return DEFAULT_HASH;
+    return h;
   }
 
-  window.addEventListener('DOMContentLoaded', fix);
-  /* removed hashchange listener for fix() to avoid recursion */
+  function applyRouteFromHash(){
+    var h = resolveHash(location.hash);
+    if (h === '#login'){
+      showModalLogin(true);
+      // mantém tela atual por baixo
+      return;
+    }
+    showModalLogin(false);
+    var screenId = SCREENS[h] || 'welcomeScreen';
+    activateScreen(screenId);
+  }
 
-  // pós-login: quando clicam em Entrar no modal, esperamos o token e levamos pro perfil
-  document.addEventListener('click', function(e){
-    var id = (e.target && e.target.id) || '';
-    if (id === 'loginSubmitBtn'){
-      setTimeout(function(){
-        try{
-          var t = localStorage.getItem('bm_token') || '';
-          if (t.length > 10){
-            location.hash = '#perfil';
-            fix();
-            // fallback extra para reidratar cards/área central (se existirem essas funções)
-            if (typeof window.init === 'function') window.init();
-            if (typeof window.renderProfile === 'function') window.renderProfile();
-          }
-        }catch(_){}
-      }, 300);
+  // Vínculos de UI (menu/botões) -> hash
+  function bindNav(){
+    $$('.nav-item[data-screen]').forEach(function(item){
+      item.addEventListener('click', function(e){
+        var id = item.getAttribute('data-screen');
+        var hash = Object.keys(SCREENS).find(k => SCREENS[k] === id) || '#home';
+        if (hash !== '#login'){
+          location.hash = hash;
+        }
+      });
+    });
+    // topo
+    var loginBtn = byId('loginBtn');
+    if (loginBtn){
+      loginBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        location.hash = '#login';
+      });
     }
-    if (id === 'loginCancelBtn'){
-      // cancelar: fecha modal, limpa hash e garante conteúdo visível
-      hideLogin();
-      history.replaceState(null,'',location.pathname + location.search);
-      fix();
+    var registerBtn = byId('registerBtn');
+    if (registerBtn){
+      registerBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        location.hash = '#cadastro';
+      });
     }
+    // modal: fechar em overlay/cancelar
+    var modal = byId('login');
+    if (modal){
+      modal.addEventListener('click', function(e){
+        if (e.target.id === 'login' || e.target.id === 'loginCancelBtn'){
+          // volta para a tela que estiver ativa; se nenhuma, home
+          if (!location.hash || location.hash === '#login'){ history.replaceState(null,'',location.pathname+location.search+'#home'); }
+          showModalLogin(false);
+          applyRouteFromHash();
+        }
+      });
+    }
+  }
+
+  // Pós-login: detecta token/usuário e navega ao perfil
+  function bindPostLogin(){
+    document.addEventListener('click', function(e){
+      var id = e.target && e.target.id;
+      if (id === 'loginSubmitBtn'){
+        setTimeout(function(){
+          try{
+            var t = localStorage.getItem('bm_token') || '';
+            var cu = localStorage.getItem('currentUser') || '';
+            if ((t && t.length>10) || cu){
+              location.hash = '#perfil';
+              showModalLogin(false);
+              applyRouteFromHash();
+            }
+          }catch(_){}
+        }, 300);
+      }
+    });
+  }
+
+  window.addEventListener('DOMContentLoaded', function(){
+    bindNav();
+    bindPostLogin();
+    // hash vazio -> home
+    if (!location.hash) { location.hash = DEFAULT_HASH; }
+    applyRouteFromHash();
   });
+
+  window.addEventListener('hashchange', applyRouteFromHash);
 })();
 </script>
 
-
+</body>
 </html>
