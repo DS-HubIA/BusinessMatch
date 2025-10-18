@@ -1363,11 +1363,12 @@
             margin-top: 1rem;
         }
         </style>
+        
 <style id="login-guard">
-  /* mantém a seção #login realmente escondida quando usar hidden */
+  /* garante que o modal some de verdade quando tiver hidden */
   #login[hidden]{ display:none !important; }
 
-  /* estilo básico do modal + overlay */
+  /* overlay + card básicos */
   .modal-overlay{
     position:fixed; inset:0; background:rgba(0,0,0,.45);
     display:flex; align-items:center; justify-content:center;
@@ -1380,12 +1381,8 @@
   }
   .modal-actions{ display:flex; gap:12px; margin-top:14px; }
   .btn{ cursor:pointer; }
-</style>
-<style id="login-guard-override">
-  /* mantém #login realmente escondido quando hidden */
-  #login[hidden]{ display:none !important; }
 
-  /* botões do modal */
+  /* estilos dos botões do modal */
   #login .btn.btn-outline{
     background:#fff;
     color: var(--secondary, #1F6FEB);
