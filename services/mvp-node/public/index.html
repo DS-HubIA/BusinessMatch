@@ -4017,11 +4017,53 @@ document.addEventListener('DOMContentLoaded',function(){
 
 
 
+
+
+
 <script id="login-modal-logic">
 (function(){
   function $(s){ return document.querySelector(s); }
   function $all(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); }
 
+  // ===== Screen Keeper: garante que ao menos 1 .screen esteja visível =====
+  function normalizeScreens(preferId){
+    var screens = $all('.screen');
+    if (!screens.length) return;
+
+    function isVisible(el){
+      var cs = getComputedStyle(el);
+      return cs && cs.display !== 'none';
+    }
+
+    var anyVisible = screens.some(isVisible);
+    if (anyVisible) return; // já tem alguém visível, não faz nada
+
+    var target = null;
+    if (preferId && document.getElementById(preferId)) target = document.getElementById(preferId);
+    if (!target){
+      target = document.querySelector('.screen.active') ||
+               document.getElementById('welcomeScreen') ||
+               screens[0];
+    }
+
+    // Mostra só a escolhida
+    screens.forEach(function(el){
+      if (el === target){
+        el.classList.add('active');
+        if (el.style) el.style.display = 'flex';
+      } else {
+        el.classList.remove('active');
+        if (el.style) el.style.display = 'none';
+      }
+    });
+  }
+
+  // Tenta normalizar nas primeiras cargas também
+  document.addEventListener('DOMContentLoaded', function(){
+    setTimeout(function(){ normalizeScreens(); }, 0);
+  });
+
+  // ===== Login Modal =====
   var modal = $('#login');
   var email = $('#loginEmail');
   var pass  = $('#loginPassword');
@@ -4043,21 +4085,22 @@ document.addEventListener('DOMContentLoaded',function(){
     modal.setAttribute('hidden','');
     if (modal.style) modal.style.display = 'none';
     document.body.style.overflow='';
+    // ao fechar, garante que uma tela volte a aparecer
+    setTimeout(function(){ normalizeScreens(); }, 0);
   }
 
   function setActiveScreen(id){
     var screens = $all('.screen');
-    for (var i=0;i<screens.length;i++){
-      var el = screens[i];
-      var isTarget = (el.id === id);
-      if (isTarget){
+    var target = document.getElementById(id);
+    screens.forEach(function(el){
+      if (el === target){
         el.classList.add('active');
         if (el.style) el.style.display = 'flex';
       } else {
         el.classList.remove('active');
         if (el.style) el.style.display = 'none';
       }
-    }
+    });
   }
 
   if (topLogin){
@@ -4070,27 +4113,11 @@ document.addEventListener('DOMContentLoaded',function(){
     btnCancel.addEventListener('click', function(e){
       e.preventDefault();
       closeModal();
-      setTimeout(function(){
-        // reassegura conteúdo visível da tela atual
-        var active = document.querySelector('.screen.active');
-        if (!active){
-          // fallback: mostra welcome se existir
-          if (document.getElementById('welcomeScreen')) setActiveScreen('welcomeScreen');
-        }
-      }, 0);
     });
   }
   if (modal){
     modal.addEventListener('click', function(e){
-      if (e.target === modal){
-        closeModal();
-        setTimeout(function(){
-          var active = document.querySelector('.screen.active');
-          if (!active){
-            if (document.getElementById('welcomeScreen')) setActiveScreen('welcomeScreen');
-          }
-        }, 0);
-      }
+      if (e.target === modal) closeModal();
     });
   }
 
@@ -4105,11 +4132,11 @@ document.addEventListener('DOMContentLoaded',function(){
     try{
       if (!window.apiLogin) throw new Error('apiLogin ausente');
       await window.apiLogin({ email: mail, password: pwd });
-      // sucesso: fecha modal e vai para profileScreen
       closeModal();
-      setActiveScreen('profileScreen');
-      try { document.body.setAttribute('data-auth', 'yes'); } catch(_){}
-      // se o app tiver renderizadores próprios, chame-os sem bloquear
+      setActiveScreen('profileScreen');         // vai para Perfil
+      setTimeout(function(){                    // normalize redundante (defensivo)
+        normalizeScreens('profileScreen');
+      }, 0);
       try { if (typeof window.init === 'function') setTimeout(window.init, 0); } catch(_){}
       try { if (typeof window.renderProfile === 'function') setTimeout(window.renderProfile, 0); } catch(_){}
     }catch(e){
@@ -4121,9 +4148,13 @@ document.addEventListener('DOMContentLoaded',function(){
   if (btnSubmit) btnSubmit.addEventListener('click', doLogin);
   if (pass) pass.addEventListener('keydown', function(e){ if (e.key === 'Enter') doLogin(); });
 
-  // IMPORTANTE: nunca mexer em location.hash aqui.
-  // Se o usuário entrar por /#login, apenas abrimos o modal uma vez.
+  // Se o usuário veio por /#login, apenas abre o modal uma vez (não mexe em hash)
   if (location.hash === '#login'){ openModal(); }
+
+  // Failsafe adicional: após qualquer clique, se tudo ficou oculto, reativa a tela atual.
+  document.addEventListener('click', function(){
+    setTimeout(function(){ normalizeScreens(); }, 0);
+  });
 })();
 </script>
 
