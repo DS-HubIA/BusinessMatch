@@ -4245,6 +4245,103 @@ document.addEventListener('DOMContentLoaded',function(){
 })();
 </script>
 
+        <script id="router-override">
+(function(){
+  // util: ativa UMA tela pela classe .active (sem mexer em style.display diretamente)
+  function setActive(id){
+    var found = false;
+    document.querySelectorAll('.screen').forEach(function(el){
+      var on = el.id === id;
+      el.classList.toggle('active', on);
+      if(on) found = true;
+    });
+    // fallback: se id não existir, garante pelo menos a welcome visível
+    if(!found){
+      var w = document.getElementById('welcomeScreen');
+      if(w) w.classList.add('active');
+    }
+  }
+
+  // modal helpers (não tocam nas telas .screen)
+  function openLogin(){
+    var dlg = document.getElementById('login');
+    if(dlg){
+      dlg.hidden = false;
+      if (dlg.style) dlg.style.display = ''; // deixa o CSS do modal atuar
+    }
+  }
+  function closeLogin(){
+    var dlg = document.getElementById('login');
+    if(dlg){
+      dlg.hidden = true;
+      if (dlg.style) dlg.style.display = 'none';
+    }
+  }
+
+  // wire no modal existente
+  var modal      = document.getElementById('login');
+  var btnOpen    = document.getElementById('loginBtn');
+  var btnCancel  = document.getElementById('loginCancelBtn');
+  var btnSubmit  = document.getElementById('loginSubmitBtn');
+  var pass       = document.getElementById('loginPassword');
+
+  if (btnOpen)   btnOpen.onclick = function(e){ e.preventDefault(); openLogin(); };
+  if (btnCancel) btnCancel.onclick = function(e){ e.preventDefault(); closeLogin(); setActive('welcomeScreen'); history.replaceState(null,'',location.pathname+location.search+'#home'); };
+  if (modal)     modal.addEventListener('click', function(e){ if (e.target === modal){ closeLogin(); setActive('welcomeScreen'); history.replaceState(null,'',location.pathname+location.search+'#home'); } });
+
+  // enter no campo senha também envia
+  if (pass) pass.addEventListener('keydown', function(e){ if(e.key==='Enter' && btnSubmit){ btnSubmit.click(); } });
+
+  // pós-login: quando clicarem em "Entrar" no modal, espere o token e vá para o perfil
+  document.addEventListener('click', function(e){
+    if ((e.target && e.target.id) !== 'loginSubmitBtn') return;
+    // pequeno delay p/ API salvar token
+    setTimeout(function(){
+      try{
+        var t = localStorage.getItem('bm_token') || localStorage.getItem('token') || '';
+        if (t && t.length > 10){
+          closeLogin();
+          setActive('profileScreen');
+          // reidrata se existirem
+          if (typeof window.renderProfile === 'function') { try{ window.renderProfile(); }catch(_){ } }
+          if (typeof window.init === 'function') { try{ window.init(); }catch(_){ } }
+          history.replaceState(null,'',location.pathname+location.search+'#perfil');
+        }
+      }catch(_){}
+    }, 300);
+  });
+
+  // guarda simples do hash no primeiro load (não força login)
+  window.addEventListener('DOMContentLoaded', function(){
+    var h = (location.hash || '').replace('#','');
+    if (h === 'perfil') setActive('profileScreen');
+    else if (h === 'oportunidades') setActive('opportunitiesScreen');
+    else if (h === 'matches') setActive('matchesScreen');
+    else if (h === 'interesses') setActive('interestsScreen');
+    else if (h === 'admin') setActive('adminScreen');
+    else if (h === 'cadastrar' || h === 'auth') setActive('authScreen');
+    else setActive('welcomeScreen');
+  });
+
+  // opcional: quando o hash muda, só alterna telas (sem mexer em modal)
+  window.addEventListener('hashchange', function(){
+    var h = (location.hash || '').replace('#','');
+    var map = {
+      'perfil':'profileScreen',
+      'oportunidades':'opportunitiesScreen',
+      'matches':'matchesScreen',
+      'interesses':'interestsScreen',
+      'admin':'adminScreen',
+      'cadastrar':'authScreen',
+      'auth':'authScreen',
+      'home':'welcomeScreen',
+      'welcome':'welcomeScreen'
+    };
+    setActive(map[h] || 'welcomeScreen');
+  });
+})();
+</script>
+        
 </body>
 <script id="final-guard">
 (function(){
