@@ -3979,6 +3979,40 @@ document.addEventListener('DOMContentLoaded',function(){
   window.addEventListener('hashchange', function(){ setTimeout(unhideAll, 0); });
 })();
 </script>
+
+<script id="visibility-guard-ultimate">
+(function(){
+  function showAllExceptLogin(){
+    var isLogin = (location.hash === '#login');
+    try{
+      var nodes = document.querySelectorAll(
+        'main, section, [data-section], .screen, .view, .page, [id]'
+      );
+      nodes.forEach(function(el){
+        var isLoginEl = (el.id === 'login') || el.classList.contains('modal-overlay');
+        if (isLogin && isLoginEl) {
+          // deixa o modal visível; o script do modal controla isso
+          return;
+        }
+        if (!isLoginEl){ el.hidden = false; if (el.style) el.style.display = ''; }
+      });
+      // Se não é a rota #login, garanta o modal oculto
+      if (!isLogin){
+        var dlg = document.getElementById('login');
+        if (dlg){ dlg.hidden = true; if (dlg.style) dlg.style.display = 'none'; }
+        document.body.style.overflow = '';
+      }
+    }catch(e){}
+  }
+  window.addEventListener('DOMContentLoaded', showAllExceptLogin);
+  window.addEventListener('load', showAllExceptLogin);
+  window.addEventListener('hashchange', function(){
+    // debounce leve para não entrar em loop de eventos encadeados
+    setTimeout(showAllExceptLogin, 0);
+  });
+})();
+</script>
+
 </body>
 <script id="final-guard">
 (function(){
