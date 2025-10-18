@@ -4042,94 +4042,137 @@ document.addEventListener('DOMContentLoaded',function(){
 
 <script id="mini-router">
 (function(){
-  const ROUTES = {
-    home: "welcomeScreen",
-    perfil: "profileScreen",
-    oportunidades: "opportunitiesScreen",
-    matches: "matchesScreen",
-    register: "authScreen"
-  };
+  const IDS = [
+    'welcomeScreen','opportunitiesScreen','matchesScreen','interestsScreen',
+    'profileScreen','authScreen','addBusinessScreen','scheduleScreen','adminScreen'
+  ];
+  const els = {};
+  IDS.forEach(id => { const el = document.getElementById(id); if (el) els[id]=el; });
 
-  function setActiveScreen(id){
-    const screens = document.querySelectorAll('.screen');
-    let target = document.getElementById(id);
-    screens.forEach(el=>{
-      const isTarget = el===target;
-      el.classList.toggle('active', isTarget);
-      el.style.display = isTarget ? 'flex' : 'none';
+  function setActive(id){
+    const target = els[id] ? id : 'welcomeScreen';
+    Object.keys(els).forEach(k => {
+      const on = (k === target);
+      els[k].classList.toggle('active', on);
+      els[k].style.display = on ? 'flex' : 'none';
     });
   }
 
-  function normalize(){
-    const active = document.querySelector('.screen.active');
-    if (!active || getComputedStyle(active).display==='none'){
-      const first = document.getElementById('welcomeScreen') || document.querySelector('.screen');
-      if(first){
-        first.classList.add('active');
-        first.style.display='flex';
-      }
+  // navegação por botões/links com data-target (sem hash)
+  document.addEventListener('click', (e)=>{
+    const t = e.target.closest('[data-target]');
+    if (!t) return;
+    const tgt = t.getAttribute('data-target');
+    if (tgt && els[tgt]) {
+      e.preventDefault();
+      setActive(tgt);
     }
-  }
+  });
 
-  function route(){
-    const hash = location.hash.replace('#','');
-    const id = ROUTES[hash] || 'welcomeScreen';
-    setActiveScreen(id);
-  }
-
-  window.addEventListener('hashchange', route);
-  document.addEventListener('DOMContentLoaded', ()=>{route(); normalize();});
+  // estado inicial: se nenhuma tela ativa, mostra welcome (ou a primeira disponível)
+  (function initStart(){
+    const anyActive = Object.values(els).some(el => el.classList.contains('active') || getComputedStyle(el).display !== 'none');
+    if (!anyActive) setActive('welcomeScreen');
+  })();
 })();
 </script>
 
 <script id="login-modal-logic">
 (function(){
-  function $(s){return document.querySelector(s);}
-  const modal=$('#login'), email=$('#loginEmail'), pass=$('#loginPassword'),
-        err=$('#loginError'), cancel=$('#loginCancelBtn'), submit=$('#loginSubmitBtn'), topBtn=$('#loginBtn');
-
-  function openModal(){
-    modal.hidden=false; modal.style.display='flex'; document.body.style.overflow='hidden';
-    if(err)err.style.display='none'; if(email)email.focus();
-  }
-  function closeModal(){
-    modal.hidden=true; modal.style.display='none'; document.body.style.overflow='';
-    setTimeout(()=>{ const a=document.querySelector('.screen.active');
-      if(!a||getComputedStyle(a).display==='none'){
-        const w=document.getElementById('welcomeScreen');
-        if(w){w.classList.add('active');w.style.display='flex';}
-      }
-    },0);
-  }
-
+  // util: ligar/desligar uma tela .screen por id (sem mexer em hash)
   function setActive(id){
     document.querySelectorAll('.screen').forEach(el=>{
-      const ok=el.id===id;
-      el.classList.toggle('active',ok);
-      el.style.display=ok?'flex':'none';
+      const on = el.id === id;
+      el.classList.toggle('active', on);
+      el.style.display = on ? 'flex' : 'none';
     });
   }
 
-  async function doLogin(){
-    if(err)err.style.display='none';
-    const mail=(email?.value||'').trim(), pwd=(pass?.value||'').trim();
-    if(!mail||!pwd){ if(err){err.textContent='Preencha e-mail e senha.';err.style.display='block';} return; }
+  async function hydrateProfile(){
     try{
-      if(!window.apiLogin)throw new Error('apiLogin ausente');
-      await window.apiLogin({email:mail,password:pwd});
-      document.dispatchEvent(new Event('bm-login-success'));
-document.dispatchEvent(new Event('bm-login-success'));
-document.dispatchEvent(new Event('bm-login-success'));
-closeModal(); setActive('profileScreen');
-      try{ if(window.renderProfile) setTimeout(window.renderProfile,0);}catch(_){}
-    }catch(e){ if(err){err.textContent='Credenciais inválidas.';err.style.display='block';} console.warn(e); }
+      const t = localStorage.getItem('bm_token') || '';
+      if (!t) return;
+      const r = await fetch('/api/me', { headers: { Authorization: 'Bearer ' + t }});
+      const j = await r.json().catch(()=>({}));
+      if (!j || !j.user) return;
+
+      // torna disponível para quem usa currentUser
+      window.currentUser = j.user;
+
+      // preenche campos comuns se existirem (defensivo)
+      const map = {
+        name: ['name', 'profileName', 'inputName'],
+        email: ['email', 'profileEmail', 'inputEmail'],
+        phone: ['phone','profilePhone','inputPhone'],
+        company: ['company','profileCompany','inputCompany'],
+        cnpj: ['cnpj','profileCnpj','inputCnpj'],
+        agenda_url: ['agenda_url','agendaUrl','inputAgendaUrl']
+      };
+      Object.entries(map).forEach(([k, ids])=>{
+        for (const id of ids){
+          const el = document.getElementById(id);
+          if (el){ try{ el.value = j.user[k] ?? ''; }catch(_){} }
+        }
+      });
+      // se existir um renderizador próprio
+      try{ if (typeof window.renderProfile === 'function') window.renderProfile(); }catch(_){}
+    }catch(_){}
   }
 
-  if(topBtn)topBtn.onclick=(e)=>{e.preventDefault();openModal();};
-  if(cancel)cancel.onclick=(e)=>{e.preventDefault();closeModal();};
-  if(modal)modal.onclick=(e)=>{if(e.target===modal)closeModal();};
-  if(submit)submit.onclick=doLogin;
-  if(pass)pass.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+  const $ = (s)=>document.querySelector(s);
+  const modal = $('#login');
+  const email = $('#loginEmail');
+  const pass  = $('#loginPassword');
+  const err   = $('#loginError');
+  const btnCancel = $('#loginCancelBtn');
+  const btnSubmit = $('#loginSubmitBtn');
+  const btnTop    = $('#loginBtn'); // botão "Entrar" do topo
+
+  function openModal(){
+    if (!modal) return;
+    modal.removeAttribute('hidden');
+    document.body.style.overflow='hidden';
+    if (err) err.style.display='none';
+    if (email) { try{ email.focus(); }catch(_){} }
+    // ao abrir o modal, mostre a tela de autenticação se existir
+    if (document.getElementById('authScreen')) setActive('authScreen');
+  }
+  function closeModal(){
+    if (!modal) return;
+    modal.setAttribute('hidden','');
+    document.body.style.overflow='';
+  }
+
+  async function doLogin(){
+    if (err) err.style.display='none';
+    const mail=(email?.value||'').trim();
+    const pwd =(pass?.value||'').trim();
+    if (!mail || !pwd){
+      if (err){ err.textContent='Preencha e-mail e senha.'; err.style.display='block'; }
+      return;
+    }
+    try{
+      if (typeof window.apiLogin !== 'function') throw new Error('apiLogin ausente');
+      await window.apiLogin({ email: mail, password: pwd });
+      // token salvo com sucesso -> fecha modal, ativa perfil e hidrata dados
+      closeModal();
+      setActive('profileScreen');
+      await hydrateProfile();
+    }catch(e){
+      if (err){ err.textContent='Credenciais inválidas.'; err.style.display='block'; }
+      console.warn(e);
+    }
+  }
+
+  // wiring de botões/áreas
+  if (btnTop)    btnTop.addEventListener('click', (e)=>{ e.preventDefault(); openModal(); });
+  if (btnCancel) btnCancel.addEventListener('click', (e)=>{ e.preventDefault(); closeModal(); });
+  if (modal)     modal.addEventListener('click', (e)=>{ if (e.target === modal) closeModal(); });
+  if (btnSubmit) btnSubmit.addEventListener('click', (e)=>{ e.preventDefault(); doLogin(); });
+  if (pass)      pass.addEventListener('keydown', (e)=>{ if (e.key==='Enter') doLogin(); });
+
+  // Se o usuário entrar direto em /#login, abrimos o modal. Não mexemos mais em hash depois disso.
+  if (location.hash === '#login') openModal();
 })();
 </script>
 
